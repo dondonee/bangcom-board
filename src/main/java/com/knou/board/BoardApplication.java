@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @Import(MyBatisConfig.class)
-@SpringBootApplication(scanBasePackages = "com.knou.board.web")
+@SpringBootApplication(scanBasePackages = {"com.knou.board.web", "com.knou.board.service"})
 public class BoardApplication {
 
 	public static void main(String[] args) {

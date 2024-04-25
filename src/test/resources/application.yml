@@ -1,7 +1,6 @@
 server:
   port: 8084
 
-
 spring:
   application.name: board
   mvc:
@@ -13,6 +12,7 @@ spring:
     username: sa
 mybatis:
   type-aliases-package: com.knou.board.domain
+  type-handlers-package: com.knou.board.domain
   mapper-locations: classpath:/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true

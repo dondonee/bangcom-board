@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.knou.board.repository.mybatis.MemberMapper">
+
+    <resultMap id="memberMap" type="Member">
+        <result property="userNo" column="user_no"/>
+        <result property="profileId" column="profile_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="imageUrl" column="image_url" />
+        <result property="transferred" column="transferred" />
+        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Grade$TypeHandler" />
+        <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Authority$TypeHandler" />
+        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Region$TypeHandler" />
+        <result property="joinedDate" column="joined_date" />
+        <result property="updatedDate" column="updated_date" />
+    </resultMap>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userNo" parameterType="MemberLogin">
+        INSERT INTO member_user (login_name) VALUES (#{loginName})
+    </insert>
+
+    <insert id="insertPassword">
+        INSERT INTO auth_password (user_no, password) VALUES (#{userNo}, #{password});
+    </insert>
+
+    <insert id="insertProfile" useGeneratedKeys="true" keyProperty = "profileId">
+        INSERT INTO member_profile (user_no, nickname, transferred, grade, authority, region, joined_date)
+        VALUES (#{userNo}, #{nickname}, #{transferred}, #{grade}, #{authority}, #{region}, #{joinedDate});
+    </insert>
+
+    <select id="selectProfileById" resultMap="memberMap">
+        SELECT * FROM member_profile
+        WHERE user_no = #{userNo}
+    </select>
+</mapper>
