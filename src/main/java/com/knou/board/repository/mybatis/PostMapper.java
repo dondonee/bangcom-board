@@ -1,11 +1,17 @@
 package com.knou.board.repository.mybatis;
 
-import com.knou.board.domain.Post;
+import com.knou.board.domain.post.Post;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface PostMapper {
 
-    void save(Post post);
-    Post findById(Long id);
+    void insert(Post post);
+    Post selectById(Long id);
+
+    List<Post> selectAll();
+    void update(Post post);
+    void delete(Long id);
 }

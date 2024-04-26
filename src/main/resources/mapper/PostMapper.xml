@@ -3,10 +3,56 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.knou.board.repository.mybatis.PostMapper">
 
-    <insert id="save" useGeneratedKeys="true" keyProperty = "id">
-        INSERT INTO post (post_title, post_content) VALUES (#{postTitle}, #{postContent})
+    <resultMap id="memberMap" type="Member">
+        <result property="userNo" column="user_no"/>
+        <result property="profileId" column="profile_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="imageUrl" column="image_url" />
+        <result property="transferred" column="transferred" />
+        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Grade$TypeHandler" />
+        <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Authority$TypeHandler" />
+        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Region$TypeHandler" />
+        <result property="joinedDate" column="joined_date" />
+        <result property="updatedDate" column="updated_date" />
+    </resultMap>
+    <resultMap id="postMap" type="Post">
+        <id property="id" column="post_id"/>
+        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Post$Topic$TypeHandler" />
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <result property="viewCount" column="view_count"/>
+        <collection property="author" resultMap="memberMap"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty = "id">
+        INSERT INTO post (topic, author_id, title, content, created_date)
+            VALUES (#{topic}, #{author.userNo}, #{title}, #{content}, #{createdDate})
     </insert>
-    <select id="findById" resultType="Post">
-        SELECT * FROM post WHERE id = #{id}
+    
+    <select id="selectById" resultMap="postMap">
+        SELECT * FROM post
+            JOIN member_profile ON post.author_id = member_profile.user_no
+        WHERE post.post_id = #{id}
     </select>
+
+    <select id="selectAll" resultMap="postMap">
+        SELECT * FROM post
+        JOIN member_profile ON post.author_id = member_profile.user_no
+    </select>
+    
+    <update id="update" parameterType="Post">
+        UPDATE post
+        SET topic = #{topic},
+            title = #{title},
+            content = #{content},
+            modified_date = #{modifiedDate}
+        WHERE post_id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM post WHERE post_id = #{id}
+    </delete>
+    
 </mapper>

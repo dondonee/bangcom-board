@@ -5,7 +5,7 @@ DROP TABLE post IF EXISTS;
 CREATE TABLE post
 (
     post_id       BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    category_id   INT NOT NULL,
+    topic         VARCHAR(10) NOT NULL,
     author_id     BIGINT NOT NULL,
     title         VARCHAR(50) NOT NULL,
     content       TEXT NOT NULL,
