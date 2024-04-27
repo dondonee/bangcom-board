@@ -9,9 +9,9 @@
         <result property="nickname" column="nickname"/>
         <result property="imageUrl" column="image_url" />
         <result property="transferred" column="transferred" />
-        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Grade$TypeHandler" />
-        <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Authority$TypeHandler" />
-        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Region$TypeHandler" />
+        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler" />
+        <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler" />
+        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler" />
         <result property="joinedDate" column="joined_date" />
         <result property="updatedDate" column="updated_date" />
     </resultMap>

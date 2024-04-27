@@ -3,6 +3,7 @@ package com.knou.board.repository.mybatis;
 import com.knou.board.domain.member.*;
 import com.knou.board.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static com.knou.board.domain.member.Member.*;
 import static org.assertj.core.api.Assertions.*;
 
 @Slf4j

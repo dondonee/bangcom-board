@@ -1,18 +1,18 @@
 package com.knou.board.domain.post;
 
-import com.knou.board.domain.member.Grade;
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.typehandler.CodeEnum;
 import com.knou.board.domain.typehandler.CodeEnumTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.MappedTypes;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
+@NoArgsConstructor
 public class Post {
 
     private Long id;
@@ -25,9 +25,6 @@ public class Post {
 
     private Member author;
 
-
-    public Post() {
-    }
 
     @Getter
     @AllArgsConstructor

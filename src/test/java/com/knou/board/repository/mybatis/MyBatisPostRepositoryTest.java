@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.knou.board.domain.member.Member.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
