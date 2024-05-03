@@ -17,7 +17,7 @@
     </resultMap>
     <resultMap id="postMap" type="Post">
         <id property="id" column="post_id"/>
-        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Post$Topic$TypeHandler" />
+        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler" />
         <result property="title" column="title"/>
         <result property="content" column="content"/>
         <result property="createdDate" column="created_date"/>
@@ -40,6 +40,16 @@
     <select id="selectAll" resultMap="postMap">
         SELECT * FROM post
         JOIN member_profile ON post.author_id = member_profile.user_no
+    </select>
+
+    <select id="selectByTopicGroup" resultMap="postMap">
+        SELECT * FROM post
+        JOIN member_profile ON post.author_id = member_profile.user_no
+        <where>
+            <foreach item="topic" index="index" collection="array" open="topic IN (" separator="," close=")">
+                #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
+            </foreach>
+        </where>
     </select>
     
     <update id="update" parameterType="Post">

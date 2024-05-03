@@ -1,6 +1,7 @@
 package com.knou.board.repository.mybatis;
 
 import com.knou.board.domain.post.Post;
+import com.knou.board.domain.post.Topic;
 import com.knou.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,11 @@ public class MyBatisPostRepository implements PostRepository {
     @Override
     public List<Post> selectAll() {
         return postMapper.selectAll();
+    }
+
+    @Override
+    public List<Post> selectByTopicGroup(Topic[] topics) {
+        return postMapper.selectByTopicGroup(topics);
     }
 
     @Override

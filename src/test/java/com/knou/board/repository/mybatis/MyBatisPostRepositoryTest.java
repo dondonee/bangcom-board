@@ -2,7 +2,8 @@ package com.knou.board.repository.mybatis;
 
 import com.knou.board.domain.member.*;
 import com.knou.board.domain.post.Post;
-import com.knou.board.domain.post.Post.Topic;
+import com.knou.board.domain.post.Topic;
+import com.knou.board.domain.post.TopicGroup;
 import com.knou.board.repository.MemberRepository;
 import com.knou.board.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.knou.board.domain.member.Member.*;
@@ -90,6 +92,41 @@ public class MyBatisPostRepositoryTest {
         assertThat(selectPost).isNull();
     }
 
+    @Test
+    void selectByTopicGroup() {
+        //given
+        Post post1 = setPost();
+        Post post2 = post1;
+        post1.setTopic(Topic.C_CAMPUS);
+        post2.setTopic(Topic.C_LIFE);
+
+        postRepository.insert(post1);
+        postRepository.insert(post2);
+
+        //when
+        Topic[] topics = TopicGroup.COMMUNITY.getTopics();
+        List<Post> posts = postRepository.selectByTopicGroup(topics);
+
+        //then
+        assertThat(posts.size()).isEqualTo(2);
+    }
+
+    @Test
+    void selectByTopicGroupNotice() {
+        //given
+        Post post = setPost();
+        post.setTopic(Topic.NOTICE);
+
+        postRepository.insert(post);
+        postRepository.insert(post);
+
+        //when
+        Topic[] topics = TopicGroup.NOTICE.getTopics();
+        List<Post> posts = postRepository.selectByTopicGroup(topics);
+
+        //then
+        assertThat(posts.size()).isEqualTo(2);
+    }
 
     private Member insertMember() {
         MemberLogin memberLogin = new MemberLogin();

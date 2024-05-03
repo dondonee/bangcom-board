@@ -1,6 +1,3 @@
--- Dummy Data
--- INSERT INTO post(category_id, author_id, title, content, date_registered, view_count) VALUES(1, 1, '제목1', '내용1', '2021-01-01 00:00:00', 0);
-
 DROP TABLE post IF EXISTS;
 CREATE TABLE post
 (
@@ -15,15 +12,6 @@ CREATE TABLE post
 --     FOREIGN KEY (category_id) REFERENCES post_category (category_id),
 --     FOREIGN KEY (author_id) REFERENCES member_user (user_no)
 );
-
--- CREATE TABLE post_category
--- (
---     category_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
---     name        VARCHAR(20) NOT NULL,
---     depth       TINYINT NULL DEFAULT NULL,
---     parent      INT NULL DEFAULT NULL
--- --     FOREIGN KEY (parent) REFERENCES post_category (category_id)
--- );
 
 DROP TABLE member_user IF EXISTS;
 CREATE TABLE member_user
