@@ -22,7 +22,7 @@ public class PostController {
     private final PostService postService;
 
 //    @GetMapping("/questions")
-//    public String getQuestions(Model model) {
+//    public String getQuestionList(Model model) {
 //        TopicGroup topicGroup = TopicGroup.QUESTIONS;
 //        List<Post> posts = postService.findByTopicGroup(topicGroup);
 //        model.addAttribute("topicGroup", topicGroup);
@@ -34,7 +34,7 @@ public class PostController {
      * 게시판 조회 : @GetMapping({"/info", "/community", "/notice"})
      */
     @GetMapping("/{board}")
-    public String getPosts(@PathVariable String board, Model model) {
+    public String getPostList(@PathVariable String board, Model model) {
 
         try {
             TopicGroup topicGroup = TopicGroup.valueOf(board.toUpperCase());
