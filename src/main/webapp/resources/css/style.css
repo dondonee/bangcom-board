@@ -1,0 +1,84 @@
+@font-face {
+    font-family: 'Pretendard-Thin';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Pretendard-Black';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+
+body {
+    min-width: 340px;
+}
+
+
+/* 부트스트랩이 아닌 CSS 클래스명은 "x-" 로 시작 */
+
+/*
+    form
+*/
+.x-member-form {
+    box-sizing: border-box;
+    max-width: 448px;
+}
+
+@media screen and (min-width: 640px) { /* breakpoint: 640px */
+    .x-margin-top__form {
+        margin-top: 128px;
+    }
+}
+@media screen and (max-width: 639px) {
+    .x-margin-top__form {
+        margin-top: 80px;
+    }
+}
+
+.x-form-check-group {
+    line-height:1.75;
+    padding: 0.375rem 0.75rem;
+}
+
+
+/*
+    text
+*/
+
+.x-font-bolder {
+    font-weight: 900;
+}
+
+.x-text-gray-600 {
+    color: #6c757d;
+}
+.x-text-gray-700 {
+    color: #495057;
+}
+
+
+/*
+    block
+*/
+.x-width-full {
+    width: 100%;
+}
+
+.x-inset-0 {
+    inset: 0;
+}

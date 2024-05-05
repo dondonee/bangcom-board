@@ -1,3 +1,27 @@
 $primary: #007db6;
 
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+$font-family-base:      Pretendard-Regular;
+$font-weight-lighter:   100;
+$font-weight-bolder:    900;
+
+$form-label-margin-bottom: .25rem;
+$form-label-font-size: 15px;
+$form-label-color: $gray-700;
+$form-check-label-color: $gray-700;
+$input-color: $gray-800;
+
+$input-placeholder-color: $gray-500;
+$input-font-weight: 100;
+$input-btn-line-height: 1.75;
+
 @import "../node_modules/bootstrap/scss/bootstrap";
