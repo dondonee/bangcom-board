@@ -9,6 +9,8 @@ spring:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
+  messages:
+    basename: errors
   datasource:
     driver-class-name: org.h2.Driver
 #    임시 메모리 데이터베이스

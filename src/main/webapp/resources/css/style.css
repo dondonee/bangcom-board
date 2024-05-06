@@ -34,11 +34,6 @@ body {
 /*
     form
 */
-.x-member-form {
-    box-sizing: border-box;
-    max-width: 448px;
-}
-
 @media screen and (min-width: 640px) { /* breakpoint: 640px */
     .x-margin-top__form {
         margin-top: 128px;
@@ -50,9 +45,26 @@ body {
     }
 }
 
+@media screen and (min-width: 640px) { /* breakpoint: 640px */
+    .x-member-form {
+        width: 448px;
+    }
+}
+@media screen and (max-width: 639px) {
+    .x-member-form {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
 .x-form-check-group {
     line-height:1.75;
     padding: 0.375rem 0.75rem;
+}
+
+.x-field-error {
+    font-size: .8rem;
+    color: #dc3545; /* $red-500 */
 }
 
 
