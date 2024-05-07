@@ -35,7 +35,7 @@
                 <div>
                     <label for="loginName" class="form-label">아이디</label>
                     <input type="text" class="form-control" name="loginName" id="loginName"
-                           placeholder="4~15자 이내로 입력해주세요">
+                           placeholder="4~15자 이내로 입력해주세요" value="${form.loginName}">
                 </div>
                 <spring:hasBindErrors name="memberSignUpForm">
                     <c:if test="${not empty errors.getFieldError('loginName')}">
@@ -50,7 +50,7 @@
                 <div>
                     <label for="password" class="form-label">비밀번호</label>
                     <input type="password" class="form-control" name="password" id="password"
-                           placeholder="최소 6자 이상(알파벳, 숫자 필수)">
+                           placeholder="최소 6자 이상">
                 </div>
                 <spring:hasBindErrors name="memberSignUpForm">
                     <c:if test="${not empty errors.getFieldError('password')}">
@@ -80,7 +80,7 @@
                 <div>
                     <label for="nickname" class="form-label">닉네임</label>
                     <input type="text" class="form-control" name="nickname" id="nickname"
-                           placeholder="별명을 20자 이하로 입력해 주세요(알파벳, 한글, 숫자)">
+                           placeholder="별명을 20자 이하로 입력해 주세요(알파벳, 한글, 숫자)" value="${form.nickname}">
                 </div>
                 <spring:hasBindErrors name="memberSignUpForm">
                     <c:if test="${not empty errors.getFieldError('nickname')}">
@@ -98,7 +98,7 @@
                         <select class="form-select form-select-md" name="grade" id="grade">
                             <option selected disabled>학년</option>
                             <c:forEach var="grade" items="${grades}">
-                                <option value="${grade}">${grade.description}</option>
+                                <option value="${grade}" <c:if test="${form.grade eq grade}"> selected</c:if>>${grade.description}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -117,7 +117,7 @@
                         <select class="form-select form-select-md" name="region" id="region">
                             <option selected disabled>지역</option>
                             <c:forEach var="region" items="${regions}">
-                                <option value="${region}">${region.description}</option>
+                                <option value="${region}" <c:if test="${form.region eq region}"> selected</c:if>>${region.description}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -137,12 +137,12 @@
                     <div class="x-form-check-group">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="transferred" id="transferredY"
-                                   value="true">
+                                   value="true" <c:if test="${form.transferred eq true}"> checked</c:if>>
                             <label class="form-check-label" for="transferredY">예</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="transferred" id="transferredN"
-                                   value="false">
+                                   value="false" <c:if test="${form.transferred eq false}"> checked</c:if>>
                             <label class="form-check-label" for="transferredN">아니오</label>
                         </div>
                     </div>

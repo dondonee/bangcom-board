@@ -34,4 +34,14 @@ public class MyBatisMemberRepository implements MemberRepository {
     public Member selectProfileById(Long userNo) {
         return memberMapper.selectProfileById(userNo);
     }
+
+    @Override
+    public MemberLogin selectUserByLoginName(String loginName) {
+        return memberMapper.selectUserByLoginName(loginName);
+    }
+
+    @Override
+    public Member selectProfileByNickName(String nickName) {
+        return memberMapper.selectProfileByNickName(nickName);
+    }
 }

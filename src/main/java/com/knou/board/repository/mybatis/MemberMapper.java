@@ -11,4 +11,6 @@ public interface MemberMapper {
     void insertPassword(MemberLogin memberLogin);
     void insertProfile(Member member);
     Member selectProfileById(Long userNo);
+    MemberLogin selectUserByLoginName(String loginName);
+    Member selectProfileByNickName(String nickName);
 }

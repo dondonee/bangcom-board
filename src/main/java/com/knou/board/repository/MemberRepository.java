@@ -9,4 +9,6 @@ public interface MemberRepository {
     MemberLogin insertPassword(MemberLogin memberLogin);
     Member insertProfile(Member member);
     Member selectProfileById(Long userNo);
+    MemberLogin selectUserByLoginName(String loginName);
+    Member selectProfileByNickName(String nickName);
 }
