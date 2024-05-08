@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.naming.Binding;
@@ -45,12 +44,12 @@ public class MemberController {
 
     // 컨트롤러 메서드
 
-    @GetMapping("/signUp")
+    @GetMapping("/signup")
     public String signUpForm() {
         return "signUpForm";
     }
 
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public String signUp(@Validated @ModelAttribute MemberSignUpForm form, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
 
         // 아이디 중복 검증 (아이디는 가입 후 수정 불가하므로 메서드 분리 X)
@@ -85,10 +84,22 @@ public class MemberController {
         // 회원가입 로직 성공
         if (newMember != null) {
             redirectAttributes.addFlashAttribute("newMember", newMember);
-            return "redirect:/login";
+            return "redirect:/signup/celebration";
         }
 
-        return "redirect:/board";  // [!] 추후 home으로 변경
+        return "redirect:/community";  // [!] 추후 home으로 변경
+    }
+
+    @GetMapping("/signup/celebration")
+    public String signUpCelebration(Model model) {
+
+        // 회원가입 성공 후 리다이렉트된 경우
+        if (model.containsAttribute("newMember")) {
+            return "signUpCelebration";
+        }
+
+        // URL을 통한 접근의 경우
+        return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
     @GetMapping("/login")

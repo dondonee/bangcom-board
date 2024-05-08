@@ -14,11 +14,11 @@
     <title>KNOU CS - 회원가입</title>
 </head>
 <body>
-<div class="d-flex justify-content-center x-margin-top__form">
-    <div class="x-member-form pb-5">
+<div class="d-flex justify-content-center x-margin-top__form x-paddingx-v640">
+    <div class="x-max-width-md x-width-full pb-5">
         <div class="text-center">
-            <h2 class="mt-4 fs-1 x-font-bolder">환영합니다.</h2>
-            <p class="mt-2 x-text-gray-600">'방콤'은 한국방송통신대학교 컴퓨터과학과 커뮤니티입니다.</p>
+            <h2 class="mt-4 fs-1 x-font-bold">환영합니다.</h2>
+            <p class="mt-2 x-font-light x-text-gray-600">'방콤'은 한국방송통신대학교 컴퓨터과학과 커뮤니티입니다.</p>
         </div>
         <div class="position-relative">
             <div class="position-absolute d-flex align-items-center x-inset-0">
@@ -26,11 +26,11 @@
                 </div>
             </div>
             <div class="position-relative mt-5 mb-4 text-center">
-                <span class="px-2 small x-text-gray-600 bg-white">회원가입에 필요한 기본정보를 입력해주세요.</span>
+                <span class="px-2 small x-font-light x-text-gray-600 bg-white">회원가입에 필요한 기본정보를 입력해주세요.</span>
             </div>
         </div>
 
-        <form action="/signUp" method="post">
+        <form action="/signup" method="post">
             <div class="mb-4">
                 <div>
                     <label for="loginName" class="form-label">아이디</label>
@@ -98,7 +98,8 @@
                         <select class="form-select form-select-md" name="grade" id="grade">
                             <option selected disabled>학년</option>
                             <c:forEach var="grade" items="${grades}">
-                                <option value="${grade}" <c:if test="${form.grade eq grade}"> selected</c:if>>${grade.description}</option>
+                                <option value="${grade}" <c:if
+                                        test="${form.grade eq grade}"> selected</c:if>>${grade.description}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -117,7 +118,8 @@
                         <select class="form-select form-select-md" name="region" id="region">
                             <option selected disabled>지역</option>
                             <c:forEach var="region" items="${regions}">
-                                <option value="${region}" <c:if test="${form.region eq region}"> selected</c:if>>${region.description}</option>
+                                <option value="${region}" <c:if
+                                        test="${form.region eq region}"> selected</c:if>>${region.description}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -156,7 +158,9 @@
                     </c:if>
                 </spring:hasBindErrors>
             </div>
-            <button type="submit" class="my-4 btn btn-primary form-control">회원가입</button>
+            <div>
+                <button type="submit" class="my-4 py-2 btn btn-primary form-control">회원가입</button>
+            </div>
         </form>
     </div>
 </div>
