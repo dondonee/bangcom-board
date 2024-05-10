@@ -56,8 +56,9 @@ CREATE TABLE auth_password
 );
 
 -- Dummy Data
--- INSERT INTO member_user (login_name) VALUES ('knou01');
--- INSERT INTO member_profile (user_no, nickname, joined_date) VALUES (1, '방콤', '2021-01-01 00:00:00');
+INSERT INTO member_user (login_name) VALUES ('knou01');
+INSERT INTO auth_password (user_no, password) VALUES (1, 'password12!@');
+INSERT INTO member_profile (user_no, nickname, joined_date) VALUES (1, '방콤', '2021-01-01 00:00:00');
 INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
 INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-LIFE', 1, '예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
 INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');

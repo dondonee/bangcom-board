@@ -48,4 +48,26 @@ public class MemberService {
 
         return memberRepository.selectProfileById(member.getUserNo());
     }
+
+    public MemberLogin findMemberByLoginName(String loginName) {
+        return memberRepository.selectUserByLoginName(loginName);
+    }
+
+    public Member authenticate(MemberLogin memberLogin) {
+        Long userNoInput = memberLogin.getUserNo();
+        String passwordInput = memberLogin.getPassword();
+
+        // 인증 시도
+        MemberLogin authenticated = memberRepository.selectUserByIdAndPassword(userNoInput, passwordInput);
+
+        if (authenticated == null) {
+            return null;
+        }
+
+        // 인증 성공
+        Long findUserNo = authenticated.getUserNo();
+        Member findMember = memberRepository.selectProfileById(findUserNo);  // 애플리케이션에서 사용할 회원 프로필 조회
+
+        return findMember;
+    }
 }

@@ -52,4 +52,10 @@
         from member_profile
         where nickname = #{nickname}
     </select>
+
+    <select id="selectUserByIdAndPassword" resultType="MemberLogin">
+        select u.user_no from member_user u
+        join auth_password p on u.user_no = p.user_no
+        where p.password = #{password}
+    </select>
 </mapper>
