@@ -41,6 +41,7 @@ public class MyBatisMemberRepositoryTest {
 
         //when
         memberLogin = memberRepository.insertUser(memberLogin);
+        memberRepository.insertPassword(memberLogin);
         member.setUserNo(memberLogin.getUserNo());
         member = memberRepository.insertProfile(member);
 
@@ -116,6 +117,28 @@ public class MyBatisMemberRepositoryTest {
 
         //then
         assertThat(findMember).isNotNull();
+    }
+
+    @Test
+    public void selectUserByIdAndPassword() {
+        //given (회원가입)
+        Map<String, Object> memberMap = setMember();  // 값 세팅
+        MemberLogin memberLogin = (MemberLogin) memberMap.get("memberLogin");
+        memberLogin.setLoginName("knou01");
+        memberLogin.setPassword("password");
+        Member member = (Member) memberMap.get("member");
+
+        memberLogin = memberRepository.insertUser(memberLogin);  //유저 등록
+        memberRepository.insertPassword(memberLogin);  //비밀번호 등록
+        member.setUserNo(memberLogin.getUserNo());
+        member = memberRepository.insertProfile(member); //프로필 등록
+
+        //when
+        MemberLogin findMemberLogin = memberRepository.selectUserByLoginName("knou01");  // 사용자 입력 아이디로 일치하는 아이디 탐색
+        MemberLogin authenticated = memberRepository.selectUserByIdAndPassword(findMemberLogin.getUserNo(), "password");  // 사용자 입력 비밀번호로 인증
+
+        //then
+        assertThat(authenticated).isNotNull();
     }
 
 
