@@ -116,6 +116,13 @@ a:hover {
 }
 
 /*
+    navbar
+*/
+.dropdown-toggle::after {
+    display: none;
+}
+
+/*
     container
 */
 @media screen and (max-width: 639px) {

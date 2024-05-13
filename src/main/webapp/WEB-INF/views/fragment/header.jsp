@@ -42,7 +42,7 @@
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-slash-circle"></i>
+                            <img src="/images/profile/temporary.gif" width="32px" height="32px" alt="프로필사진">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end x-text-sm" aria-labelledby="navbarScrollingDropdown">
                             <li><a class="dropdown-item" href="#"><i class="me-1 bi bi-person-circle"></i>프로필</a></li>

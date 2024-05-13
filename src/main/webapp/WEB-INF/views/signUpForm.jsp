@@ -11,7 +11,7 @@
 <html lang="ko">
 <head>
     <%@ include file="fragment/head.jsp" %>
-    <title>KNOU CS - 회원가입</title>
+    <title>Bangcom - 회원가입</title>
 </head>
 <body>
 <div class="d-flex justify-content-center x-margin-top__form x-paddingx-v640">

@@ -9,7 +9,7 @@
 <html lang="ko">
 <head>
     <%@ include file="fragment/head.jsp" %>
-    <title>KNOU CS - 로그인</title>
+    <title>Bangcom - 로그인</title>
 </head>
 <body>
 <div class="x-paddingx-v640 d-flex min-vh-100 justify-content-center align-items-center">

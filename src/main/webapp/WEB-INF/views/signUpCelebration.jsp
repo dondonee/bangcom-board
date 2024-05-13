@@ -12,7 +12,7 @@
     <%--  [!] refresh 경로 추후 home으로 변경  --%>
     <meta http-equiv="Refresh" content="3; /community">
     <%@ include file="fragment/head.jsp" %>
-    <title>KNOU CS - 가입을 환영합니다.</title>
+    <title>Bangcom - 가입을 환영합니다.</title>
 </head>
 <body>
 <c:if test="${not empty newMember}">
