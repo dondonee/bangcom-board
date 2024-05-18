@@ -17,10 +17,10 @@ public class Member {
     private Long userNo;
     private String nickname;
     private String imageUrl;
-    private Enum<Grade> grade;
+    private Grade grade;
     private Boolean transferred;
-    private Enum<Region> region;
-    private Enum<Authority> authority;
+    private Region region;
+    private Authority authority;
     private LocalDateTime joinedDate;
     private LocalDateTime updatedDate;
 

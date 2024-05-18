@@ -23,7 +23,7 @@ public class JspFunction {
 
         long hours = minutes / 60;
         if (hours < 24) {
-            return "약 " + hours + "시간 전";
+            return hours + "시간 전";
         }
 
         long days = hours / 24;
@@ -31,8 +31,8 @@ public class JspFunction {
         long months = ChronoUnit.MONTHS.between(createdTime, now);
         long years = ChronoUnit.YEARS.between(createdTime, now);
 
-        if (weeks < 5) {
-            return "약 " + days + "일 전";
+        if (days < 7) {
+            return days + "일 전";
         }
 
         if (months < 1) {

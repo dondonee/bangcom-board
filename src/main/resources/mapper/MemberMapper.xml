@@ -5,7 +5,6 @@
 
     <resultMap id="memberMap" type="Member">
         <result property="userNo" column="user_no"/>
-        <result property="profileId" column="profile_id"/>
         <result property="nickname" column="nickname"/>
         <result property="imageUrl" column="image_url"/>
         <result property="transferred" column="transferred"/>
@@ -27,7 +26,7 @@
         VALUES (#{userNo}, #{password});
     </insert>
 
-    <insert id="insertProfile" useGeneratedKeys="true" keyProperty="profileId">
+    <insert id="insertProfile">
         INSERT INTO member_profile (user_no, nickname, transferred, grade, authority, region, joined_date)
         VALUES (#{userNo}, #{nickname}, #{transferred},
                 #{grade, typeHandler=com.knou.board.domain.member.Member$Grade$TypeHandler},
@@ -56,6 +55,6 @@
     <select id="selectUserByIdAndPassword" resultType="MemberLogin">
         select u.user_no from member_user u
         join auth_password p on u.user_no = p.user_no
-        where p.password = #{password}
+        where u.user_no = #{userNo} and p.password = #{password}
     </select>
 </mapper>

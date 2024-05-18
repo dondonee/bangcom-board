@@ -31,10 +31,10 @@ public class MemberSignUpForm {
     private String nickname;
 
     @NotNull(message = "학년을 선택하세요.")  // Enum 필드 유효성 검사는 setter 바인딩 시 수행됨
-    private Enum<Grade> grade;
+    private Grade grade;
 
     @NotNull(message = "지역을 선택하세요.")
-    private Enum<Region> region;
+    private Region region;
 
     @NotNull(message = "편입여부를 선택하세요.")
     private Boolean transferred;

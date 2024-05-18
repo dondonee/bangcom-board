@@ -48,7 +48,6 @@ public class MyBatisMemberRepositoryTest {
         //then
         Member selectMember = memberRepository.selectProfileById(member.getUserNo());
         assertThat(selectMember.getUserNo()).isEqualTo(member.getUserNo());
-        assertThat(selectMember.getProfileId()).isEqualTo(member.getProfileId());
     }
 
     @Test
