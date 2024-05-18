@@ -5,7 +5,6 @@
 
     <resultMap id="memberMap" type="Member">
         <result property="userNo" column="user_no"/>
-        <result property="profileId" column="profile_id"/>
         <result property="nickname" column="nickname"/>
         <result property="imageUrl" column="image_url" />
         <result property="transferred" column="transferred" />
@@ -28,7 +27,7 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty = "id">
         INSERT INTO post (topic, author_id, title, content, created_date)
-            VALUES (#{topic}, #{author.userNo}, #{title}, #{content}, #{createdDate})
+            VALUES (#{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}, #{author.userNo}, #{title}, #{content}, #{createdDate})
     </insert>
     
     <select id="selectById" resultMap="postMap">
@@ -42,7 +41,7 @@
         JOIN member_profile ON post.author_id = member_profile.user_no
     </select>
 
-    <select id="selectByTopicGroup" resultMap="postMap">
+    <select id="selectByTopics" resultMap="postMap">
         SELECT * FROM post
         JOIN member_profile ON post.author_id = member_profile.user_no
         <where>
@@ -50,6 +49,7 @@
                 #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
             </foreach>
         </where>
+         order by post.post_id desc
     </select>
     
     <update id="update" parameterType="Post">
@@ -58,6 +58,12 @@
             title = #{title},
             content = #{content},
             modified_date = #{modifiedDate}
+        WHERE post_id = #{id}
+    </update>
+
+    <update id="updateViewCount" parameterType="Post">
+        UPDATE post
+        SET view_count = view_count + 1
         WHERE post_id = #{id}
     </update>
 

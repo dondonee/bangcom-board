@@ -31,14 +31,19 @@ public class MyBatisPostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> selectByTopicGroup(Topic[] topics) {
-        return postMapper.selectByTopicGroup(topics);
+    public List<Post> selectByTopics(Topic[] topics) {
+        return postMapper.selectByTopics(topics);
     }
 
     @Override
     public Post update(Post post) {
         postMapper.update(post);
         return post;
+    }
+
+    @Override
+    public void updateViewCount(Long id) {
+        postMapper.updateViewCount(id);
     }
 
     @Override

@@ -11,7 +11,8 @@ public interface PostRepository {
     Post selectById(Long id);
 
     List<Post> selectAll();
-    List<Post> selectByTopicGroup(Topic[] topics);
+    List<Post> selectByTopics(Topic[] topics);
     Post update(Post post);
+    void updateViewCount(Long id);
     void delete(Long id);
 }

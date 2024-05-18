@@ -157,6 +157,12 @@ public class MemberController {
         return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/community";  // [!] 추후 home으로 변경
+    }
+
 
     // private 메서드
 

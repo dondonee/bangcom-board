@@ -3,6 +3,7 @@ server:
 
 spring:
   application.name: board
+  profiles.active: sensitive
   mvc:
     view:
       prefix: /WEB-INF/views/

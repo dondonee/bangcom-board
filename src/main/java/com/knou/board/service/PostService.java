@@ -7,7 +7,7 @@ import com.knou.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,8 +16,26 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    public long createPost(Post post) {
+        post.setCreatedDate(LocalDateTime.now());
+        post.setViewCount(0);
+
+        post = postRepository.insert(post);
+
+        return post.getId();
+    }
+
     public List<Post> findByTopicGroup(TopicGroup topicGroup) {
         Topic[] topics = topicGroup.getTopics();
-        return postRepository.selectByTopicGroup(topics);
+        return postRepository.selectByTopics(topics);
+    }
+
+    public List<Post> findByTopic(Topic topic) {
+        return postRepository.selectByTopics(new Topic[]{topic});
+    }
+
+    public Post findPost(long postId) {
+        postRepository.updateViewCount(postId);
+        return postRepository.selectById(postId);
     }
 }

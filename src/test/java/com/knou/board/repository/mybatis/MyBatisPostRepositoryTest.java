@@ -97,15 +97,15 @@ public class MyBatisPostRepositoryTest {
         //given
         Post post1 = setPost();
         Post post2 = post1;
-        post1.setTopic(Topic.C_CAMPUS);
-        post2.setTopic(Topic.C_LIFE);
+        post1.setTopic(Topic.CAMPUS);
+        post2.setTopic(Topic.LIFE);
 
         postRepository.insert(post1);
         postRepository.insert(post2);
 
         //when
         Topic[] topics = TopicGroup.COMMUNITY.getTopics();
-        List<Post> posts = postRepository.selectByTopicGroup(topics);
+        List<Post> posts = postRepository.selectByTopics(topics);
 
         //then
         assertThat(posts.size()).isEqualTo(2);
@@ -122,7 +122,7 @@ public class MyBatisPostRepositoryTest {
 
         //when
         Topic[] topics = TopicGroup.NOTICE.getTopics();
-        List<Post> posts = postRepository.selectByTopicGroup(topics);
+        List<Post> posts = postRepository.selectByTopics(topics);
 
         //then
         assertThat(posts.size()).isEqualTo(2);
@@ -152,7 +152,7 @@ public class MyBatisPostRepositoryTest {
         Member member = insertMember();
 
         Post post = new Post();
-        post.setTopic(Topic.C_LIFE);
+        post.setTopic(Topic.LIFE);
         post.setTitle("title");
         post.setContent("content");
         post.setCreatedDate(LocalDateTime.now());
