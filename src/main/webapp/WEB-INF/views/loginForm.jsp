@@ -52,7 +52,7 @@
                 <button type="submit" class="my-4 py-2 btn btn-primary form-control">로그인</button>
             </div>
             <div class="d-flex justify-content-center small x-font-light x-text-gray-700">
-                <span>아직 회원이 아니신가요?</span><a class="ms-1" href="/signup">회원가입</a>
+                <span>아직 회원이 아니신가요?</span><a class="ms-1 x-link" style="text-decoration: underline" href="/signup">회원가입</a>
             </div>
         </form>
     </div>

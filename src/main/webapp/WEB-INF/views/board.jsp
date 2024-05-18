@@ -31,26 +31,25 @@
                 <div class="mb-3 row d-flex justify-content-between">
                     <div class="order-md-2 col-md-auto col-12 x-mb-sm-3 align-content-center">
                         <ul class="list-unstyled list-inline d-flex justify-content-center m-0">
-                            <c:forEach var="topic" items="${topicGroup.topics}">
+                            <c:forEach var="vo" items="${topicGroup.topics}">
                                 <li class="list-inline-item">
-                                    <button type="button"
-                                            class="btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">${topic.description}</button>
+                                    <a href="/${topicGroup.uri}/${vo.uri}"
+                                            class="<c:if test="${vo.uri eq topic.uri}"> active </c:if> btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">${vo.description}</a>
                                 </li>
                             </c:forEach>
                             <li class="list-inline-item">
-                                <button type="button"
-                                        class="btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">전체
-                                </button>
+                                <a href="/${topicGroup.uri}"
+                                        class="<c:if test="${empty topic}"> active </c:if>btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">전체
+                                </a>
                             </li>
                         </ul>
                     </div>
                     <div class="order-md-1 col-md-auto col-6 col-sm-6">
-                        <button type="button" class="btn btn-primary px-3 py-1"><i
-                                class="bi bi-pencil-fill pe-1"></i><span class="x-text-sm">글쓰기</span></button>
+                        <a href="/${fn:toLowerCase(topicGroup)}/new" class="btn btn-primary px-3 py-1"><i
+                                class="bi bi-pencil-fill pe-1"></i><span>글쓰기</span></a>
                     </div>
                     <div class="order-md-3 col-md-auto col-6 col-sm-6 text-end">
-                        <button type="button" class="btn btn-outline-secondary px-3 py-1"><span
-                                class="x-text-sm">최신순</span></button>
+                        <button type="button" class="btn btn-outline-secondary px-3 py-1"><i class="bi bi-arrow-bar-down pe-1"></i><span>최신순</span></button>
                     </div>
                 </div>
             </c:if>
@@ -58,33 +57,33 @@
             <!--    게시글 목록    -->
             <div>
                 <ul class="list-group list-group-flush list-unstyled">
-                    <c:forEach var="post" items="${posts}">
+                    <c:forEach var="vo" items="${posts}">
                         <li class="py-3 border-top text-decoration-none">
                             <div class="x-text-sm">
                                 <span>
-                                    <c:if test="${not empty post.author.imageUrl}">
-                                        <img src="/images/profile/${post.author.imageUrl}"
+                                    <c:if test="${not empty vo.author.imageUrl}">
+                                        <img src="/images/profile/${vo.author.imageUrl}"
                                              style="width: 20px; height: 20px"
                                              alt="프로필사진">
                                     </c:if>
-                                    <c:if test="${empty post.author.imageUrl}">
+                                    <c:if test="${empty vo.author.imageUrl}">
                                         <img src="/images/profile/temporary.gif" style="width: 20px; height: 20px"
                                              alt="프로필사진">
                                     </c:if>
                                 </span>
                                 <span>
                                     <a class="x-text-gray-600"
-                                       href="#">${post.author.nickname} / ${post.author.grade.description} / ${post.author.region.description}</a>
+                                       href="#">${vo.author.nickname} / ${vo.author.grade.description} / ${vo.author.region.description}</a>
                                 </span>
                                 <span class="x-text-gray-600">·</span>
-                                <span class="x-text-gray-600">${customFn.getElapsedTime(post.createdDate)}</span>
+                                <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
                             </div>
                             <div class="my-2">
-                                <a href="#"><span class="x-font-semibold">${post.title}</span></a>
+                                <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out value="${vo.title}"></c:out></span></a>
                             </div>
                             <div class="d-flex justify-content-end x-text-md" style="line-height: 1.2rem">
                                 <i class="me-1 bi bi-eye" style="font-size: 1.2rem"></i><span
-                                    class="x-text-sm">${post.viewCount}</span>
+                                    class="x-text-sm">${vo.viewCount}</span>
                             </div>
                         </li>
                     </c:forEach>

@@ -170,11 +170,11 @@ a:hover {
 /* btn-outline-secondary 커스텀 */
 .btn-outline-secondary:hover {
     color: #6c757d; /* $gray-600 */
-    background-color: #f3f4f6 !important; /* pale gray */
+    background-color: #f3f4f6 !important; /* $gray-150 */
 }
 
 .btn-outline-secondary:focus {
-    background-color: #f3f4f6 !important; /* pale gray */
+    background-color: #f3f4f6 !important; /* $gray-150 */
 }
 
 .btn-outline-secondary:active {
@@ -196,7 +196,35 @@ a:hover {
 
 .btn-link.active {
     color: #212529;
+    background: #f3f4f6;  /* $gray-150 */
     font-family: Pretendard-Medium;
+}
+
+/*
+    inline
+*/
+.x-link {
+    color: #007db6;  /* $primary */
+}
+
+.x-link:hover {
+    color: #006a9b;
+}
+
+.x-link.active {
+    color: #007db6;
+}
+
+.x-link.active:hover {
+    color: #00A4F0;
+}
+
+.x-link.sub {
+    color: #adb5bd;  /* $gray-500 */
+}
+
+.x-link.sub:hover {
+    color: #007db6;
 }
 
 /*
@@ -228,6 +256,14 @@ a:hover {
     .x-v390-text-sm {
         font-size: 0.875rem;
     }
+}
+
+.x-text-gray-400 {
+    color: #ced4da;
+}
+
+.x-text-gray-500 {
+    color: #adb5bd;
 }
 
 .x-text-gray-600 {
