@@ -8,7 +8,7 @@
 <html lang="ko">
 <head>
     <%@ include file="fragment/head.jsp" %>
-    <title>Bangcom - ${topicGroup.description} 게시글 등록</title>
+    <title>Bangcom - ${topicGroup.description} 게시글 수정</title>
 </head>
 <body>
 <header>
@@ -25,9 +25,11 @@
             <div class="x-main" style="min-width: 340px">
                 <div class="my-5 p-3">
                     <h2 class="fs-2 x-font-bold x-text-gray-800">${topicGroup.description}</h2>
-                    <p class="fs-5 x-font-medium x-text-gray-700">새로운 게시글 작성하기</p>
+                    <p class="fs-5 x-font-medium x-text-gray-700">게시글 수정하기</p>
                 </div>
-                <form class="mb-4" action="/${topicGroup.uri}/new" method="post">
+                <form class="mb-4" action="/articles/${form.id}/edit" method="post">
+                    <input type="hidden" name="id" value="${form.id}">
+                    <input type="hidden" name="authorId" value="${form.authorId}">
                     <div class="mb-5">
                         <div class="mb-4">
                             <label for="topic" class="form-label">토픽</label>
@@ -35,7 +37,7 @@
                                 <option selected disabled>토픽을 선택해주세요.</option>
                                 <c:forEach var="topic" items="${topicGroup.topics}">
                                     <option value="${topic}" <c:if
-                                            test="${form.topic eq topic || topic eq 'USER' && loginMember.authority eq 'USER'}"> selected</c:if><c:if
+                                            test="${form.topic eq topic}"> selected</c:if><c:if
                                             test="${topic eq 'MENTOR' && loginMember.authority eq 'USER'}"> disabled</c:if>>${topic.description}</option>
                                 </c:forEach>
                             </select>
@@ -43,12 +45,12 @@
                         <div class="mb-4">
                             <label for="title" class="form-label">제목</label>
                             <input type="text" class="form-control" name="title" id="title"
-                                   placeholder="제목을 입력해주세요." value="${form.title}">
+                                   placeholder="제목을 입력해주세요." value="<c:out value="${form.title}"></c:out>">
                         </div>
                         <div class="mb-4">
                             <label for="content" class="form-label">본문</label>
                             <textarea class="form-control" name="content" id="content" rows="10"
-                                      placeholder="내용을 입력해주세요" value="${form.content}"></textarea>
+                                      placeholder="내용을 입력해주세요"><c:out value="${form.content}"></c:out></textarea>
 
                         </div>
                     </div>
@@ -69,5 +71,16 @@
 
 <!-- Bootstrap JS Bundle with Popper -->
 <%@ include file="fragment/script.jsp" %>
+
+<script>
+
+    $(document).ready(function () {
+
+    });
+
+    function changeTopicSelect() {
+
+    }
+</script>
 </body>
 </html>

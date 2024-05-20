@@ -134,6 +134,13 @@ a:hover {
 }
 
 /*
+    modal
+*/
+.modal-open {
+    padding-right: 0px !important;
+}
+
+/*
     form
 */
 @media screen and (min-width: 640px) {
