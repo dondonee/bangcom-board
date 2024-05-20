@@ -6,7 +6,8 @@ import com.knou.board.domain.post.Topic;
 import com.knou.board.domain.post.TopicGroup;
 import com.knou.board.service.PostService;
 import com.knou.board.web.argumentresolver.Login;
-import com.knou.board.web.form.PostForm;
+import com.knou.board.web.form.PostAddForm;
+import com.knou.board.web.form.PostEditForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class PostController {
     public String getPostList(@PathVariable String board, Model model) {
 
         try {
-            TopicGroup topicGroup = TopicGroup.valueOf(board.toUpperCase());
+            TopicGroup topicGroup = TopicGroup.uriValueOf(board);
             model.addAttribute("topicGroup", topicGroup);
             List<Post> posts = postService.findByTopicGroup(topicGroup);
             model.addAttribute("posts", posts);
@@ -59,13 +60,13 @@ public class PostController {
     public String getPostList(@PathVariable String board, @PathVariable String boardTopic, Model model) {
 
         try {
-            TopicGroup topicGroup = TopicGroup.valueOf(board.toUpperCase());
+            TopicGroup topicGroup = TopicGroup.uriValueOf(board);
+            Topic topic = Topic.uriValueOf(boardTopic);
 
-            if (!(topicGroup == TopicGroup.INFO || topicGroup == TopicGroup.COMMUNITY)) {
+            if (TopicGroup.findGroup(topic) != topicGroup) {
                 throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
             }
 
-            Topic topic = Topic.uriValueOf(boardTopic);
             List<Post> posts = postService.findByTopic(topic);
 
             model.addAttribute("topicGroup", topicGroup);
@@ -79,23 +80,36 @@ public class PostController {
     }
 
     /**
-     * 게시글 등록 폼 : @GetMapping({"questions", "/info", "/community", "/notice"})
+     * 게시글 상세 조회 : 모든 게시판 공용
+     */
+    @GetMapping("/articles/{postId}")
+    public String getPostDetail(@PathVariable long postId, Model model) {
+
+        Post post = postService.findPost(postId);
+        if (post == null) {
+            throw new ResponseStatusException(NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
+
+        // 조회수 증가
+        postService.increaseViewCount(postId);
+        post.setViewCount(post.getViewCount() + 1);
+
+        TopicGroup topicGroup = TopicGroup.findGroup(post.getTopic());
+        model.addAttribute("topicGroup", topicGroup);
+        model.addAttribute("post", post);
+
+        return "postDetail";
+    }
+
+    /**
+     * 게시글 등록 폼 : 모든 게시판 공용
      */
     @GetMapping("/{board}/new")
-    public String addPostForm(@PathVariable String board, @Login Member loginMember, Model model) {
-
-        TopicGroup topicGroup = TopicGroup.valueOf(board.toUpperCase());
+    public String addPostForm(@PathVariable String board, Model model) {
 
         try {
-            // INFO 게시판 -> 일반 사용자(USER)는 '정보알림' 토픽에만 글쓰기 가능
-            if (topicGroup == TopicGroup.INFO) {
-                if (loginMember.getAuthority() == Member.Authority.USER) {
-                    model.addAttribute("topic", Topic.USER);
-                }
-            }
-
+            TopicGroup topicGroup = TopicGroup.uriValueOf(board);
             model.addAttribute("topicGroup", topicGroup);
-
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }
@@ -104,58 +118,149 @@ public class PostController {
     }
 
     /**
-     * 게시글 등록 : @GetMapping({"/questions", "/community", "/notice"})
+     * 게시글 등록 : 모든 게시판 공용
      */
     @PostMapping("/{board}/new")
-    public String addPost(@PathVariable String board, @Validated @ModelAttribute PostForm form, BindingResult bindingResult, @Login Member loginMember, Model model) {
+    public String addPost(@PathVariable String board, @Validated @ModelAttribute PostAddForm form, BindingResult bindingResult, @Login Member loginMember, Model model) {
 
+        // 검증
         try {
-            TopicGroup topicGroup = TopicGroup.valueOf(board.toUpperCase());
+            TopicGroup topicGroup = TopicGroup.uriValueOf(board);
 
             if (bindingResult.hasErrors()) {
-                System.out.println("form : " + form);
                 model.addAttribute("topicGroup", topicGroup);
                 model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
                 return "postAddForm";
             }
+
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }
 
+        // 멘토게시판의 경우 권한 체크
+        if (form.getTopic() == Topic.MENTOR) {
+            if (loginMember.getAuthority() == Member.Authority.USER) {
+                throw new ResponseStatusException(FORBIDDEN, "멘토링 게시판은 멘토만 글을 작성할 수 있습니다.");
+            }
+        }
 
+        // 게시글 등록
         Post post = new Post();
         post.setTopic(form.getTopic());
         post.setTitle(form.getTitle());
         post.setContent(form.getContent());
         post.setAuthor(loginMember);
-
         long postId = postService.createPost(post);
 
-        return "redirect:/articles/" + postId;  // [!] 작성글 상세보기로 수정 필요
+        return "redirect:/articles/" + postId;  // 작성 글 보기
     }
 
     /**
-     * INFO 게시글 등록 : 권한 체크 필요
+     * 게시글 수정 폼 : 모든 게시판 공용
      */
-//    @PostMapping("/info/new")
-//    public String addInfoPost(@Login Member loginMember, @ModelAttribute Post post, Model model) {
-//
-
-//        return "redirect:/info";
-//    }
-
-
-    /**
-     * 게시글 상세 조회 (모든 게시판 공용)
-     */
-    @GetMapping("/articles/{postId}")
-    public String getPostDetail(@PathVariable long postId, Model model) {
+    @GetMapping("/articles/{postId}/edit")
+    public String editPostForm(@PathVariable long postId, @Login Member loginMember, Model model) {
 
         Post post = postService.findPost(postId);
-        TopicGroup topicGroup = TopicGroup.findGroup(post.getTopic());
-        model.addAttribute("topicGroup", topicGroup);
-        model.addAttribute("post", post);
+        if (post == null) {
+            throw new ResponseStatusException(NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
 
-        return "postDetail";
+        if (post.getAuthor().getUserNo() != loginMember.getUserNo()) {
+            throw new ResponseStatusException(FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
+        }
+
+        try {
+            TopicGroup topicGroup = TopicGroup.findGroup(post.getTopic());
+            model.addAttribute("topicGroup", topicGroup);
+
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
+        }
+
+        // 수정 폼에 기존 게시글 정보 전달
+        PostEditForm form = new PostEditForm();
+        form.setId(post.getId());
+        form.setTopic(post.getTopic());
+        form.setTitle(post.getTitle());
+        form.setContent(post.getContent());
+        form.setAuthorId(post.getAuthor().getUserNo());
+        model.addAttribute("form", form);
+
+        return "postEditForm";
+    }
+
+    /**
+     * 게시글 수정 : 모든 게시판 공용
+     */
+    @PostMapping("/articles/{postId}/edit")
+    public String editPost(@ModelAttribute PostEditForm form, BindingResult bindingResult, @Login Member loginMember, Model model) {
+
+        // 바인딩 오류 검증
+        try {
+            TopicGroup topicGroup = TopicGroup.findGroup(form.getTopic());
+
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("topicGroup", topicGroup);
+                model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
+                return "postEditForm";
+            }
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
+        }
+
+        // 멘토게시판의 경우 권한 체크
+        if (form.getTopic() == Topic.MENTOR) {
+            if (loginMember.getAuthority() == Member.Authority.USER) {
+                throw new ResponseStatusException(FORBIDDEN, "멘토링 게시판은 멘토만 글을 작성할 수 있습니다.");
+            }
+        }
+
+        // 작성자만 수정 가능
+        if (form.getAuthorId() != loginMember.getUserNo()) {
+            throw new ResponseStatusException(FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
+        }
+
+        // 게시글 업데이트
+        Post post = new Post();
+        post.setId(form.getId());
+        post.setTopic(form.getTopic());
+        post.setTitle(form.getTitle());
+        post.setContent(form.getContent());
+        post.setAuthor(loginMember);
+
+        post = postService.updatePost(post);
+        long postId = post.getId();
+
+        return "redirect:/articles/" + postId;  // 수정 글 보기
+    }
+
+    /**
+     * 게시글 삭제 : 모든 게시판 공용
+     */
+    @GetMapping("/articles/{postId}/delete")
+    public String deletePost(@PathVariable long postId, @Login Member loginMember) {
+
+        Post post = postService.findPost(postId);
+        if (post == null) {
+            throw new ResponseStatusException(NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
+
+        // 작성자만 삭제 가능
+        if (loginMember == null || post.getAuthor().getUserNo() != loginMember.getUserNo()) {
+            throw new ResponseStatusException(FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
+        }
+
+        // 게시글 삭제
+        postService.deletePost(postId);
+
+        Topic topic = post.getTopic();
+        TopicGroup topicGroup = TopicGroup.findGroup(topic);
+        String redirectUri = topicGroup.getUri();
+        if (topic != Topic.NOTICE) {
+            redirectUri += "/" + topic.getUri();
+        }
+
+        return "redirect:/" + redirectUri;  // 해당 토픽 게시판으로 이동
     }
 }

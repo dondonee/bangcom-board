@@ -36,7 +36,7 @@ public enum Topic implements CodeEnum {
 
     public static Topic uriValueOf(String uri) {
         return Arrays.stream(Topic.values())
-                .filter(topic -> topic.getUri().equals(uri))
+                .filter(topic -> topic.getUri().equals(uri.toLowerCase()))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 Topic이 없습니다."));
     }

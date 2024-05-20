@@ -25,4 +25,11 @@ public enum TopicGroup {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 TopicGroup이 없습니다."));
     }
+
+    public static TopicGroup uriValueOf(String uri) {
+        return Arrays.stream(TopicGroup.values())
+                .filter(topicGroup -> topicGroup.getUri().equals(uri.toLowerCase()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 TopicGroup이 없습니다."));
+    }
 }

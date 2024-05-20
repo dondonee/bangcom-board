@@ -7,7 +7,10 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class PostForm {
+public class PostEditForm {
+
+    @NotNull
+    private long id;
 
     @NotNull
     private Topic topic;
@@ -20,8 +23,14 @@ public class PostForm {
     @Length(max = 4000, message = "내용은 4000자 이하로 입력하세요.")
     private String content;
 
+    @NotNull
+    private long authorId;
+
 
     public void setTopic(String topic) {
         this.topic = Topic.valueOf(topic);  // 일치하는 상수가 없으면 400 Bad Request
     }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;}
 }

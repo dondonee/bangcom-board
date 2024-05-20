@@ -54,14 +54,14 @@
     
     <update id="update" parameterType="Post">
         UPDATE post
-        SET topic = #{topic},
+        SET topic = #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler},
             title = #{title},
             content = #{content},
             modified_date = #{modifiedDate}
         WHERE post_id = #{id}
     </update>
 
-    <update id="updateViewCount" parameterType="Post">
+    <update id="updateViewCount">
         UPDATE post
         SET view_count = view_count + 1
         WHERE post_id = #{id}

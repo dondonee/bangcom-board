@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class Member {
-    private Long profileId;
+
     private Long userNo;
     private String nickname;
     private String imageUrl;

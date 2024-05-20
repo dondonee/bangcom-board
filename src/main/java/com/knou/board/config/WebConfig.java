@@ -18,17 +18,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final String uploadImagesPath;
 
+    // application-sensitive.yml에 설정한 경로를 가져옴 (이미지 업로드 경로)
     public WebConfig(@Value("${custom.path.upload.images}") String uploadImagesPath) {
-        this.uploadImagesPath = uploadImagesPath;  // 보안 문제로 인해 application-sensitive.yml에 설정한 경로를 가져옴
+        this.uploadImagesPath = uploadImagesPath;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(1)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/", "/questions", "/questions/career", "/questions/study", "/questions/qna-etc", "/info", "/info/mentor", "/info/user", "/community", "/community/campus", "/community/life", "/community/market", "/notice/**", "/articles/**", "/signup", "/signup/celebration", "/login",
-                        "/logout", "/resources/css/**", "/**/scss/*.scss", "/images/**", "/*.ico", "/error");
+                .addPathPatterns("/*/new", "/*/*/edit", "/*/*/delete");
     }
 
     @Override

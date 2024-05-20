@@ -35,7 +35,19 @@ public class PostService {
     }
 
     public Post findPost(long postId) {
-        postRepository.updateViewCount(postId);
         return postRepository.selectById(postId);
+    }
+
+    public void increaseViewCount(long postId) {
+        postRepository.updateViewCount(postId);
+    }
+
+    public Post updatePost(Post post) {
+        post.setModifiedDate(LocalDateTime.now());
+        return postRepository.update(post);
+    }
+
+    public void deletePost(long postId) {
+        postRepository.delete(postId);
     }
 }
