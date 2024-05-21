@@ -66,6 +66,7 @@ public class MemberController {
 
         // 검증 실패 => 회원가입 폼으로 이동
         if (bindingResult.hasErrors()) {
+            form.setPassword("");  // 비밀번호는 초기화
             model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
             return "signUpForm";
         }
@@ -83,26 +84,26 @@ public class MemberController {
 
         Member newMember = memberService.createMember(memberLogin, member);
 
-        // 회원가입 로직 성공
-        if (newMember != null) {
-            redirectAttributes.addFlashAttribute("newMember", newMember);
-            return "redirect:/signup/celebration";
-        }
+// 회원가입 로직 성공
+if (newMember != null) {
+    redirectAttributes.addFlashAttribute("newMember", newMember);
+    return "redirect:/signup/celebration";
+}
 
         return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
-    @GetMapping("/signup/celebration")
-    public String signUpCelebration(Model model) {
+@GetMapping("/signup/celebration")
+public String signUpCelebration(Model model) {
 
-        // 회원가입 성공 후 리다이렉트된 경우
-        if (model.containsAttribute("newMember")) {
-            return "signUpCelebration";
-        }
-
-        // URL을 통한 접근의 경우
-        return "redirect:/community";  // [!] 추후 home으로 변경
+    // 회원가입 성공 후 리다이렉트된 경우
+    if (model.containsAttribute("newMember")) {
+        return "signUpCelebration";
     }
+
+    // URL을 통한 접근의 경우
+    return "redirect:/community";  // [!] 추후 home으로 변경
+}
 
     @GetMapping("/login")
     public String loginForm() {
