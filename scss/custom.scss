@@ -36,4 +36,12 @@ $dropdown-link-hover-bg:     none;
 $dropdown-link-active-color: #007db6;
 $dropdown-link-active-bg:    none;
 
+$pagination-color:           #343a40;
+$pagination-border-radius:   0;
+$pagination-border-color:    none;
+$pagination-hover-bg:        none;
+$pagination-focus-bg:        none;
+$pagination-active-color:    #007db6;
+$pagination-active-bg:       none;
+
 @import "../node_modules/bootstrap/scss/bootstrap";

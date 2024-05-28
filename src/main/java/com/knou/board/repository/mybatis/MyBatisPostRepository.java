@@ -1,5 +1,6 @@
 package com.knou.board.repository.mybatis;
 
+import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.domain.post.Topic;
 import com.knou.board.repository.PostRepository;
@@ -31,8 +32,13 @@ public class MyBatisPostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> selectByTopics(Topic[] topics) {
-        return postMapper.selectByTopics(topics);
+    public List<Post> selectByTopics(Topic[] topics, Criteria criteria) {
+        return postMapper.selectByTopics(topics, criteria);
+    }
+
+    @Override
+    public long countTotalSelectedByTopics(Topic[] topics) {
+        return postMapper.countTotalSelectedByTopics(topics);
     }
 
     @Override

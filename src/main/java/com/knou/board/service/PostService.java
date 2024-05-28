@@ -1,8 +1,8 @@
 package com.knou.board.service;
 
+import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.domain.post.Topic;
-import com.knou.board.domain.post.TopicGroup;
 import com.knou.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,13 +25,20 @@ public class PostService {
         return post.getId();
     }
 
-    public List<Post> findByTopicGroup(TopicGroup topicGroup) {
-        Topic[] topics = topicGroup.getTopics();
-        return postRepository.selectByTopics(topics);
+    public List<Post> findListByTopics(Topic[] topics, Criteria criteria) {
+        return postRepository.selectByTopics(topics, criteria);
     }
 
-    public List<Post> findByTopic(Topic topic) {
-        return postRepository.selectByTopics(new Topic[]{topic});
+    public List<Post> findListByTopics(Topic topic, Criteria criteria) {
+        return postRepository.selectByTopics(new Topic[]{topic}, criteria);
+    }
+
+    public long getTotalCountByTopics(Topic[] topics) {
+        return postRepository.countTotalSelectedByTopics(topics);
+    }
+
+    public long getTotalCountByTopics(Topic topic) {
+        return postRepository.countTotalSelectedByTopics(new Topic[]{topic});
     }
 
     public Post findPost(long postId) {

@@ -45,11 +45,22 @@
         SELECT * FROM post
         JOIN member_profile ON post.author_id = member_profile.user_no
         <where>
+            <foreach item="topic" index="index" collection="topics" open="topic IN (" separator="," close=")">
+                #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
+            </foreach>
+        </where>
+        ORDER BY post.post_id DESC
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
+    </select>
+
+    <select id="countTotalSelectedByTopics" resultType="long">
+        SELECT count(*) FROM post
+        JOIN member_profile ON post.author_id = member_profile.user_no
+        <where>
             <foreach item="topic" index="index" collection="array" open="topic IN (" separator="," close=")">
                 #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
             </foreach>
         </where>
-         order by post.post_id desc
     </select>
     
     <update id="update" parameterType="Post">

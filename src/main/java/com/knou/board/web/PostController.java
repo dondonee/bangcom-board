@@ -1,9 +1,7 @@
 package com.knou.board.web;
 
 import com.knou.board.domain.member.Member;
-import com.knou.board.domain.post.Post;
-import com.knou.board.domain.post.Topic;
-import com.knou.board.domain.post.TopicGroup;
+import com.knou.board.domain.post.*;
 import com.knou.board.service.PostService;
 import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.PostAddForm;
@@ -39,13 +37,21 @@ public class PostController {
      * 게시판 조회 : @GetMapping({"/info", "/community", "/notice"})
      */
     @GetMapping("/{board}")
-    public String getPostList(@PathVariable String board, Model model) {
+    public String getPostList(@PathVariable String board, Criteria criteria, Model model) {
 
         try {
             TopicGroup topicGroup = TopicGroup.uriValueOf(board);
+            Topic[] topics = topicGroup.getTopics();
             model.addAttribute("topicGroup", topicGroup);
-            List<Post> posts = postService.findByTopicGroup(topicGroup);
+
+            List<Post> posts = postService.findListByTopics(topics, criteria);
             model.addAttribute("posts", posts);
+
+            PageMaker pageMaker = new PageMaker();
+            pageMaker.setCriteria(criteria);
+            pageMaker.setTotalArticles(postService.getTotalCountByTopics(topics));
+            model.addAttribute("pageMaker", pageMaker);
+
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }
@@ -57,7 +63,7 @@ public class PostController {
      * 게시판 조회 (Topic) : @GetMapping({"/info/{topic}", "/community/{topic}"})
      */
     @GetMapping("/{board}/{boardTopic}")
-    public String getPostList(@PathVariable String board, @PathVariable String boardTopic, Model model) {
+    public String getPostList(@PathVariable String board, @PathVariable String boardTopic, Criteria criteria, Model model) {
 
         try {
             TopicGroup topicGroup = TopicGroup.uriValueOf(board);
@@ -67,11 +73,16 @@ public class PostController {
                 throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
             }
 
-            List<Post> posts = postService.findByTopic(topic);
-
+            List<Post> posts = postService.findListByTopics(topic, criteria);
+            model.addAttribute("posts", posts);
             model.addAttribute("topicGroup", topicGroup);
             model.addAttribute("topic", topic);
-            model.addAttribute("posts", posts);
+
+            PageMaker pageMaker = new PageMaker();
+            pageMaker.setCriteria(criteria);
+            pageMaker.setTotalArticles(postService.getTotalCountByTopics(topic));
+            model.addAttribute("pageMaker", pageMaker);
+
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }

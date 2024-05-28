@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:useBean id="customFn" class="com.knou.board.web.JspFunction"/>
+<c:set var="cpath" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -34,12 +35,12 @@
                             <c:forEach var="vo" items="${topicGroup.topics}">
                                 <li class="list-inline-item">
                                     <a href="/${topicGroup.uri}/${vo.uri}"
-                                            class="<c:if test="${vo.uri eq topic.uri}"> active </c:if> btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">${vo.description}</a>
+                                       class="<c:if test="${vo.uri eq topic.uri}"> active </c:if> btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">${vo.description}</a>
                                 </li>
                             </c:forEach>
                             <li class="list-inline-item">
                                 <a href="/${topicGroup.uri}"
-                                        class="<c:if test="${empty topic}"> active </c:if>btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">전체
+                                   class="<c:if test="${empty topic}"> active </c:if>btn btn-link x-btn-link x-v390-text-sm text-decoration-none px-3 py-1">전체
                                 </a>
                             </li>
                         </ul>
@@ -49,7 +50,8 @@
                                 class="bi bi-pencil-fill pe-1"></i><span>글쓰기</span></a>
                     </div>
                     <div class="order-md-3 col-md-auto col-6 col-sm-6 text-end">
-                        <button type="button" class="btn btn-outline-secondary px-3 py-1"><i class="bi bi-arrow-bar-down pe-1"></i><span>최신순</span></button>
+                        <button type="button" class="btn btn-outline-secondary px-3 py-1"><i
+                                class="bi bi-arrow-bar-down pe-1"></i><span>최신순</span></button>
                     </div>
                 </div>
             </c:if>
@@ -79,7 +81,8 @@
                                 <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
                             </div>
                             <div class="my-2">
-                                <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out value="${vo.title}"></c:out></span></a>
+                                <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
+                                        value="${vo.title}"></c:out></span></a>
                             </div>
                             <div class="d-flex justify-content-end x-text-md" style="line-height: 1.2rem">
                                 <i class="me-1 bi bi-eye" style="font-size: 1.2rem"></i><span
@@ -88,6 +91,33 @@
                         </li>
                     </c:forEach>
                 </ul>
+            </div>
+
+            <!--    페이징    -->
+            <div class="border-top mb-5">
+                <nav class="d-flex justify-content-center">
+                    <ul class="pagination">
+                        <c:if test="${pageMaker.prevButton}">
+                            <li class="page-item">
+                                <a class="x-text-sm page-link x-page-link" href="${cpath}?page=${pageMaker.startPageButton - 1}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        </c:if>
+                        <c:forEach var="page" varStatus="pageStatus" begin="${pageMaker.startPageButton}" end="${pageMaker.endPageButton}">
+                            <li class="page-item">
+                                <a class="x-text-sm page-link x-page-link ${pageMaker.criteria.page eq pageStatus.current?'active':''}" href="${cpath}?page=${pageStatus.current}">${pageStatus.current}</a>
+                            </li>
+                        </c:forEach>
+                        <c:if test="${pageMaker.nextButton}">
+                            <li class="page-item">
+                                <a class="x-text-sm page-link x-page-link" href="${cpath}?page=${pageMaker.endPageButton + 1}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </ul>
+                </nav>
             </div>
         </div>
 

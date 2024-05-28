@@ -123,6 +123,23 @@ a:hover {
 }
 
 /*
+    pagination
+*/
+.x-page-link {
+    border-top: 2px solid transparent;
+    padding: 1rem;
+    padding-bottom: 0;
+}
+
+.x-page-link:hover {
+    background: ;
+}
+
+.x-page-link.active {
+    border-top: 2px solid #007db6;
+}
+
+/*
     container
 */
 @media screen and (max-width: 639px) {

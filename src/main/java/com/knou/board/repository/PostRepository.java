@@ -1,5 +1,6 @@
 package com.knou.board.repository;
 
+import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.domain.post.Topic;
 
@@ -11,7 +12,8 @@ public interface PostRepository {
     Post selectById(Long id);
 
     List<Post> selectAll();
-    List<Post> selectByTopics(Topic[] topics);
+    List<Post> selectByTopics(Topic[] topics, Criteria criteria);
+    long countTotalSelectedByTopics(Topic[] topics);
     Post update(Post post);
     void updateViewCount(Long id);
     void delete(Long id);
