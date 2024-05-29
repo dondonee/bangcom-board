@@ -28,8 +28,8 @@
                 <h2 class="fs-2 x-font-bold x-text-gray-800">${topicGroup.description}</h2>
             </div>
             <!--    토픽 네비게이션    -->
-            <c:if test="${topicGroup != 'NOTICE'}"> <%-- 공지사항은 하위 topic 없음 --%>
-                <div class="mb-3 row d-flex justify-content-between">
+            <div class="mb-3 row d-flex ${topicGroup eq 'NOTICE' ?'justify-content-end':'justify-content-between'}">
+                <c:if test="${topicGroup != 'NOTICE'}"> <%-- 공지사항은 하위 topic 없음 --%>
                     <div class="order-md-2 col-md-auto col-12 x-mb-sm-3 align-content-center">
                         <ul class="list-unstyled list-inline d-flex justify-content-center m-0">
                             <c:forEach var="vo" items="${topicGroup.topics}">
@@ -49,12 +49,27 @@
                         <a href="/${fn:toLowerCase(topicGroup)}/new" class="btn btn-primary px-3 py-1"><i
                                 class="bi bi-pencil-fill pe-1"></i><span>글쓰기</span></a>
                     </div>
-                    <div class="order-md-3 col-md-auto col-6 col-sm-6 text-end">
-                        <button type="button" class="btn btn-outline-secondary px-3 py-1"><i
-                                class="bi bi-arrow-bar-down pe-1"></i><span>최신순</span></button>
+                </c:if>
+                <div class="order-md-3 col-md-auto col-6 col-sm-6 text-end">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle btn btn-outline-secondary px-3 py-1" type="button"
+                                id="sortDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false"><i
+                                class="bi bi-filter pe-1"></i>
+                            <c:if test="${empty param.sort || param.sort eq 'ID'}"><span>최신순</span></c:if>
+                            <c:if test="${param.sort eq 'VIEW_COUNT'}"><span>조회순</span></c:if>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end x-text-sm" aria-labelledby="sortDropdown">
+                            <li><a class="dropdown-item"
+                                   href="${cpath}?sort=ID<c:if test="${!empty param.page}">&page=${param.page}</c:if>">최신순</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                   href="${cpath}?sort=VIEW_COUNT<c:if test="${!empty param.page}">&page=${param.page}</c:if>">조회순</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </c:if>
+            </div>
 
             <!--    게시글 목록    -->
             <div>
@@ -99,19 +114,23 @@
                     <ul class="pagination">
                         <c:if test="${pageMaker.prevButton}">
                             <li class="page-item">
-                                <a class="x-text-sm page-link x-page-link" href="${cpath}?page=${pageMaker.startPageButton - 1}" aria-label="Previous">
+                                <a class="x-text-sm page-link x-page-link"
+                                   href="${cpath}?page=${pageMaker.startPageButton - 1}" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                         </c:if>
-                        <c:forEach var="page" varStatus="pageStatus" begin="${pageMaker.startPageButton}" end="${pageMaker.endPageButton}">
+                        <c:forEach var="page" varStatus="pageStatus" begin="${pageMaker.startPageButton}"
+                                   end="${pageMaker.endPageButton}">
                             <li class="page-item">
-                                <a class="x-text-sm page-link x-page-link ${pageMaker.criteria.page eq pageStatus.current?'active':''}" href="${cpath}?page=${pageStatus.current}">${pageStatus.current}</a>
+                                <a class="x-text-sm page-link x-page-link ${pageMaker.criteria.page eq pageStatus.current?'active':''}"
+                                   href="${cpath}?<c:if test="${!empty param.sort}">sort=${param.sort}&</c:if>page=${pageStatus.current}">${pageStatus.current}</a>
                             </li>
                         </c:forEach>
                         <c:if test="${pageMaker.nextButton}">
                             <li class="page-item">
-                                <a class="x-text-sm page-link x-page-link" href="${cpath}?page=${pageMaker.endPageButton + 1}" aria-label="Next">
+                                <a class="x-text-sm page-link x-page-link"
+                                   href="${cpath}?page=${pageMaker.endPageButton + 1}" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
