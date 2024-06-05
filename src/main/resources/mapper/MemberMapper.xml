@@ -6,7 +6,8 @@
     <resultMap id="memberMap" type="Member">
         <result property="userNo" column="user_no"/>
         <result property="nickname" column="nickname"/>
-        <result property="imageUrl" column="image_url"/>
+        <result property="imageName" column="image_name"/>
+        <result property="bio" column="bio"/>
         <result property="transferred" column="transferred"/>
         <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler"/>
         <result property="authority" column="authority"
@@ -40,23 +41,58 @@
         WHERE user_no = #{userNo}
     </select>
 
-    <select id="selectUserByLoginName" resultType="MemberLogin">
-        select *
-        from member_user
-        where login_name = #{loginName}
+    <select id="selectProfileByNickName" resultMap="memberMap">
+        SELECT *
+        FROM member_profile
+        WHERE nickname = #{nickname}
     </select>
 
-    <select id="selectProfileByNickName" resultMap="memberMap">
-        select *
-        from member_profile
-        where nickname = #{nickname}
+    <select id="selectLoginNameById">
+        SELECT login_name
+        FROM member_user
+        WHERE user_no = #{userNo}
+    </select>
+
+    <select id="selectUserByLoginName" resultType="MemberLogin">
+        SELECT *
+        FROM member_user
+        WHERE login_name = #{loginName}
     </select>
 
     <select id="selectUserByIdAndPassword" resultType="MemberLogin">
-        select u.user_no
-        from member_user u
-                 join auth_password p on u.user_no = p.user_no
-        where u.user_no = #{userNo}
-          and p.password = #{password}
+        SELECT u.user_no
+        FROM member_user u
+                 JOIN auth_password p ON u.user_no = p.user_no
+        WHERE u.user_no = #{userNo}
+          AND p.password = #{password}
     </select>
+
+    <select id="selectUploadFileNameById">
+        SELECT upload_name
+        FROM profile_image
+        WHERE user_no = #{userNo}
+    </select>
+
+    <update id="updateProfile">
+        UPDATE member_profile
+        SET nickname     = #{nickname},
+            bio          = #{bio},
+            grade        = #{grade, typeHandler=com.knou.board.domain.member.Member$Grade$TypeHandler},
+            region       = #{region, typeHandler=com.knou.board.domain.member.Member$Region$TypeHandler},
+            transferred  = #{transferred},
+            updated_date = #{updatedDate}
+        WHERE user_no = #{userNo}
+    </update>
+
+    <update id="updateProfileImage">
+        UPDATE member_profile
+        SET image_name = #{uploadFile.storeFileName}
+        WHERE user_no = #{userNo}
+    </update>
+
+    <insert id="updateProfileImageName">
+        INSERT INTO profile_image (user_no, upload_name)
+        VALUES (#{userNo}, #{uploadFile.uploadFileName})
+        ON DUPLICATE KEY UPDATE upload_name = #{uploadFile.uploadFileName}
+    </insert>
 </mapper>

@@ -2,6 +2,7 @@ package com.knou.board.repository;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.file.UploadFile;
 
 public interface MemberRepository {
 
@@ -9,7 +10,12 @@ public interface MemberRepository {
     MemberLogin insertPassword(MemberLogin memberLogin);
     Member insertProfile(Member member);
     Member selectProfileById(Long userNo);
-    MemberLogin selectUserByLoginName(String loginName);
     Member selectProfileByNickName(String nickName);
+    String selectLoginNameById(Long userNo);
+    MemberLogin selectUserByLoginName(String loginName);
     MemberLogin selectUserByIdAndPassword(Long userNo, String password);
+    String selectUploadFileNameById(Long userNo);
+    int updateProfile(Member member);
+    int updateProfileImage(Long userNo, UploadFile uploadFile);
+    int updateProfileImageName(Long userNo, UploadFile uploadFile);
 }

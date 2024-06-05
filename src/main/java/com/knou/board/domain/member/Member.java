@@ -16,7 +16,8 @@ public class Member {
 
     private Long userNo;
     private String nickname;
-    private String imageUrl;
+    private String imageName;
+    private String bio;
     private Grade grade;
     private Boolean transferred;
     private Region region;

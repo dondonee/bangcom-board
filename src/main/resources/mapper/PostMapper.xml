@@ -6,7 +6,8 @@
     <resultMap id="memberMap" type="Member">
         <result property="userNo" column="user_no"/>
         <result property="nickname" column="nickname"/>
-        <result property="imageUrl" column="image_url" />
+        <result property="imageName" column="image_name" />
+        <result property="bio" column="bio" />
         <result property="transferred" column="transferred" />
         <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler" />
         <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler" />

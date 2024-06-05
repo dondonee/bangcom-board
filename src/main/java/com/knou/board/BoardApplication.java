@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 import java.util.TimeZone;
 
 @Import({MyBatisConfig.class, WebConfig.class})
-@SpringBootApplication(scanBasePackages = {"com.knou.board.web", "com.knou.board.service"})
+@SpringBootApplication(scanBasePackages = {"com.knou.board.web", "com.knou.board.service", "com.knou.board.file"})
 public class BoardApplication {
 
 	public static void main(String[] args) {

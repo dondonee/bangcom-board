@@ -4,9 +4,11 @@ import com.knou.board.web.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+@Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
@@ -31,7 +33,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession();
         if (session.getAttribute(SessionConst.PREV_URL) != null) {
+            String previousUrl = (String) session.getAttribute(SessionConst.PREV_URL);
             session.removeAttribute(SessionConst.PREV_URL);  // 불필요한 세션 속성 제거
+            response.sendRedirect(previousUrl);
         }
     }
 }

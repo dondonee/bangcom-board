@@ -1,34 +1,45 @@
-package com.knou.board.web;
+package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.exception.ErrorResultDetail;
+import com.knou.board.file.FileStore;
 import com.knou.board.service.MemberService;
+import com.knou.board.web.SessionConst;
+import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.MemberLoginForm;
+import com.knou.board.web.form.MemberProfileForm;
 import com.knou.board.web.form.MemberSignUpForm;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.knou.board.domain.member.Member.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
 
-    @Autowired
     private final MemberService memberService;
+    private final FileStore fileStore;
 
 
     // Model 초기화
@@ -84,26 +95,26 @@ public class MemberController {
 
         Member newMember = memberService.createMember(memberLogin, member);
 
-// 회원가입 로직 성공
-if (newMember != null) {
-    redirectAttributes.addFlashAttribute("newMember", newMember);
-    return "redirect:/signup/celebration";
-}
+        // 회원가입 로직 성공
+        if (newMember != null) {
+            redirectAttributes.addFlashAttribute("newMember", newMember);
+            return "redirect:/signup/celebration";
+        }
 
         return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
-@GetMapping("/signup/celebration")
-public String signUpCelebration(Model model) {
+    @GetMapping("/signup/celebration")
+    public String signUpCelebration(Model model) {
 
-    // 회원가입 성공 후 리다이렉트된 경우
-    if (model.containsAttribute("newMember")) {
-        return "signUpCelebration";
+        // 회원가입 성공 후 리다이렉트된 경우
+        if (model.containsAttribute("newMember")) {
+            return "signUpCelebration";
+        }
+
+        // URL을 통한 접근의 경우
+        return "redirect:/community";  // [!] 추후 home으로 변경
     }
-
-    // URL을 통한 접근의 경우
-    return "redirect:/community";  // [!] 추후 home으로 변경
-}
 
     @GetMapping("/login")
     public String loginForm() {
@@ -162,6 +173,88 @@ public String signUpCelebration(Model model) {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/community";  // [!] 추후 home으로 변경
+    }
+
+    @GetMapping(value = {"/settings", "/settings/profile"})
+    public String editProfileForm(@Login Member loginMember, Model model) {
+
+        String loginName = memberService.findLoginNameByUserNo(loginMember.getUserNo());
+        Member member = memberService.findProfileByUserNo(loginMember.getUserNo());
+
+        MemberProfileForm form = new MemberProfileForm();
+        form.setLoginName(loginName);
+        form.setNickname(member.getNickname());
+        form.setBio(member.getBio());
+        form.setGrade(member.getGrade());
+        form.setRegion(member.getRegion());
+        form.setTransferred(member.getTransferred());
+
+        model.addAttribute("form", form);
+
+        return "memberProfileForm";
+    }
+
+    @PostMapping("/settings/profile")
+    public String editProfile(@Validated @ModelAttribute MemberProfileForm form, BindingResult bindingResult, @Login Member loginMember, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+
+        // 닉네임 중복 검증
+        if (!form.getNickname().equals(loginMember.getNickname())) {  // 닉네임을 변경하려는 경우
+            validateUniqueNickname(form.getNickname(), bindingResult);
+        }
+
+        // 검증 실패 => 프로필 수정 폼으로 이동
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
+            return "memberProfileForm";
+        }
+
+        // 프로필 수정 로직
+        Member member = new Member();
+        member.setUserNo(loginMember.getUserNo());
+        member.setNickname(form.getNickname());
+        member.setBio(form.getBio().trim());  // 앞뒤 공백 제거
+        member.setGrade(form.getGrade());
+        member.setRegion(form.getRegion());
+        member.setTransferred(form.getTransferred());
+        member.setUpdatedDate(LocalDateTime.now());  // 수정일 업데이트
+
+        Member updatedMember = memberService.updateProfile(member);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember); // loginMember 세션 업데이트
+
+        redirectAttributes.addFlashAttribute("updateSuccess", "true");
+        return "redirect:/settings/profile";  // 수정 완료 후 프로필 수정 폼으로 리다이렉트
+    }
+
+    @PostMapping("/settings/profile/image")
+    public ResponseEntity editProfileImage(@RequestParam(required = false) MultipartFile file, @Login Member loginMember, HttpSession session) throws IOException {
+
+        // 업로드 파일 검증
+        if (file.isEmpty()) {
+            ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "파일 없음", "파일을 업로드 해주세요.");
+            return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
+        } else {
+            // 파일 크기 검사
+            long size = file.getSize() / 1024;  // KB
+            if (size > 250) {  // 프로필 이미지 용량제한 초과
+                ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "프로필 이미지 용량제한 초과", "프로필 이미지 파일 용량은 최대 250KB 까지만 가능합니다.");
+                return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
+            }
+
+            // 지원하는 포맷인지 검사 (JPEG, PNG)
+            String fileExt = fileStore.extractExtension(file.getOriginalFilename());
+            Set<String> accpetExts = Set.of("jpg", "jpeg", "png");
+            if (!accpetExts.contains(fileExt) || !fileStore.isSupportedImageType(file)) {
+                ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "지원하지 않는 이미지 형식", "JPEG, PNG 형식의 이미지 파일만 업로드 가능합니다.");
+                return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
+            }
+        }
+
+        // 검증 통과 => 프로필 이미지 저장
+        Member updatedMember = memberService.updateProfileImage(loginMember, file);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);  // loginMember 세션 업데이트
+
+        Map<String, String> response = Map.of("imageName", updatedMember.getImageName());  // 네비게이션 바 이미지 업데이트용
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

@@ -78,12 +78,12 @@
                         <li class="py-3 border-top text-decoration-none">
                             <div class="x-text-sm">
                                 <span>
-                                    <c:if test="${not empty vo.author.imageUrl}">
-                                        <img src="/images/profile/${vo.author.imageUrl}"
+                                    <c:if test="${not empty vo.author.imageName}">
+                                        <img src="/images/profile/${vo.author.imageName}"
                                              style="width: 20px; height: 20px"
                                              alt="프로필사진">
                                     </c:if>
-                                    <c:if test="${empty vo.author.imageUrl}">
+                                    <c:if test="${empty vo.author.imageName}">
                                         <img src="/images/profile/temporary.gif" style="width: 20px; height: 20px"
                                              alt="프로필사진">
                                     </c:if>

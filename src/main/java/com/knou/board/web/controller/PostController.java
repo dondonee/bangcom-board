@@ -1,8 +1,9 @@
-package com.knou.board.web;
+package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.post.*;
 import com.knou.board.service.PostService;
+import com.knou.board.web.PageMaker;
 import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.PostAddForm;
 import com.knou.board.web.form.PostEditForm;
