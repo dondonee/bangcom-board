@@ -19,6 +19,6 @@ public interface MemberMapper {
     MemberLogin selectUserByLoginName(String loginName);
     MemberLogin selectUserByIdAndPassword(@Param("userNo") Long userNo, @Param("password") String password);
     int updateProfile(Member member);
-    int updateProfileImage(@Param("userNo") Long userNo, @Param("uploadFile") UploadFile uploadFile);
+    int updateProfileImage(@Param("member") Member member, @Param("uploadFile") UploadFile uploadFile);
     int updateProfileImageName(@Param("userNo") Long userNo, @Param("uploadFile") UploadFile uploadFile);
 }

@@ -86,8 +86,8 @@
 
     <update id="updateProfileImage">
         UPDATE member_profile
-        SET image_name = #{uploadFile.storeFileName}
-        WHERE user_no = #{userNo}
+        SET image_name = #{uploadFile.storeFileName}, updated_date = #{member.updatedDate}
+        WHERE user_no = #{member.userNo}
     </update>
 
     <insert id="updateProfileImageName">

@@ -16,6 +16,6 @@ public interface MemberRepository {
     MemberLogin selectUserByIdAndPassword(Long userNo, String password);
     String selectUploadFileNameById(Long userNo);
     int updateProfile(Member member);
-    int updateProfileImage(Long userNo, UploadFile uploadFile);
+    int updateProfileImage(Member member, UploadFile uploadFile);
     int updateProfileImageName(Long userNo, UploadFile uploadFile);
 }

@@ -67,8 +67,8 @@ public class MyBatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public int updateProfileImage(Long userNo, UploadFile uploadFile) {
-        return memberMapper.updateProfileImage(userNo, uploadFile);
+    public int updateProfileImage(Member member, UploadFile uploadFile) {
+        return memberMapper.updateProfileImage(member, uploadFile);
     }
 
     @Override

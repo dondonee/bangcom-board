@@ -41,12 +41,12 @@
                     <%--    작성자 정보    --%>
                     <div class="d-flex">
                         <div>
-                            <a href=""><c:if test="${not empty post.author.imageUrl}">
-                                <img src="/images/profile/${post.author.imageUrl}"
+                            <a href=""><c:if test="${not empty post.author.imageName}">
+                                <img src="/images/profile/${post.author.imageName}"
                                      style="width: 40px; height: 40px"
                                      alt="프로필사진">
                             </c:if>
-                                <c:if test="${empty post.author.imageUrl}">
+                                <c:if test="${empty post.author.imageName}">
                                     <img src="/images/profile/temporary.gif" style="width: 40px; height: 40px"
                                          alt="프로필사진">
                                 </c:if></a>

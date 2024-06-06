@@ -21,10 +21,34 @@
                 }, 1000);
             }
 
+            $('#imgInitBtn').click(function () {
+                $.ajax({
+                    url: '/settings/profile/image',
+                    method: 'DELETE',
+                    success: function (xhr) {
+                        imgUploadModal.hide()
+                        $('#navProfileImg').attr('src', '/images/profile/temporary.gif');
+                        $('#formImg').load(location.href + ' #formImg', null, function () {
+                            $('#imgSuccessLight').show()
+                            setTimeout(() => {
+                                $('#imgSuccessLight').fadeOut(1000)
+                            }, 1000);
+                        });
+
+                    },
+                    error: function () {
+                        imgUploadModal.hide()
+
+                        $('#imgUploadErrorModalLabel').text('기본사진 적용 오류');
+                        imgUploadErrorModal.show();
+                    }
+                });
+            });
+
             $('#imgUploadBtn').click(function () {
                 $.ajax({
                     url: '/settings/profile/image',
-                    type: 'POST',
+                    method: 'POST',
                     data: new FormData($('#imgUploadForm')[0]),
                     enctype: 'multipart/form-data',
                     processData: false,
@@ -49,7 +73,7 @@
                         const exMessage = response.exMessage;
                         const exDescription = response.exDescription;
 
-                        $('#imgUploadErrorModal').find('.modal-title').text(exMessage);
+                        $('#imgUploadErrorModalLabel').text(exMessage);
                         $('#imgUploadErrorModal').find('.modal-body > div').text(exDescription);
                         imgUploadErrorModal.show();
                     }
@@ -96,7 +120,8 @@
                             data-bs-toggle="modal"
                             data-bs-target="#imgUploadModal">
                         <img style="border:1px solid #f8f9fa" class="x-profile-img rounded-circle"
-                             src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}" alt="프로필사진">
+                             src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
+                             alt="프로필사진">
                         <div id="imgSuccessLight"
                              class="position-absolute top-50 start-50 translate-middle x-border-greenlight x-profile-img rounded-circle"
                              style="display: none"></div>
@@ -218,23 +243,22 @@
                     <h5 class="modal-title" id="imgUploadModalLabel">프로필 사진 업로드</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-1 x-text-sm x-text-gray-700">
-                    <form id="imgUploadForm" class="mb-3" action="${cpath}/settings/profile/image" method="post"
+                <div class="modal-body pb-0 x-text-sm x-text-gray-700">
+                    <form id="imgUploadForm" class="mb-2" action="${cpath}/settings/profile/image" method="post"
                           enctype="multipart/form-data">
                         <input class="form-control" type="file" id="file" name="file" accept="image/jpeg, image/png">
                         <div class="mt-1 x-text-sm x-text-gray-600 x-font-light">권장 사이즈 150px, 최대 250KB</div>
                     </form>
-                    <c:if test="${!empty loginMember.imageName}">
-                        <div class="d-flex row justify-content-end">
-                            <a class="col-6 x-link text-truncate text-end" href="#">
-                                <i class="bi bi-download"></i>
-                                <span style="text-decoration: underline">download.png</span>
-                            </a>
-                        </div>
-                    </c:if>
+<%--                    <div id="imgDownload" class="d-flex justify-content-end"--%>
+<%--                         style="display:${!empty loginMember.imageName? 'blcok': 'none'};">--%>
+<%--                        <button id="imgDownloadBtn" class="p-0 pe-1 btn x-link text-truncate text-end" type="button">--%>
+<%--                            <i class="bi bi-download"></i>--%>
+<%--                            <span style="text-decoration: underline">다운로드</span>--%>
+<%--                        </button>--%>
+<%--                    </div>--%>
                 </div>
                 <div class="modal-footer d-flex justify-content-end">
-                    <button type="button" class="px-3 py-1 btn btn-outline-secondary">기본사진 사용</button>
+                    <button id="imgInitBtn" type="button" class="px-3 py-1 btn btn-outline-secondary">기본사진 사용</button>
                     <button id="imgUploadBtn" type="button" class="px-3 py-1 btn btn-primary">업로드</button>
                 </div>
             </div>

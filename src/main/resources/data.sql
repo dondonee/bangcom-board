@@ -52,7 +52,7 @@ CREATE TABLE profile_image
 (
     image_id    BIGINT        NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no     BIGINT UNIQUE NOT NULL,
-    upload_name VARCHAR(255)   NOT NULL
+    upload_name VARCHAR(255)  NULL DEFAULT NULL
 );
 
 DROP TABLE auth_password IF EXISTS;

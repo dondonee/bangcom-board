@@ -257,6 +257,20 @@ public class MemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @DeleteMapping("/settings/profile/image")
+    public ResponseEntity deleteProfileImage(@Login Member loginMember, HttpSession session) throws IOException {
+
+        if (loginMember.getImageName() == null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        // 기존 프로필 이미지 삭제
+        Member updatedMember = memberService.initProfileImage(loginMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);  // loginMember 세션 업데이트
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     // private 메서드
 

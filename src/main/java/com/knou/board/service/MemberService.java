@@ -90,16 +90,30 @@ public class MemberService {
     }
 
     public Member updateProfileImage(Member loginMember, MultipartFile file) throws IOException {
-        // 파일 로컬에 저장
+        // 로컬에 파일 저장 후 파일명 받아오기
         UploadFile uploadFile = fileStore.storeFile(file, "profile/");
 
-        // 파일 이름 DB에 저장
-        Long userNo = loginMember.getUserNo();
-        memberRepository.updateProfileImage(userNo, uploadFile);      // 프로필에 파일 이름 저장
-        memberRepository.updateProfileImageName(userNo, uploadFile);  // 별도 테이블에 원본 이름 저장
+        // 파일명 DB 업데이트 후 최신 프로필 반환
+        return doUpdateProfileImage(loginMember, uploadFile);
+    }
+
+    public Member initProfileImage(Member loginMember) throws IOException {
+        // 파일명 DB 업데이트 후 최신 프로필 반환
+        return doUpdateProfileImage(loginMember, new UploadFile(null, null));
+    }
+
+    private Member doUpdateProfileImage(Member member, UploadFile uploadFile) throws IOException {
+
+        // 프로필 테이블의 저장 파일명 삭제 (+ 수정일 업데이트)
+        member.setUpdatedDate(LocalDateTime.now());
+        memberRepository.updateProfileImage(member, uploadFile);
+
+        // 별도 테이블의 원본 파일명 삭제
+        Long userNo = member.getUserNo();
+        memberRepository.updateProfileImageName(userNo, uploadFile);
 
         // 기존 파일 로컬에서 삭제
-        String oldImageName = loginMember.getImageName();
+        String oldImageName = member.getImageName();
         boolean deleted = fileStore.deleteFile(oldImageName, "profile/");
         if (!deleted) {
             log.error("기존 프로필 이미지 삭제 실패: {}", oldImageName);
