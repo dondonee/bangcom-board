@@ -2,12 +2,14 @@ package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.post.*;
+import com.knou.board.repository.CommentRepository;
 import com.knou.board.service.PostService;
 import com.knou.board.web.PageMaker;
 import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.PostAddForm;
 import com.knou.board.web.form.PostEditForm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,11 +21,13 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
+    private final CommentRepository commentRepository;
 
 //    @GetMapping("/questions")
 //    public String getQuestionList(Model model) {
@@ -109,6 +113,12 @@ public class PostController {
         TopicGroup topicGroup = TopicGroup.findGroup(post.getTopic());
         model.addAttribute("topicGroup", topicGroup);
         model.addAttribute("post", post);
+
+        // 댓글 목록 조회
+        List<Comment> comments = commentRepository.selectByPostId(postId);
+        long commentCount = commentRepository.countTotalSelectedByPostId(postId);
+        model.addAttribute("comments", comments);
+        model.addAttribute("commentCount", commentCount);
 
         return "postDetail";
     }

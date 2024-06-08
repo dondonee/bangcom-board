@@ -27,6 +27,7 @@ CREATE TABLE member_profile
     user_no     BIGINT UNIQUE NOT NULL,
     nickname    VARCHAR(12) UNIQUE NOT NULL,
     image_url   VARCHAR(100) NULL DEFAULT NULL,
+    bio         VARCHAR(150) NULL DEFAULT NULL,
     transferred TINYINT NULL DEFAULT NULL,
     grade VARCHAR(10) NULL DEFAULT NULL,
     authority VARCHAR(10) NULL DEFAULT NULL,

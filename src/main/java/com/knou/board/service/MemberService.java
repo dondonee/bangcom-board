@@ -114,9 +114,10 @@ public class MemberService {
 
         // 기존 파일 로컬에서 삭제
         String oldImageName = member.getImageName();
-        boolean deleted = fileStore.deleteFile(oldImageName, "profile/");
-        if (!deleted) {
-            log.error("기존 프로필 이미지 삭제 실패: {}", oldImageName);
+        if (oldImageName != null) {
+            if (!fileStore.deleteFile(oldImageName, "profile/")) {
+                log.error("기존 프로필 이미지 삭제 실패: {}", oldImageName);
+            }
         }
 
         return memberRepository.selectProfileById(userNo);

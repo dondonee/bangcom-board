@@ -1,5 +1,6 @@
 package com.knou.board.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.knou.board.domain.typehandler.CodeEnum;
 import com.knou.board.domain.typehandler.CodeEnumTypeHandler;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class Member {
         GRADUATE("graduate", "졸업생");
 
         private String code;
+        @JsonValue
         private String description;
 
         @MappedTypes(Grade.class)
@@ -72,6 +74,7 @@ public class Member {
 
 
         private String code;
+        @JsonValue
         private String description;
 
         @MappedTypes(Region.class)
@@ -91,6 +94,7 @@ public class Member {
         USER("U", "사용자");
 
         private String code;
+        @JsonValue
         private String description;
 
         @MappedTypes(Authority.class)

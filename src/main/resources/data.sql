@@ -16,6 +16,17 @@ CREATE TABLE post
 --     FOREIGN KEY (author_id) REFERENCES member_user (user_no)
 );
 
+DROP TABLE post_comment IF EXISTS;
+CREATE TABLE post_comment
+(
+    comment_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    post_id    BIGINT NOT NULL,
+    writer_id  BIGINT NOT NULL,
+    content       TEXT        NOT NULL,
+    created_date  DATETIME    NOT NULL,
+    modified_date DATETIME
+);
+
 DROP TABLE member_user IF EXISTS;
 CREATE TABLE member_user
 (
@@ -29,7 +40,7 @@ CREATE TABLE member_profile
     profile_id   BIGINT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no      BIGINT UNIQUE      NOT NULL,
     nickname     VARCHAR(12) UNIQUE NOT NULL,
-    image_name    VARCHAR(100)       NULL DEFAULT NULL,
+    image_name   VARCHAR(100)       NULL DEFAULT NULL,
     bio          VARCHAR(150)       NULL DEFAULT NULL,
     transferred  TINYINT            NULL DEFAULT NULL,
     grade        VARCHAR(10)        NULL DEFAULT NULL,
@@ -66,13 +77,23 @@ CREATE TABLE auth_password
 );
 
 -- Dummy Data
-INSERT INTO member_user (login_name) VALUES ('knou01');
-INSERT INTO auth_password (user_no, password) VALUES (1, 'password12!@');
-INSERT INTO member_profile (user_no, nickname, grade, region, authority, joined_date) VALUES (1, '방콤', '1', '11', 'U', '2021-01-01 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-01 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2023-05-15 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-LIFE', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-13 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-13 18:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('NOTICE', 1, 'NOTICE 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('I-USER', 1, 'INFO 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
-INSERT INTO post (topic, author_id, title, content, created_date) VALUES ('Q-CAREER', 1, 'Q&A 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
+INSERT INTO member_user (login_name)
+VALUES ('knou01');
+INSERT INTO auth_password (user_no, password)
+VALUES (1, 'password12!@');
+INSERT INTO member_profile (user_no, nickname, grade, region, authority, joined_date)
+VALUES (1, '방콤', '1', '11', 'U', '2021-01-01 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-01 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2023-05-15 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('C-LIFE', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-13 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('C-CAMPUS', 1, '예시 제목입니다.', '예시 내용입니다.', '2024-05-13 18:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('NOTICE', 1, 'NOTICE 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('I-USER', 1, 'INFO 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');
+INSERT INTO post (topic, author_id, title, content, created_date)
+VALUES ('Q-CAREER', 1, 'Q&A 예시 제목입니다.', '예시 내용입니다.', '2021-01-01 00:00:00');

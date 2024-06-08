@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
@@ -26,16 +25,5 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 인증된 사용자 -> 요청 처리 진행
         return true;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-        HttpSession session = request.getSession();
-        if (session.getAttribute(SessionConst.PREV_URL) != null) {
-            String previousUrl = (String) session.getAttribute(SessionConst.PREV_URL);
-            session.removeAttribute(SessionConst.PREV_URL);  // 불필요한 세션 속성 제거
-            response.sendRedirect(previousUrl);
-        }
     }
 }

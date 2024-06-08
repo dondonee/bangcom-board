@@ -10,6 +10,7 @@ import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.MemberLoginForm;
 import com.knou.board.web.form.MemberProfileForm;
 import com.knou.board.web.form.MemberSignUpForm;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +118,11 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(HttpServletRequest request, HttpSession session) {
+        // 로그인 이전 페이지 저장
+        String referer = request.getHeader("Referer");
+        session.setAttribute(SessionConst.PREV_URL, referer);
+
         return "loginForm";
     }
 
@@ -162,7 +167,8 @@ public class MemberController {
         // 로그인 성공
         session.setAttribute(SessionConst.LOGIN_MEMBER, member);
 
-        if (prevUrl != null) {  // 로그인 이전 페이지가 존재하는 경우
+        if (prevUrl != null) {  // 세션에 로그인 이전 페이지가 존재하는 경우
+            session.removeAttribute(SessionConst.PREV_URL);  // 불필요한 세션 속성 제거
             return "redirect:" + prevUrl;
         }
 
