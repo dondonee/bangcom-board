@@ -11,45 +11,45 @@
     <%@ include file="fragment/head.jsp" %>
     <title>Bangcom - ${post.title}</title>
     <script>
-function getElapsedTime(createdTime) {
-    const now = new Date();
-    const created = new Date(createdTime);
+        function getElapsedTime(createdTime) {
+            const now = new Date();
+            const created = new Date(createdTime);
 
-    const seconds = Math.floor((now - created) / 1000); // Milliseconds -> Seconds
+            const seconds = Math.floor((now - created) / 1000); // Milliseconds -> Seconds
 
-    if (seconds < 60) {
-        return "방금 전";
-    }
+            if (seconds < 60) {
+                return "방금 전";
+            }
 
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) {
-        return minutes + "분 전";
-    }
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) {
+                return minutes + "분 전";
+            }
 
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) {
-        return hours + "시간 전";
-    }
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) {
+                return hours + "시간 전";
+            }
 
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30.43685); // 한 달은 약 30.43685일
-    const years = Math.floor(months / 12);
+            const days = Math.floor(hours / 24);
+            const weeks = Math.floor(days / 7);
+            const months = Math.floor(days / 30.43685); // 한 달은 약 30.43685일
+            const years = Math.floor(months / 12);
 
-    if (days < 7) {
-        return days + "일 전";
-    }
+            if (days < 7) {
+                return days + "일 전";
+            }
 
-    if (months < 1) {
-        return "약 " + weeks + "주 전";
-    }
+            if (months < 1) {
+                return "약 " + weeks + "주 전";
+            }
 
-    if (months < 12) {
-        return "약 " + months + "개월 전";
-    }
+            if (months < 12) {
+                return "약 " + months + "개월 전";
+            }
 
-    return "약 " + years + "년 전";
-}
+            return "약 " + years + "년 전";
+        }
 
         $(document).ready(function () {
             $('#commentAddBtn').click(function () {
@@ -61,31 +61,32 @@ function getElapsedTime(createdTime) {
                     data: form.serializeArray(),
                     success: function (xhr) {
                         var html = '';
-                        for (let i = 0; i < xhr.length; i++) {
-                            let imageName = xhr[i].writer.imageName || 'temporary.gif';
+                        for (let i = 0; i < xhr.comments.length; i++) {
+                            let imageName = xhr.comments[i].writer.imageName || 'temporary.gif';
                             html += '<li class="py-3 border-top text-decoration-none">'
+                                + '<div>'
                                 + '<div class="d-flex">'
                                 + ' <div class="me-2">'
                                 + '     <a href=""><img src="/images/profile/' + imageName + '" style="width: 48px; height: 48px" class="x-border-thin rounded-circle" alt="프로필사진"></a>'
                                 + ' </div>'
                                 + ' <div class="d-flex flex-column my-auto">'
-                                + '     <a class="x-text-sm" href="">' + xhr[i].writer.nickname + '</a>'
+                                + '     <a class="x-text-sm" href="">' + xhr.comments[i].writer.nickname + '</a>'
                                 + '     <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                                + '     <span>' + xhr[i].writer.grade + ' / ' + xhr[i].writer.region + '</span>'
+                                + '     <span>' + xhr.comments[i].writer.grade + ' / ' + xhr.comments[i].writer.region + '</span>'
                                 + '     <span>·</span>'
-                                + '     <span class="">' + getElapsedTime(xhr[i].createdDate) + '</span>'
+                                + '     <span class="">' + getElapsedTime(xhr.comments[i].createdDate) + '</span>'
                                 + ' </div>'
                                 + '</div>'
+                                + '<div class="my-2 x-text-sm x-text-gray-800">'
+                                + xhr.comments[i].content
                                 + '</div>'
-                                + ' <div class="my-2 x-text-sm x-text-gray-800">'
-                                + xhr[i].content
-                                + ' </div>'
+                                + '</div>'
                                 + '</li>';
                         }
 
                         $('#commentList').html(html);
                         $('#commentList li:first').removeClass('border-top');
-                        $('#commentCount').text(parseInt($('#commentCount').text()) + 1);
+                        $('#commentTotal').text(xhr.commentTotal);
                         // 초기화
                         $('#commentErr').html('');
                         $('#commentAddForm textarea').val('');
@@ -196,7 +197,7 @@ function getElapsedTime(createdTime) {
             <%--    댓글 영역    --%>
             <div class="mt-3">
                 <div>
-                    <span id="commentCount">${commentCount}</span>개의 댓글
+                    <span id="commentTotal">${commentTotal}</span>개의 댓글
                 </div>
                 <%--    댓글 작성 폼    --%>
                 <div class="mt-4 mb-5 p-3 d-flex border rounded">
@@ -206,10 +207,11 @@ function getElapsedTime(createdTime) {
                              src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
                              style="border:1px solid #f8f9fa">
                     </div>
-                    <form id="commentAddForm" action="/articles/${post.id}/comments" method="post" class="w-100">
+                    <form id="commentAddForm" action="/articles/comments" method="post" class="w-100">
                         <c:if test="${!empty loginMember}">
-                        <textarea class="form-control" name="content" id="content" placeholder="댓글을 남겨주세요."
-                                  rows="3"></textarea>
+                            <input type="hidden" name="postId" id="postId" value="${post.id}">
+                            <textarea class="form-control" name="content" id="content" placeholder="댓글을 남겨주세요."
+                                      rows="3"></textarea>
                         </c:if>
                         <c:if test="${empty loginMember}">
                             <div class="form-control x-text-gray-600" style="height:87.5px">
@@ -230,25 +232,70 @@ function getElapsedTime(createdTime) {
                     <ul id="commentList" class="list-group list-group-flush list-unstyled">
                         <c:forEach var="vo" varStatus="status" items="${comments}">
                             <li class="py-3 ${status.index ne 0?'border-top':''} text-decoration-none">
-                                <div class="d-flex">
-                                    <div class="me-2">
-                                        <a href=""><img
-                                                src="/images/profile/${vo.writer.imageName ne null? vo.writer.imageName: 'temporary.gif'}"
-                                                style="width: 48px; height: 48px" class="x-border-thin rounded-circle"
-                                                alt="프로필사진"></a>
-                                    </div>
-                                    <div class="d-flex flex-column my-auto">
-                                        <a class="x-text-sm" href="">${vo.writer.nickname}</a>
-                                        <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">
-                                            <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
-                                            <span>·</span>
-                                            <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
+                                    <%--    Root 댓글    --%>
+                                <div>
+                                    <div class="d-flex">
+                                        <div class="me-2">
+                                            <a href=""><img
+                                                    src="/images/profile/${vo.writer.imageName ne null? vo.writer.imageName: 'temporary.gif'}"
+                                                    style="width: 48px; height: 48px"
+                                                    class="x-border-thin rounded-circle"
+                                                    alt="프로필사진"></a>
+                                        </div>
+                                        <div class="d-flex flex-column my-auto">
+                                            <a class="x-text-sm" href="">${vo.writer.nickname}</a>
+                                            <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                 style="line-height: 1.2rem">
+                                                <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
+                                                <span>·</span>
+                                                <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="my-2 x-text-sm x-text-gray-800">
+                                        <c:out value="${vo.content}"></c:out>
+                                    </div>
                                 </div>
-                                <div class="my-2 x-text-sm x-text-gray-800">
-                                    <c:out value="${vo.content}"></c:out>
-                                </div>
+                                    <%--    Branch 댓글    --%>
+                                <c:if test="${vo.branchComments.size() > 0}">
+                                    <div>
+                                        <button id="'toggleBranchesOf' + ${vo.groupNo}" class="btn btn-link"
+                                                type="button">댓글 모두 숨기기
+                                        </button>
+                                        <div class="my-2">
+                                            <ul class="ms-2 ps-3 list-unstyled" style="border-left: 2px solid #dee2e6">
+                                                <c:forEach var="bvo" varStatus="status" items="${vo.branchComments}">
+                                                    <li class="py-3 ${status.index ne 0?'x-border-top-dashed':''}">
+                                                        <div>
+                                                            <div class="d-flex">
+                                                                <div class="me-2">
+                                                                    <a href=""><img
+                                                                            src="/images/profile/${bvo.writer.imageName ne null? bvo.writer.imageName: 'temporary.gif'}"
+                                                                            style="width: 48px; height: 48px"
+                                                                            class="x-border-thin rounded-circle"
+                                                                            alt="프로필사진"></a>
+                                                                </div>
+                                                                <div class="d-flex flex-column my-auto">
+                                                                    <a class="x-text-sm"
+                                                                       href="">${bvo.writer.nickname}</a>
+                                                                    <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                                         style="line-height: 1.2rem">
+                                                                        <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
+                                                                        <span>·</span>
+                                                                        <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="my-2 x-text-sm x-text-gray-800">
+                                                                <c:out value="${bvo.content}"></c:out>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </c:if>
                             </li>
                         </c:forEach>
                     </ul>

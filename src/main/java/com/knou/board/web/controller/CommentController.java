@@ -1,19 +1,21 @@
 package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
-import com.knou.board.domain.post.Comment;
+import com.knou.board.domain.comment.Comment;
 import com.knou.board.domain.post.Post;
 import com.knou.board.exception.ErrorResult;
 import com.knou.board.service.CommentService;
 import com.knou.board.service.PostService;
 import com.knou.board.web.argumentresolver.Login;
+import com.knou.board.web.dto.CommentListDto;
+import com.knou.board.web.form.CommentAddForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -26,8 +28,8 @@ public class CommentController {
     private final PostService postService;
 
 
-    @PostMapping("/articles/{postId}/comments")
-    public ResponseEntity addComment(@PathVariable long postId, @ModelAttribute("content") String content, @Login Member loginMember) {
+    @PostMapping("/articles/comments")
+    public ResponseEntity addComment(@ModelAttribute CommentAddForm form, @Login Member loginMember) {
 
         // 로그인 체크
         if (loginMember == null) {
@@ -36,11 +38,13 @@ public class CommentController {
         }
 
         // 댓글 유효성 검증
-        Post post = postService.findPost(postId);  // 존재하는 게시물인지 확인
-        if (post == null) {
+        long postId = form.getPostId();
+        Optional<Post> post = Optional.ofNullable(postService.findPost(postId));  // 존재하는 게시물인지 확인
+        if (post.isEmpty()) {
             ErrorResult errorResult = new ErrorResult("BAD_REQUEST", "존재하지 않는 게시글입니다.");
             return new ResponseEntity<>(errorResult, BAD_REQUEST);
         }
+        String content = form.getContent();
         if (content == null || content.isBlank()) {
             ErrorResult errorResult = new ErrorResult("BAD_REQUEST", "내용을 최소 1자 이상 입력해주세요.");
             return new ResponseEntity<>(errorResult, BAD_REQUEST);
@@ -54,10 +58,13 @@ public class CommentController {
         comment.setPostId(postId);
         comment.setWriter(loginMember);
         comment.setContent(content);
-
+        if (form.getParentCommentInfo() != null) {
+            comment.setParentCommentInfo(form.getParentCommentInfo());
+        }
         commentService.createComment(comment);
-        List<Comment> comments = commentService.findListByPostId(postId);
-        return new ResponseEntity<>(comments, HttpStatus.OK);  // 댓글 목록 반환
+
+        CommentListDto findComments = commentService.findListByPostId(postId);
+        return new ResponseEntity<>(findComments, HttpStatus.OK);  // 댓글 목록 반환
     }
 
     @GetMapping("/articles/{postId}/comments")
@@ -69,7 +76,7 @@ public class CommentController {
             return new ResponseEntity<>(errorResult, BAD_REQUEST);
         }
 
-        List<Comment> comments = commentService.findListByPostId(postId);
+        CommentListDto comments = commentService.findListByPostId(postId);  // 댓글 목록 및 개수 반환
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 }

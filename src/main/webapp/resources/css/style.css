@@ -243,6 +243,10 @@ a:hover {
     border: 1px solid #f8f9fa;
 }
 
+.x-border-top-dashed {
+    border-top: 1px dashed #dee2e6;   /* $gray-300 */
+}
+
 /*
     list group
 */

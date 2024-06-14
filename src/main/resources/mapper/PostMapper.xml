@@ -3,43 +3,48 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.knou.board.repository.mybatis.PostMapper">
 
-    <resultMap id="memberMap" type="Member">
-        <result property="userNo" column="user_no"/>
-        <result property="nickname" column="nickname"/>
-        <result property="imageName" column="image_name" />
-        <result property="bio" column="bio" />
-        <result property="transferred" column="transferred" />
-        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler" />
-        <result property="authority" column="authority" typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler" />
-        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler" />
-        <result property="joinedDate" column="joined_date" />
-        <result property="updatedDate" column="updated_date" />
-    </resultMap>
     <resultMap id="postMap" type="Post">
         <id property="id" column="post_id"/>
-        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler" />
+        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
         <result property="createdDate" column="created_date"/>
         <result property="modifiedDate" column="modified_date"/>
         <result property="viewCount" column="view_count"/>
-        <collection property="author" resultMap="memberMap"/>
+        <association property="author" column="author_id" javaType="Member">
+            <result property="userNo" column="user_no"/>
+            <result property="nickname" column="nickname"/>
+            <result property="imageName" column="image_name"/>
+            <result property="bio" column="bio"/>
+            <result property="transferred" column="transferred"/>
+            <result property="grade" column="grade"
+                    typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler"/>
+            <result property="authority" column="authority"
+                    typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler"/>
+            <result property="region" column="region"
+                    typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler"/>
+            <result property="joinedDate" column="joined_date"/>
+            <result property="updatedDate" column="updated_date"/>
+        </association>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty = "id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (topic, author_id, title, content, created_date)
-            VALUES (#{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}, #{author.userNo}, #{title}, #{content}, #{createdDate})
+        VALUES (#{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}, #{author.userNo}, #{title},
+                #{content}, #{createdDate})
     </insert>
-    
+
     <select id="selectById" resultMap="postMap">
-        SELECT * FROM post
-            JOIN member_profile ON post.author_id = member_profile.user_no
+        SELECT *
+        FROM post
+                 JOIN member_profile ON post.author_id = member_profile.user_no
         WHERE post.post_id = #{id}
     </select>
 
     <select id="selectAll" resultMap="postMap">
-        SELECT * FROM post
-        JOIN member_profile ON post.author_id = member_profile.user_no
+        SELECT *
+        FROM post
+                 JOIN member_profile ON post.author_id = member_profile.user_no
     </select>
 
     <select id="selectByTopics" resultMap="postMap">
@@ -50,7 +55,8 @@
                 #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
             </foreach>
         </where>
-        ORDER BY ${criteria.sort.code} DESC<if test="!criteria.sort.name().equals('ID')">, post_id DESC</if>
+        ORDER BY ${criteria.sort.code} DESC
+        <if test="!criteria.sort.name().equals('ID')">, post_id DESC</if>
         LIMIT #{criteria.startRow}, #{criteria.pageSize}
     </select>
 
@@ -62,12 +68,12 @@
             </foreach>
         </where>
     </select>
-    
+
     <update id="update" parameterType="Post">
         UPDATE post
-        SET topic = #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler},
-            title = #{title},
-            content = #{content},
+        SET topic         = #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler},
+            title         = #{title},
+            content       = #{content},
             modified_date = #{modifiedDate}
         WHERE post_id = #{id}
     </update>
@@ -79,7 +85,9 @@
     </update>
 
     <delete id="delete">
-        DELETE FROM post WHERE post_id = #{id}
+        DELETE
+        FROM post
+        WHERE post_id = #{id}
     </delete>
-    
+
 </mapper>

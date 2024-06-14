@@ -2,10 +2,11 @@ package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.post.*;
-import com.knou.board.repository.CommentRepository;
+import com.knou.board.service.CommentService;
 import com.knou.board.service.PostService;
 import com.knou.board.web.PageMaker;
 import com.knou.board.web.argumentresolver.Login;
+import com.knou.board.web.dto.CommentListDto;
 import com.knou.board.web.form.PostAddForm;
 import com.knou.board.web.form.PostEditForm;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ import static org.springframework.http.HttpStatus.*;
 public class PostController {
 
     private final PostService postService;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
 //    @GetMapping("/questions")
 //    public String getQuestionList(Model model) {
@@ -115,10 +116,9 @@ public class PostController {
         model.addAttribute("post", post);
 
         // 댓글 목록 조회
-        List<Comment> comments = commentRepository.selectByPostId(postId);
-        long commentCount = commentRepository.countTotalSelectedByPostId(postId);
-        model.addAttribute("comments", comments);
-        model.addAttribute("commentCount", commentCount);
+        CommentListDto commentListDto = commentService.findListByPostId(postId);
+        model.addAttribute("comments", commentListDto.getComments());
+        model.addAttribute("commentTotal", commentListDto.getCommentTotal());
 
         return "postDetail";
     }
