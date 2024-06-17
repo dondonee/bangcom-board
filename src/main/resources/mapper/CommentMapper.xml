@@ -21,7 +21,7 @@
     <resultMap id="parentCommentInfoMap" type="com.knou.board.domain.comment.ParentCommentInfoSelect">
         <result property="parentId" column="parent_id"/>
         <result property="mentionedId" column="mentioned_id"/>
-        <result property="mentionedName" column="parent_mentioned_nickname"/>
+        <result property="mentionedName" column="mentioned_nickname"/>
     </resultMap>
     <resultMap id="singleCommentMap" type="Comment">
         <id property="id" column="comment_id"/>
@@ -51,6 +51,7 @@
             <result property="postId" column="post_id"/>
             <result property="content" column="content"/>
             <result property="groupNo" column="group_no"/>
+            <result property="depthNo" column="depth_no"/>
             <result property="orderNo" column="order_no"/>
             <result property="createdDate" column="created_date"/>
             <result property="modifiedDate" column="modified_date"/>
@@ -126,6 +127,7 @@
                b.post_id       as branch_post_id,
                b.content       as branch_content,
                b.group_no      as branch_group_no,
+               b.depth_no      as branch_depth_no,
                b.order_no      as branch_order_no,
                b.parent_id     as branch_parent_id,
                b.mentioned_id  as branch_mentioned_id,
@@ -136,7 +138,8 @@
                bm.image_name   as branch_image_name,
                bm.grade        as branch_grade,
                bm.authority    as branch_authority,
-               bm.region       as branch_region
+               bm.region       as branch_region,
+               pm.nickname     as branch_mentioned_nickname
         FROM post_comment r
                  LEFT JOIN member_profile m
                            ON r.writer_id = m.user_no
@@ -144,6 +147,8 @@
                            ON b.parent_id IS NOT NULL AND r.group_no = b.group_no
                  LEFT JOIN member_profile bm
                            ON b.writer_id = bm.user_no
+                 LEFT JOIN member_profile pm
+                           ON b.mentioned_id = pm.user_no
         WHERE r.post_id = #{postId}
           AND r.parent_id IS NULL
         ORDER BY comment_id DESC

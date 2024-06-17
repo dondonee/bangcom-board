@@ -309,6 +309,24 @@ a:hover {
     font-family: Pretendard-Medium;
 }
 
+/* 대댓글 보기 버튼 */
+.x-btn-comments {
+    color: #007db6; /* $primary */
+}
+
+.x-btn-comments:hover {
+    color: #00A4F0; /* $primary light */
+}
+
+/* 댓글 쓰기 버튼 */
+.x-btn-comment {
+    color: #6c757d; /* $gray-600 */
+}
+
+.x-btn-comment:hover {
+    color: #007db6; /* $primary */
+}
+
 /*
     inline
 */
@@ -334,6 +352,30 @@ a:hover {
 
 .x-link.sub:hover {
     color: #007db6;
+}
+
+.x-mention {
+    color: #006a9b;
+    font-size: 0.75rem;
+    font-family: Pretendard-SemiBold;
+    background: #dee2e6;    /* $gray-300 */
+    padding: 0.15rem 0.3rem;
+}
+
+@media screen and (min-width: 576px) {
+    /* breakpoint: xs */
+    .x-comment-profile-img {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    /* breakpoint: xs */
+    .x-comment-profile-img {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 /*

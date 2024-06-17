@@ -51,6 +51,16 @@
             return "약 " + years + "년 전";
         }
 
+        $(document).on('click', 'button[id^="branchAddCancelBtnOf"]', function (e) {
+            const button = $(e.currentTarget);
+            const parentCommentId = button.attr('id').replace(/^branchAddCancelBtnOf/, '');
+            const addArea = $('#branchAddOf' + parentCommentId);
+            addArea.addClass('d-none');
+            button.text('댓글 쓰기');
+            $('#branchAddBtnOf' + parentCommentId).text('댓글 쓰기');
+        });
+
+
         $(document).ready(function () {
             $('#commentAddBtn').click(function () {
                 const form = $('#commentAddForm');
@@ -67,7 +77,7 @@
                                 + '<div>'
                                 + '<div class="d-flex">'
                                 + ' <div class="me-2">'
-                                + '     <a href=""><img src="/images/profile/' + imageName + '" style="width: 48px; height: 48px" class="x-border-thin rounded-circle" alt="프로필사진"></a>'
+                                + '     <a href=""><img src="/images/profile/' + imageName + ' class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
                                 + ' </div>'
                                 + ' <div class="d-flex flex-column my-auto">'
                                 + '     <a class="x-text-sm" href="">' + xhr.comments[i].writer.nickname + '</a>'
@@ -108,6 +118,62 @@
                     }
                 });
             });
+            $('button[id^="toggleBranchesOf"]').click(function (e) {
+                const button = $(e.currentTarget);
+                const areaId = button.attr('id').replace(/^toggleB/, 'b');
+                const area = $('#' + areaId);
+                const areaDisplay = area.css('display');
+
+                if (areaDisplay == 'block') {
+                    area.css('display', 'none');
+                    button.find('span:first').css('display', 'block');
+                    button.find('span:last').css('display', 'none');
+                } else {
+                    area.css('display', 'block');
+                    button.find('span:first').css('display', 'none');
+                    button.find('span:last').css('display', 'block');
+                }
+            });
+            $('button[id^="branchAddBtnOf"]').click(function (e) {
+
+                const button = $(e.currentTarget);
+
+                if (button.attr('data-login') === 'false') {
+
+                }
+
+                const parentCommentId = button.attr('id').replace(/^branchAddBtnOf/, '');
+                const addAreaId = 'branchAddOf' + parentCommentId;
+
+                if (!document.getElementById(addAreaId)) {  // 작성 폼이 없는 경우
+                    // 대댓글 작성 폼 만들기
+                    var clone = $('#addBranch').clone();
+                    if (button.attr('data-comment') === 'root') {  // 댓글인 경우
+                        $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
+                    } else {  // 대댓글인 경우
+                        const mentioned = button.attr('data-mentioned');
+                        $(clone).find('> div').css('border-left', '')
+                        $(clone).find('div.form-control').prepend('<div class="ps-2"><span class="x-mention rounded-pill">@' + mentioned + '</span></div>');
+                    }
+                    $(clone).find('> div').attr('id', addAreaId);
+                    $(clone).find('form').attr('id', 'branchAddFormOf' + parentCommentId);
+                    $(clone).find('form button:first').attr('id', 'branchAddCancelBtnOf' + parentCommentId);
+                    $(clone).find('form button:last').attr('id', 'branchAddSubmitBtnOf' + parentCommentId);
+
+                    $('#commentOf' + parentCommentId).append(clone.html());
+                    button.text('댓글 취소');
+
+                } else {  // 작성 폼이 생성되어 있는 경우
+                    const addArea = $('#' + addAreaId);
+                    if (addArea.is(':visible')) {
+                        addArea.addClass('d-none');
+                        button.text('댓글 쓰기');
+                    } else {
+                        addArea.removeClass('d-none');
+                        button.text('댓글 취소');
+                    }
+                }
+            });
         });
     </script>
 </head>
@@ -144,11 +210,12 @@
                         <a href="">
                             <c:if test="${not empty post.author.imageName}">
                                 <img src="/images/profile/${post.author.imageName}"
-                                     style="width: 40px; height: 40px"
+                                     style="width: 40px; height: 40px;"
                                      alt="프로필사진">
                             </c:if>
                             <c:if test="${empty post.author.imageName}">
-                                <img src="/images/profile/temporary.gif" style="width: 40px; height: 40px"
+                                <img src="/images/profile/temporary.gif"
+                                     style="width: 40px; height: 40px;"
                                      alt="프로필사진">
                             </c:if>
                         </a>
@@ -202,8 +269,7 @@
                 <%--    댓글 작성 폼    --%>
                 <div class="mt-4 mb-5 p-3 d-flex border rounded">
                     <div class="me-3">
-                        <img style="width: 48px; height: 48px;"
-                             class="x-comment-profile-img x-border-thin rounded-circle"
+                        <img class="x-comment-profile-img x-border-thin rounded-circle"
                              src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
                              style="border:1px solid #f8f9fa">
                     </div>
@@ -233,13 +299,12 @@
                         <c:forEach var="vo" varStatus="status" items="${comments}">
                             <li class="py-3 ${status.index ne 0?'border-top':''} text-decoration-none">
                                     <%--    Root 댓글    --%>
-                                <div>
+                                <div id="commentOf${vo.id}">
                                     <div class="d-flex">
                                         <div class="me-2">
                                             <a href=""><img
                                                     src="/images/profile/${vo.writer.imageName ne null? vo.writer.imageName: 'temporary.gif'}"
-                                                    style="width: 48px; height: 48px"
-                                                    class="x-border-thin rounded-circle"
+                                                    class="x-comment-profile-img x-border-thin rounded-circle"
                                                     alt="프로필사진"></a>
                                         </div>
                                         <div class="d-flex flex-column my-auto">
@@ -255,51 +320,117 @@
                                     <div class="my-2 x-text-sm x-text-gray-800">
                                         <c:out value="${vo.content}"></c:out>
                                     </div>
+                                    <div class="mb-2 d-flex">
+                                        <c:if test="${vo.branchComments.size() > 0}">
+                                            <button id="toggleBranchesOf${vo.groupNo}"
+                                                    class="ps-0 pe-2 btn x-btn-comments x-text-xs d-flex"
+                                                    type="button">
+                                                <span style="display: block"><i
+                                                        class="me-1 bi bi-chevron-down"></i>댓글 ${vo.branchComments.size()}개 보기</span>
+                                                <span style="display: none"><i class="me-1 bi bi-chevron-up"></i>댓글 모두 숨기기</span>
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${not empty loginMember}">
+                                            <button id="branchAddBtnOf${vo.id}" data-comment="root" type="button"
+                                                    class="px-0 btn x-btn-comment x-text-xs">
+                                                댓글 쓰기
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${empty loginMember}">
+                                            <button type="button" data-bs-toggle="modal"
+                                                    class="px-0 btn x-btn-comment x-text-xs"
+                                                    data-bs-target="#loginModal">
+                                                댓글 쓰기
+                                            </button>
+                                        </c:if>
+                                    </div>
                                 </div>
                                     <%--    Branch 댓글    --%>
-                                <c:if test="${vo.branchComments.size() > 0}">
+                                <div id="branchesOf${vo.groupNo}" style="display:none;">
                                     <div>
-                                        <button id="'toggleBranchesOf' + ${vo.groupNo}" class="btn btn-link"
-                                                type="button">댓글 모두 숨기기
-                                        </button>
-                                        <div class="my-2">
-                                            <ul class="ms-2 ps-3 list-unstyled" style="border-left: 2px solid #dee2e6">
-                                                <c:forEach var="bvo" varStatus="status" items="${vo.branchComments}">
-                                                    <li class="py-3 ${status.index ne 0?'x-border-top-dashed':''}">
-                                                        <div>
-                                                            <div class="d-flex">
-                                                                <div class="me-2">
-                                                                    <a href=""><img
-                                                                            src="/images/profile/${bvo.writer.imageName ne null? bvo.writer.imageName: 'temporary.gif'}"
-                                                                            style="width: 48px; height: 48px"
-                                                                            class="x-border-thin rounded-circle"
-                                                                            alt="프로필사진"></a>
-                                                                </div>
-                                                                <div class="d-flex flex-column my-auto">
-                                                                    <a class="x-text-sm"
-                                                                       href="">${bvo.writer.nickname}</a>
-                                                                    <div class="x-text-xs x-text-gray-600 x-font-light"
-                                                                         style="line-height: 1.2rem">
-                                                                        <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
-                                                                        <span>·</span>
-                                                                        <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
-                                                                    </div>
-                                                                </div>
+                                        <ul class="ms-2 ps-3 list-unstyled" style="border-left: 2px solid #dee2e6">
+                                            <c:forEach var="bvo" varStatus="status" items="${vo.branchComments}">
+                                                <li class="py-3 ${status.index ne 0?'x-border-top-dashed':''}">
+                                                    <div id="commentOf${bvo.id}">
+                                                        <div class="d-flex">
+                                                            <div class="me-2">
+                                                                <a href=""><img
+                                                                        src="/images/profile/${bvo.writer.imageName ne null? bvo.writer.imageName: 'temporary.gif'}"
+                                                                        class="x-comment-profile-img x-border-thin rounded-circle"
+                                                                        alt="프로필사진"></a>
                                                             </div>
-                                                            <div class="my-2 x-text-sm x-text-gray-800">
-                                                                <c:out value="${bvo.content}"></c:out>
+                                                            <div class="d-flex flex-column my-auto">
+                                                                <a class="x-text-sm"
+                                                                   href="">${bvo.writer.nickname}</a>
+                                                                <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                                     style="line-height: 1.2rem">
+                                                                    <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
+                                                                    <span>·</span>
+                                                                    <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
-                                        </div>
+                                                        <c:if test="${bvo.depthNo > 1}">
+                                                            <div>
+                                                                <span class="x-mention rounded-pill">@${bvo.parentCommentInfo.mentionedName}</span>
+                                                            </div>
+                                                        </c:if>
+                                                        <div class="${bvo.depthNo > 1? 'mt-0': 'mt-2'} mb-2 x-text-sm x-text-gray-800">
+                                                            <c:out value="${bvo.content}"></c:out>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <c:if test="${not empty loginMember}">
+                                                            <button id="branchAddBtnOf${bvo.id}"
+                                                                    data-mentioned="${bvo.parentCommentInfo.mentionedName}"
+                                                                    type="button"
+                                                                    class="px-0 btn x-btn-comment x-text-xs">
+                                                                댓글 쓰기
+                                                            </button>
+                                                            </c:if>
+                                                            <c:if test="${empty loginMember}">
+                                                                <button type="button" data-bs-toggle="modal"
+                                                                        class="px-0 btn x-btn-comment x-text-xs"
+                                                                        data-bs-target="#loginModal">
+                                                                    댓글 쓰기
+                                                                </button>
+                                                            </c:if>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
                                     </div>
-                                </c:if>
+                                </div>
                             </li>
                         </c:forEach>
                     </ul>
                 </div>
+                <%--    대댓글 작성 폼    --%>
+                <c:if test="${!empty loginMember}">
+                    <div id="addBranch" style="display: none">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <img class="x-comment-profile-img x-border-thin rounded-circle"
+                                     src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
+                                     style="border:1px solid #f8f9fa">
+                            </div>
+                            <form action="/articles/comments" method="post" class="w-100">
+                                <input type="hidden" name="postId" value="${post.id}">
+                                <div class="form-control p-0 pt-2">
+                                    <textarea class="pt-0 border-0 form-control" name="content" placeholder="댓글을 남겨주세요."
+                                              rows="3"></textarea>
+                                </div>
+                                <div class="mt-3 d-flex justify-content-end">
+                                    <div class="mt-1 me-2 x-field-error"></div>
+                                    <button class="me-1 px-3 py-1 btn btn-outline-secondary" type="button">취소</button>
+                                    <button class="px-3 py-1 btn btn-primary"
+                                            type="button">댓글 쓰기
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </c:if>
             </div>
         </div>
 
@@ -308,7 +439,7 @@
     </div>
 
     <!--    모달 (게시글 삭제 확인)   -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -323,6 +454,24 @@
                     </button>
                     <button type="button" class="px-3 py-1 btn btn-primary"
                             onclick="location.href='/articles/${post.id}/delete'">삭제
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    모달 (댓글 쓰기 로그인 확인)   -->
+    <div class="modal" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="p-4 pb-0 modal-body x-text-sm x-text-gray-700">
+                    <h5 class="modal-title mb-1 x-font-medium">로그인이 필요한 기능</h5>
+                    <p class="x-text-sm x-font-light x-text-gray-600">로그인 페이지로 이동하시겠습니까?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="px-3 py-1 btn btn-outline-secondary" data-bs-dismiss="modal">취소
+                    </button>
+                    <button type="button" class="px-3 py-1 btn btn-primary"
+                            onclick="location.href='/login'">확인
                     </button>
                 </div>
             </div>
