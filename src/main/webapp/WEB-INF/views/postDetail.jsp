@@ -53,13 +53,14 @@
         }
 
         // 댓글 쓰기 ajax 요청
-        $(document).on('click', '#commentAddBtn', function () {
-            const form = $('#commentAddForm');
-            const url = form.attr('action');
+        $(document).on('click', 'button[id^="commentAddBtn"]', function (e) {
+            const form = e.currentTarget.closest('form');
+            const rootCommentId = e.currentTarget.getAttribute('data-root');
+            console.log('form: ', form);
             $.ajax({
-                url: url,
+                url: '/articles/comments',
                 type: 'POST',
-                data: form.serializeArray(),
+                data: $(form).serializeArray(),
                 success: function (xhr) {  // 댓글 목록 갱신
                     var html = '';
 
@@ -121,7 +122,7 @@
                                     + bvo.content
                                     + ' </div>'
                                     + ' <div class="mb-2">'
-                                    + ' <button id="branchAddBtnOf' + bvo.id + '" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                                    + ' <button id="commentAddFormBtnOf' + bvo.id + '" data-root="' + vo.id + '" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
                                     + '댓글 쓰기'
                                     + ' </button>'
                                     + ' </div>'
@@ -152,7 +153,7 @@
                             + ' </div>'
                             + ' <div class="mb-2 d-flex">'
                             + branchBtnHtml
-                            + '     <button id="branchAddBtnOf' + vo.id + '" data-comment="root" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                            + '     <button id="commentAddFormBtnOf' + vo.id + '" data-parent="root" data-root="' + vo.id + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
                             + '댓글 쓰기'
                             + '     </button>'
                             + ' </div>'
@@ -168,13 +169,17 @@
                             + '</li>';
                     }
 
-                    console.log('html: ', html);
                     $('#commentList').html(html);
                     $('#commentList li:first').removeClass('border-top');
                     $('#commentTotal').text(xhr.length);
-                    // 초기화
-                    $('#commentErr').html('');
-                    $('#commentAddForm textarea').val('');
+                    // 모든 댓글 작성 폼 초기화
+                    $('.x-field-error').html('');
+                    $('form[id^="commentAddForm"]').find('textarea').val('');
+
+                    // 작성한 글이 대댓글인 경우 대댓글 목록 토글 열기
+                    if (rootCommentId) {
+                        $('#toggleBranchesOf' + rootCommentId).trigger('click');
+                    }
                 },
                 error: function (xhr) {
                     const response = JSON.parse(xhr.responseText);
@@ -183,16 +188,19 @@
                     if (exMessage) {
                         let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
                             + '<span>' + exMessage + '</span>';
-                        $('#commentErr').html(html);
+                        $('.x-field-error').html('');  // 다른 작성 폼의 에러메세지 삭제
+                        $(form).find('.x-field-error').html(html);  // 해당 작성 폼에 에러메세지 표시
                     }
 
                     // 작성 댓글 내용이 empty인 경우 초기화
-                    if ($('#commentAddForm textarea').val().trim() === '') {
-                        $('#commentAddForm textarea').val('');
+                    if ($(form).find('textarea').val().trim() === '') {
+                        $('form[id^="commentAddForm"]').find('textarea').val('');
+                        $(form).find('textarea').val('');
                     }
                 }
             });
         });
+        // 대댓글 목록 토글
         $(document).on('click', 'button[id^="toggleBranchesOf"]', function (e) { // 대댓글 목록 보기 토글
             const button = $(e.currentTarget);
             const areaId = button.attr('id').replace(/^toggleB/, 'b');
@@ -209,17 +217,19 @@
                 button.find('span:last').css('display', 'block');
             }
         });
-        $(document).on('click', 'button[id^="branchAddBtnOf"]', function (e) {  // 댓글의 '댓글 쓰기' 버튼 클릭
+        // 대댓글 작성 폼 보이기/숨기기
+        $(document).on('click', 'button[id^="commentAddFormBtnOf"]', function (e) {
 
             const button = $(e.currentTarget);
 
-            const parentCommentId = button.attr('id').replace(/^branchAddBtnOf/, '');
-            const addAreaId = 'branchAddOf' + parentCommentId;
+            const parentCommentId = button.attr('id').replace(/^commentAddFormBtnOf/, '');
+            const rootCommentId = button.attr('data-root');
+            const addAreaId = 'commentAddBoxOf' + parentCommentId;
 
             if (!document.getElementById(addAreaId)) {  // 작성 폼이 없는 경우
                 // 대댓글 작성 폼 만들기
                 var clone = $('#addBranch').clone();
-                if (button.attr('data-comment') === 'root') {  // 댓글인 경우
+                if (button.attr('data-parent') === 'root') {  // 댓글인 경우
                     $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
                 } else {  // 대댓글인 경우
                     const mentioned = button.attr('data-mentioned');
@@ -227,10 +237,12 @@
                     $(clone).find('div.form-control').prepend('<div class="ps-2"><span class="x-mention rounded-pill">@' + mentioned + '</span></div>');
                 }
                 $(clone).find('> div').attr('id', addAreaId);
-                $(clone).find('form').attr('id', 'branchAddFormOf' + parentCommentId);
-                $(clone).find('form button:first').attr('id', 'branchAddCancelBtnOf' + parentCommentId);
-                $(clone).find('form button:last').attr('id', 'branchAddSubmitBtnOf' + parentCommentId);
+                $(clone).find('form').attr('id', 'commentAddFormOf' + parentCommentId);
+                $(clone).find('form input[name="parentId"]').val(parentCommentId);
+                $(clone).find('form button:first').attr('id', 'commentAddCancelBtnOf' + parentCommentId);
+                $(clone).find('form button:last').attr('id', 'commentAddBtnOf' + parentCommentId).attr('data-root', rootCommentId);
 
+                $('button[id^="commentAddCancelBtnOf"]').trigger('click');
                 $('#commentOf' + parentCommentId).append(clone.html());
                 button.text('댓글 취소');
 
@@ -240,19 +252,20 @@
                     addArea.addClass('d-none');
                     button.text('댓글 쓰기');
                 } else {
+                    $('button[id^="commentAddCancelBtnOf"]').trigger('click');
                     addArea.removeClass('d-none');
                     button.text('댓글 취소');
                 }
             }
         });
-        // 댓글 쓰기 폼의 '취소' 버튼 클릭 -> 폼 숨기기
-        $(document).on('click', 'button[id^="branchAddCancelBtnOf"]', function (e) {
+        // 대댓글 작성 폼 '취소' 버튼 -> 폼 숨기기
+        $(document).on('click', 'button[id^="commentAddCancelBtnOf"]', function (e) {
             const button = $(e.currentTarget);
-            const parentCommentId = button.attr('id').replace(/^branchAddCancelBtnOf/, '');
-            const addArea = $('#branchAddOf' + parentCommentId);
+            const parentCommentId = button.attr('id').replace(/^commentAddCancelBtnOf/, '');
+            const addArea = $('#commentAddBoxOf' + parentCommentId);
             addArea.addClass('d-none');
             button.text('댓글 쓰기');
-            $('#branchAddBtnOf' + parentCommentId).text('댓글 쓰기');
+            $('#commentAddFormBtnOf' + parentCommentId).text('댓글 쓰기');
         });
 
     </script>
@@ -366,7 +379,7 @@
                             </div>
                         </c:if>
                         <div class="mt-3 d-flex justify-content-end">
-                            <div id="commentErr" class="mt-1 me-2 x-field-error"></div>
+                            <div class="mt-1 me-2 x-field-error"></div>
                             <button id="commentAddBtn" class="px-3 py-1 btn btn-primary"
                                     type="button" ${empty loginMember?'disabled':''}>댓글 쓰기
                             </button>
@@ -411,7 +424,7 @@
                                             </button>
                                         </c:if>
                                         <c:if test="${not empty loginMember}">
-                                            <button id="branchAddBtnOf${vo.id}" data-comment="root" type="button"
+                                            <button id="commentAddFormBtnOf${vo.id}" data-parent="root" data-root="${vo.id}" type="button"
                                                     class="px-0 btn x-btn-comment x-text-xs">
                                                 댓글 쓰기
                                             </button>
@@ -460,7 +473,8 @@
                                                         </div>
                                                         <div class="mb-2">
                                                             <c:if test="${not empty loginMember}">
-                                                                <button id="branchAddBtnOf${bvo.id}"
+                                                                <button id="commentAddFormBtnOf${bvo.id}"
+                                                                        data-root="${vo.id}"
                                                                         data-mentioned="${bvo.parentCommentInfo.mentionedName}"
                                                                         type="button"
                                                                         class="px-0 btn x-btn-comment x-text-xs">
@@ -485,32 +499,6 @@
                         </c:forEach>
                     </ul>
                 </div>
-                <%--    대댓글 작성 폼    --%>
-                <c:if test="${!empty loginMember}">
-                    <div id="addBranch" style="display: none">
-                        <div class="d-flex">
-                            <div class="me-3">
-                                <img class="x-comment-profile-img x-border-thin rounded-circle"
-                                     src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
-                                     style="border:1px solid #f8f9fa">
-                            </div>
-                            <form action="/articles/comments" method="post" class="w-100">
-                                <input type="hidden" name="postId" value="${post.id}">
-                                <div class="form-control p-0 pt-2">
-                                    <textarea class="pt-0 border-0 form-control" name="content" placeholder="댓글을 남겨주세요."
-                                              rows="3"></textarea>
-                                </div>
-                                <div class="mt-3 d-flex justify-content-end">
-                                    <div class="mt-1 me-2 x-field-error"></div>
-                                    <button class="me-1 px-3 py-1 btn btn-outline-secondary" type="button">취소</button>
-                                    <button class="px-3 py-1 btn btn-primary"
-                                            type="button">댓글 쓰기
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </c:if>
             </div>
         </div>
 
@@ -557,6 +545,33 @@
             </div>
         </div>
     </div>
+    <%--    대댓글 작성 폼(뼈대)    --%>
+    <c:if test="${!empty loginMember}">
+        <div id="addBranch" style="display: none">
+            <div class="d-flex">
+                <div class="me-3">
+                    <img class="x-comment-profile-img x-border-thin rounded-circle"
+                         src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
+                         style="border:1px solid #f8f9fa">
+                </div>
+                <form method="post" class="w-100">
+                    <input type="hidden" name="postId" value="${post.id}">
+                    <input type="hidden" name="parentId">
+                    <div class="form-control p-0 pt-2">
+                                    <textarea class="pt-0 border-0 form-control" name="content" placeholder="댓글을 남겨주세요."
+                                              rows="3"></textarea>
+                    </div>
+                    <div class="mt-3 d-flex justify-content-end">
+                        <div class="mt-1 me-2 x-field-error"></div>
+                        <button class="me-1 px-3 py-1 btn btn-outline-secondary" type="button">취소</button>
+                        <button class="px-3 py-1 btn btn-primary"
+                                type="button">댓글 쓰기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </c:if>
 </main>
 
 <!-- Bootstrap JS Bundle with Popper -->
