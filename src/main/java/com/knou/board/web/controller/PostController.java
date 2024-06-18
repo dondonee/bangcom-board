@@ -1,12 +1,12 @@
 package com.knou.board.web.controller;
 
+import com.knou.board.domain.comment.Comment;
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.post.*;
 import com.knou.board.service.CommentService;
 import com.knou.board.service.PostService;
 import com.knou.board.web.PageMaker;
 import com.knou.board.web.argumentresolver.Login;
-import com.knou.board.web.dto.CommentListDto;
 import com.knou.board.web.form.PostAddForm;
 import com.knou.board.web.form.PostEditForm;
 import lombok.RequiredArgsConstructor;
@@ -116,9 +116,8 @@ public class PostController {
         model.addAttribute("post", post);
 
         // 댓글 목록 조회
-        CommentListDto commentListDto = commentService.findListByPostId(postId);
-        model.addAttribute("comments", commentListDto.getComments());
-        model.addAttribute("commentTotal", commentListDto.getCommentTotal());
+        List<Comment> comments = commentService.findListByPostId(postId);
+        model.addAttribute("comments", comments);
 
         return "postDetail";
     }

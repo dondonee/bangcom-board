@@ -11,6 +11,7 @@
     <%@ include file="fragment/head.jsp" %>
     <title>Bangcom - ${post.title}</title>
     <script>
+        // 댓글 작성일 경과 계산
         function getElapsedTime(createdTime) {
             const now = new Date();
             const created = new Date(createdTime);
@@ -51,6 +52,200 @@
             return "약 " + years + "년 전";
         }
 
+        // 댓글 쓰기 ajax 요청
+        $(document).on('click', '#commentAddBtn', function () {
+            const form = $('#commentAddForm');
+            const url = form.attr('action');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serializeArray(),
+                success: function (xhr) {  // 댓글 목록 갱신
+                    var html = '';
+
+                    // Root 댓글 목록
+                    for (let i = 0; i < xhr.length; i++) {
+                        const vo = xhr[i];
+                        const branchSize = vo.branchComments.length;
+
+                        let branchBtnHtml = '';
+                        let branchesHtml = '';
+
+                        if (branchSize > 0) {
+                            branchBtnHtml += '<button id="toggleBranchesOf' + vo.id + '" class="ps-0 pe-2 btn x-btn-comments x-text-xs d-flex" type="button">'
+                                + '<span style="display: block"><i class="me-1 bi bi-chevron-down"></i>댓글' + branchSize + '개 보기</span>'
+                                + '<span style="display: none"><i class="me-1 bi bi-chevron-up"></i>댓글 모두 숨기기</span>'
+                                + '</button>';
+
+                            // Branch 댓글 목록
+                            for (let j = 0; j < branchSize; j++) {
+
+                                const bvo = vo.branchComments[j];
+                                const bvoImageName = bvo.writer.imageName || 'temporary.gif';
+                                let mentionedHtml = ''
+                                if (bvo.depthNo > 1) {
+                                    mentionedHtml += '<div>'
+                                        + '<span class="x-mention rounded-pill">@' + bvo.parentCommentInfo.mentionedName + '</span>'
+                                        + '</div>'
+                                }
+
+                                let borderTop = '';
+                                if (j !== 0) {
+                                    borderTop = ' x-border-top-dashed';
+                                }
+
+                                let marginTop = '';
+                                if (bvo.depthNo > 1) {
+                                    marginTop = 'mt-0';
+                                } else {
+                                    marginTop = 'mt-2';
+                                }
+
+                                branchesHtml += '<li class="py-3' + borderTop + '">'
+                                    + '<div id="commentOf' + bvo.id + '">'
+                                    + ' <div class="d-flex">'
+                                    + '    <div class="me-2">'
+                                    + '        <a href=""><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
+                                    + '    </div>'
+                                    + '     <div class="d-flex flex-column my-auto">'
+                                    + '         <a class="x-text-sm" href="">' + bvo.writer.nickname + '</a>'
+                                    + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                                    + '             <span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
+                                    + '             <span>·</span>'
+                                    + '             <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
+                                    + '         </div>'
+                                    + '     </div>'
+                                    + ' </div>'
+                                    + mentionedHtml // 대댓글의 댓글인 경우 '@닉네임' 표시
+                                    + ' <div class="' + marginTop + ' mb-2 x-text-sm x-text-gray-800">'
+                                    + bvo.content
+                                    + ' </div>'
+                                    + ' <div class="mb-2">'
+                                    + ' <button id="branchAddBtnOf' + bvo.id + '" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                                    + '댓글 쓰기'
+                                    + ' </button>'
+                                    + ' </div>'
+                                    + '</div>'
+                                    + '</li>'
+                            }
+                        }
+
+                        const imageName = vo.writer.imageName || 'temporary.gif';
+                        html += '<li class="py-3 border-top text-decoration-none">'
+                            // Root 댓글
+                            + '<div id="commentOf' + vo.id + '">'
+                            + ' <div class="d-flex">'
+                            + '     <div class="me-2">'
+                            + '        <a href=""><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
+                            + '     </div>'
+                            + '     <div class="d-flex flex-column my-auto">'
+                            + '         <a class="x-text-sm" href="">' + vo.writer.nickname + '</a>'
+                            + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                            + '             <span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
+                            + '             <span>·</span>'
+                            + '             <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
+                            + '         </div>'
+                            + '     </div>'
+                            + ' </div>'
+                            + ' <div class="my-2 x-text-sm x-text-gray-800">'
+                            + vo.content
+                            + ' </div>'
+                            + ' <div class="mb-2 d-flex">'
+                            + branchBtnHtml
+                            + '     <button id="branchAddBtnOf' + vo.id + '" data-comment="root" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                            + '댓글 쓰기'
+                            + '     </button>'
+                            + ' </div>'
+                            + '</div>'
+                            // Branch 댓글
+                            + '<div id="branchesOf' + vo.id + '" style="display:none;">'
+                            + ' <div>'
+                            + ' <ul class="ms-2 ps-3 list-unstyled" style="border-left: 2px solid #dee2e6">'
+                            + branchesHtml  // Branch 댓글 목록
+                            + ' </ul>'
+                            + ' </div>'
+                            + '</div>'
+                            + '</li>';
+                    }
+
+                    console.log('html: ', html);
+                    $('#commentList').html(html);
+                    $('#commentList li:first').removeClass('border-top');
+                    $('#commentTotal').text(xhr.length);
+                    // 초기화
+                    $('#commentErr').html('');
+                    $('#commentAddForm textarea').val('');
+                },
+                error: function (xhr) {
+                    const response = JSON.parse(xhr.responseText);
+                    const exMessage = response.exMessage;
+
+                    if (exMessage) {
+                        let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
+                            + '<span>' + exMessage + '</span>';
+                        $('#commentErr').html(html);
+                    }
+
+                    // 작성 댓글 내용이 empty인 경우 초기화
+                    if ($('#commentAddForm textarea').val().trim() === '') {
+                        $('#commentAddForm textarea').val('');
+                    }
+                }
+            });
+        });
+        $(document).on('click', 'button[id^="toggleBranchesOf"]', function (e) { // 대댓글 목록 보기 토글
+            const button = $(e.currentTarget);
+            const areaId = button.attr('id').replace(/^toggleB/, 'b');
+            const area = $('#' + areaId);
+            const areaDisplay = area.css('display');
+
+            if (areaDisplay == 'block') {
+                area.css('display', 'none');
+                button.find('span:first').css('display', 'block');
+                button.find('span:last').css('display', 'none');
+            } else {
+                area.css('display', 'block');
+                button.find('span:first').css('display', 'none');
+                button.find('span:last').css('display', 'block');
+            }
+        });
+        $(document).on('click', 'button[id^="branchAddBtnOf"]', function (e) {  // 댓글의 '댓글 쓰기' 버튼 클릭
+
+            const button = $(e.currentTarget);
+
+            const parentCommentId = button.attr('id').replace(/^branchAddBtnOf/, '');
+            const addAreaId = 'branchAddOf' + parentCommentId;
+
+            if (!document.getElementById(addAreaId)) {  // 작성 폼이 없는 경우
+                // 대댓글 작성 폼 만들기
+                var clone = $('#addBranch').clone();
+                if (button.attr('data-comment') === 'root') {  // 댓글인 경우
+                    $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
+                } else {  // 대댓글인 경우
+                    const mentioned = button.attr('data-mentioned');
+                    $(clone).find('> div').css('border-left', '')
+                    $(clone).find('div.form-control').prepend('<div class="ps-2"><span class="x-mention rounded-pill">@' + mentioned + '</span></div>');
+                }
+                $(clone).find('> div').attr('id', addAreaId);
+                $(clone).find('form').attr('id', 'branchAddFormOf' + parentCommentId);
+                $(clone).find('form button:first').attr('id', 'branchAddCancelBtnOf' + parentCommentId);
+                $(clone).find('form button:last').attr('id', 'branchAddSubmitBtnOf' + parentCommentId);
+
+                $('#commentOf' + parentCommentId).append(clone.html());
+                button.text('댓글 취소');
+
+            } else {  // 작성 폼이 생성되어 있는 경우
+                const addArea = $('#' + addAreaId);
+                if (addArea.is(':visible')) {
+                    addArea.addClass('d-none');
+                    button.text('댓글 쓰기');
+                } else {
+                    addArea.removeClass('d-none');
+                    button.text('댓글 취소');
+                }
+            }
+        });
+        // 댓글 쓰기 폼의 '취소' 버튼 클릭 -> 폼 숨기기
         $(document).on('click', 'button[id^="branchAddCancelBtnOf"]', function (e) {
             const button = $(e.currentTarget);
             const parentCommentId = button.attr('id').replace(/^branchAddCancelBtnOf/, '');
@@ -60,121 +255,6 @@
             $('#branchAddBtnOf' + parentCommentId).text('댓글 쓰기');
         });
 
-
-        $(document).ready(function () {
-            $('#commentAddBtn').click(function () {
-                const form = $('#commentAddForm');
-                const url = form.attr('action');
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: form.serializeArray(),
-                    success: function (xhr) {
-                        var html = '';
-                        for (let i = 0; i < xhr.comments.length; i++) {
-                            let imageName = xhr.comments[i].writer.imageName || 'temporary.gif';
-                            html += '<li class="py-3 border-top text-decoration-none">'
-                                + '<div>'
-                                + '<div class="d-flex">'
-                                + ' <div class="me-2">'
-                                + '     <a href=""><img src="/images/profile/' + imageName + ' class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
-                                + ' </div>'
-                                + ' <div class="d-flex flex-column my-auto">'
-                                + '     <a class="x-text-sm" href="">' + xhr.comments[i].writer.nickname + '</a>'
-                                + '     <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                                + '     <span>' + xhr.comments[i].writer.grade + ' / ' + xhr.comments[i].writer.region + '</span>'
-                                + '     <span>·</span>'
-                                + '     <span class="">' + getElapsedTime(xhr.comments[i].createdDate) + '</span>'
-                                + ' </div>'
-                                + '</div>'
-                                + '<div class="my-2 x-text-sm x-text-gray-800">'
-                                + xhr.comments[i].content
-                                + '</div>'
-                                + '</div>'
-                                + '</li>';
-                        }
-
-                        $('#commentList').html(html);
-                        $('#commentList li:first').removeClass('border-top');
-                        $('#commentTotal').text(xhr.commentTotal);
-                        // 초기화
-                        $('#commentErr').html('');
-                        $('#commentAddForm textarea').val('');
-                    },
-                    error: function (xhr) {
-                        const response = JSON.parse(xhr.responseText);
-                        const exMessage = response.exMessage;
-
-                        if (exMessage) {
-                            let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
-                                + '<span>' + exMessage + '</span>';
-                            $('#commentErr').html(html);
-                        }
-
-                        // 작성 댓글 내용이 empty인 경우 초기화
-                        if ($('#commentAddForm textarea').val().trim() == '') {
-                            $('#commentAddForm textarea').val('');
-                        }
-                    }
-                });
-            });
-            $('button[id^="toggleBranchesOf"]').click(function (e) {
-                const button = $(e.currentTarget);
-                const areaId = button.attr('id').replace(/^toggleB/, 'b');
-                const area = $('#' + areaId);
-                const areaDisplay = area.css('display');
-
-                if (areaDisplay == 'block') {
-                    area.css('display', 'none');
-                    button.find('span:first').css('display', 'block');
-                    button.find('span:last').css('display', 'none');
-                } else {
-                    area.css('display', 'block');
-                    button.find('span:first').css('display', 'none');
-                    button.find('span:last').css('display', 'block');
-                }
-            });
-            $('button[id^="branchAddBtnOf"]').click(function (e) {
-
-                const button = $(e.currentTarget);
-
-                if (button.attr('data-login') === 'false') {
-
-                }
-
-                const parentCommentId = button.attr('id').replace(/^branchAddBtnOf/, '');
-                const addAreaId = 'branchAddOf' + parentCommentId;
-
-                if (!document.getElementById(addAreaId)) {  // 작성 폼이 없는 경우
-                    // 대댓글 작성 폼 만들기
-                    var clone = $('#addBranch').clone();
-                    if (button.attr('data-comment') === 'root') {  // 댓글인 경우
-                        $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
-                    } else {  // 대댓글인 경우
-                        const mentioned = button.attr('data-mentioned');
-                        $(clone).find('> div').css('border-left', '')
-                        $(clone).find('div.form-control').prepend('<div class="ps-2"><span class="x-mention rounded-pill">@' + mentioned + '</span></div>');
-                    }
-                    $(clone).find('> div').attr('id', addAreaId);
-                    $(clone).find('form').attr('id', 'branchAddFormOf' + parentCommentId);
-                    $(clone).find('form button:first').attr('id', 'branchAddCancelBtnOf' + parentCommentId);
-                    $(clone).find('form button:last').attr('id', 'branchAddSubmitBtnOf' + parentCommentId);
-
-                    $('#commentOf' + parentCommentId).append(clone.html());
-                    button.text('댓글 취소');
-
-                } else {  // 작성 폼이 생성되어 있는 경우
-                    const addArea = $('#' + addAreaId);
-                    if (addArea.is(':visible')) {
-                        addArea.addClass('d-none');
-                        button.text('댓글 쓰기');
-                    } else {
-                        addArea.removeClass('d-none');
-                        button.text('댓글 취소');
-                    }
-                }
-            });
-        });
     </script>
 </head>
 <body>
@@ -264,7 +344,7 @@
             <%--    댓글 영역    --%>
             <div class="mt-3">
                 <div>
-                    <span id="commentTotal">${commentTotal}</span>개의 댓글
+                    <span id="commentTotal">${comments.size()}</span>개의 댓글
                 </div>
                 <%--    댓글 작성 폼    --%>
                 <div class="mt-4 mb-5 p-3 d-flex border rounded">
@@ -322,7 +402,7 @@
                                     </div>
                                     <div class="mb-2 d-flex">
                                         <c:if test="${vo.branchComments.size() > 0}">
-                                            <button id="toggleBranchesOf${vo.groupNo}"
+                                            <button id="toggleBranchesOf${vo.id}"
                                                     class="ps-0 pe-2 btn x-btn-comments x-text-xs d-flex"
                                                     type="button">
                                                 <span style="display: block"><i
@@ -346,7 +426,7 @@
                                     </div>
                                 </div>
                                     <%--    Branch 댓글    --%>
-                                <div id="branchesOf${vo.groupNo}" style="display:none;">
+                                <div id="branchesOf${vo.id}" style="display:none;">
                                     <div>
                                         <ul class="ms-2 ps-3 list-unstyled" style="border-left: 2px solid #dee2e6">
                                             <c:forEach var="bvo" varStatus="status" items="${vo.branchComments}">
@@ -380,12 +460,12 @@
                                                         </div>
                                                         <div class="mb-2">
                                                             <c:if test="${not empty loginMember}">
-                                                            <button id="branchAddBtnOf${bvo.id}"
-                                                                    data-mentioned="${bvo.parentCommentInfo.mentionedName}"
-                                                                    type="button"
-                                                                    class="px-0 btn x-btn-comment x-text-xs">
-                                                                댓글 쓰기
-                                                            </button>
+                                                                <button id="branchAddBtnOf${bvo.id}"
+                                                                        data-mentioned="${bvo.parentCommentInfo.mentionedName}"
+                                                                        type="button"
+                                                                        class="px-0 btn x-btn-comment x-text-xs">
+                                                                    댓글 쓰기
+                                                                </button>
                                                             </c:if>
                                                             <c:if test="${empty loginMember}">
                                                                 <button type="button" data-bs-toggle="modal"

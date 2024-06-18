@@ -3,12 +3,12 @@ package com.knou.board.service;
 import com.knou.board.domain.comment.Comment;
 import com.knou.board.domain.comment.ParentCommentInfo;
 import com.knou.board.repository.CommentRepository;
-import com.knou.board.web.dto.CommentListDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -40,10 +40,7 @@ public class CommentService {
         return comment.getId();
     }
 
-    public CommentListDto findListByPostId(long postId) {
-        CommentListDto result = new CommentListDto();
-        result.setComments(commentRepository.selectByPostId(postId));
-        result.setCommentTotal(commentRepository.countTotalSelectedByPostId(postId));
-        return result;
+    public List<Comment> findListByPostId(long postId) {
+        return commentRepository.selectByPostId(postId);
     }
 }

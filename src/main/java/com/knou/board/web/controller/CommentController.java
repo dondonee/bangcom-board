@@ -7,7 +7,6 @@ import com.knou.board.exception.ErrorResult;
 import com.knou.board.service.CommentService;
 import com.knou.board.service.PostService;
 import com.knou.board.web.argumentresolver.Login;
-import com.knou.board.web.dto.CommentListDto;
 import com.knou.board.web.form.CommentAddForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -63,8 +63,8 @@ public class CommentController {
         }
         commentService.createComment(comment);
 
-        CommentListDto findComments = commentService.findListByPostId(postId);
-        return new ResponseEntity<>(findComments, HttpStatus.OK);  // 댓글 목록 반환
+        List<Comment> comments = commentService.findListByPostId(postId);
+        return new ResponseEntity<>(comments, HttpStatus.OK);  // 댓글 목록 반환
     }
 
     @GetMapping("/articles/{postId}/comments")
@@ -76,7 +76,7 @@ public class CommentController {
             return new ResponseEntity<>(errorResult, BAD_REQUEST);
         }
 
-        CommentListDto comments = commentService.findListByPostId(postId);  // 댓글 목록 및 개수 반환
+        List<Comment> comments = commentService.findListByPostId(postId);// 댓글 목록 및 개수 반환
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 }
