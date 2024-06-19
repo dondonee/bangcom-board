@@ -163,10 +163,10 @@
         WHERE comment_id = #{id}
     </select>
 
-    <select id="countTotalSelectedByPostId" resultType="long">
+    <select id="countChildrenById">
         SELECT count(*)
         FROM post_comment
-        WHERE post_comment.post_id = #{postId}
+        WHERE parent_id = #{id}
     </select>
 
     <update id="updateOrderNo">
@@ -176,4 +176,9 @@
           AND comment_id != #{id}
           AND order_no >= #{orderNo}
     </update>
+
+    <delete id="delete">
+        DELETE FROM post_comment
+        WHERE comment_id = #{id}
+    </delete>
 </mapper>

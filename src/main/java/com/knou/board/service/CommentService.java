@@ -40,7 +40,20 @@ public class CommentService {
         return comment.getId();
     }
 
+    public Comment findComment (long commentId) {
+        return commentRepository.selectById(commentId);
+    }
+
     public List<Comment> findListByPostId(long postId) {
         return commentRepository.selectByPostId(postId);
+    }
+
+    public int deleteComment (long commentId) {
+        // 자식 댓글이 있는지 확인
+        int children = commentRepository.countChildrenById(commentId);
+        if (children > 0) {
+            return 0;  // 삭제 불가
+        }
+        return commentRepository.delete(commentId);
     }
 }

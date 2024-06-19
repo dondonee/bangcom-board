@@ -11,6 +11,7 @@ public interface CommentRepository {
     Comment selectById(Long id);
     List<Comment> selectByPostId(Long postId);
     ParentCommentInfo selectParentInfoById(Long id);
-    long countTotalSelectedByPostId(Long postId);
+    int countChildrenById(Long id);
     void updateOrderNo(Comment comment);
+    int delete(Long id);
 }

@@ -36,12 +36,17 @@ public class MyBatisCommentRepository implements CommentRepository {
     }
 
     @Override
-    public long countTotalSelectedByPostId(Long postId) {
-        return commentMapper.countTotalSelectedByPostId(postId);
+    public void updateOrderNo(Comment comment) {
+        commentMapper.updateOrderNo(comment);
     }
 
     @Override
-    public void updateOrderNo(Comment comment) {
-        commentMapper.updateOrderNo(comment);
+    public int countChildrenById(Long id) {
+        return commentMapper.countChildrenById(id);
+    }
+
+    @Override
+    public int delete(Long id) {
+        return commentMapper.delete(id);
     }
 }
