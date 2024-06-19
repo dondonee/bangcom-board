@@ -169,6 +169,13 @@
         WHERE parent_id = #{id}
     </select>
 
+    <update id="update">
+        UPDATE post_comment
+        SET content = #{content},
+            modified_date = #{modifiedDate}
+        WHERE comment_id = #{id}
+    </update>
+
     <update id="updateOrderNo">
         UPDATE post_comment
         SET order_no = order_no + 1

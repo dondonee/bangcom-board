@@ -14,6 +14,7 @@ public interface CommentMapper {
     List<Comment> selectByPostId(Long postId);
     ParentCommentInfo selectParentInfoById(Long id);
     int countChildrenById(Long id);
+    int update(Comment comment);
     void updateOrderNo(Comment comment);
     int delete(Long id);
 }

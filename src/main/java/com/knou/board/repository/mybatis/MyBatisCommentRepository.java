@@ -36,6 +36,11 @@ public class MyBatisCommentRepository implements CommentRepository {
     }
 
     @Override
+    public int update(Comment comment) {
+        return commentMapper.update(comment);
+    }
+
+    @Override
     public void updateOrderNo(Comment comment) {
         commentMapper.updateOrderNo(comment);
     }

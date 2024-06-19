@@ -86,6 +86,42 @@ public class CommentController {
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
+    @PutMapping("/articles/comments/{commentId}")
+    public ResponseEntity editComment(@PathVariable long commentId, @ModelAttribute("content") String content, @Login Member loginMember) {
+
+        // 존재하는 댓글인지 확인
+        Comment comment = commentService.findComment(commentId);
+        if (comment == null) {
+            ErrorResult errorResult = new ErrorResult("BAD_REQUEST", "존재하지 않는 댓글입니다.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        // 작성자 여부 체크
+        if (loginMember == null || loginMember.getUserNo() != comment.getWriter().getUserNo()) {
+            ErrorResult errorResult = new ErrorResult("UNAUTHORIZED", "작성자만 댓글을 수정할 수 있습니다.");
+            return new ResponseEntity<>(errorResult, HttpStatus.UNAUTHORIZED);
+        }
+
+        // 댓글 유효성 검증
+        if (content == null || content.isBlank()) {
+            ErrorResult errorResult = new ErrorResult("BAD_REQUEST", "내용을 최소 1자 이상 입력해주세요.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        } else if (content.length() > 2000) {
+            ErrorResult errorResult = new ErrorResult("BAD_REQUEST", "댓글은 2000자 이하로 입력해주세요.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        // 검증 성공 => 댓글 삭제
+        comment.setContent(content);
+        commentService.editComment(comment);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        List<Comment> comments = commentService.findListByPostId(comment.getPostId());
+        resultMap.put("comments", comments);
+        resultMap.put("loginMember", loginMember);
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    }
+
     @DeleteMapping("/articles/comments/{commentId}")
     public ResponseEntity deleteComment(@PathVariable long commentId, @Login Member loginMember) {
 
@@ -102,7 +138,6 @@ public class CommentController {
             return new ResponseEntity<>(errorResult, HttpStatus.UNAUTHORIZED);
         }
 
-        log.info("delete 유효성 검사 통과", commentId);
         // 검증 성공 => 댓글 삭제
         int result = commentService.deleteComment(commentId);
         if (result == 0) {  // 삭제 실패
