@@ -57,12 +57,12 @@
             var html = '';
             const loginMember = xhr.loginMember;
 
-            // Root 댓글 영역
+            // Root 반복문
             for (let i = 0; i < xhr.comments.length; i++) {
                 const vo = xhr.comments[i];
                 const branchSize = vo.branchComments.length;
 
-                // Branch 댓글 영역
+                // Branch 댓글 영역 생성
                 let branchBtnHtml = '';
                 let branchesHtml = '';
 
@@ -73,7 +73,7 @@
                         + '<span style="display: none"><i class="me-1 bi bi-chevron-up"></i>댓글 모두 숨기기</span>'
                         + '</button>';
 
-                    // Branch 댓글 목록
+                    // Branch 반복문
                     for (let j = 0; j < branchSize; j++) {
 
                         const bvo = vo.branchComments[j];
@@ -97,14 +97,14 @@
                             }
 
                             branchEditBtnHtml += '<div class="dropdown d-flex align-items-center">'
-                                + '<button class="dropdown-toggle" style="background: none; border: none;" type="button" id="dropdownMenuButtonOf'+ bvo.id +'" data-bs-toggle="dropdown" aria-expanded="false">'
+                                + '<button class="dropdown-toggle" style="background: none; border: none;" type="button" id="dropdownMenuButtonOf' + bvo.id + '" data-bs-toggle="dropdown" aria-expanded="false">'
                                 + ' <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#6c757d" class="bi bi-three-dots x-text-gray-700" viewBox="0 0 16 16">'
                                 + '     <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>'
                                 + ' </svg>'
                                 + '</button>'
-                                + '<ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700" aria-labelledby="dropdownMenuButton'+ bvo.id +'">'
-                                + ' <li><button id="commentEditFormBtnOf'+ bvo.id +'" '+ branchDataAttr +' type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
-                                + ' <li><button id="commentDeleteBtnOf'+ bvo.id +'" data-root="'+ vo.id +'" type="button" class="dropdown-item"><i class="me-1 bi bi-trash3"></i>삭제하기</a></button></li>'
+                                + '<ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700" aria-labelledby="dropdownMenuButton' + bvo.id + '">'
+                                + ' <li><button id="commentEditFormBtnOf' + bvo.id + '" data-root="'+ vo.id +'" ' + branchDataAttr + ' type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
+                                + ' <li><button id="commentDeleteBtnOf' + bvo.id + '" data-root="' + vo.id + '" type="button" class="dropdown-item"><i class="me-1 bi bi-trash3"></i>삭제하기</a></button></li>'
                                 + '</ul>'
                                 + '</div>';
                         }
@@ -123,8 +123,9 @@
 
                         branchesHtml += '<li class="py-3' + borderTop + '">'
                             + '<div id="commentOf' + bvo.id + '">'
+                            // 작성자 정보 및 부가 메뉴
                             + ' <div class="d-flex justify-content-between">'
-                            + '     <div class="d-flex">'  // 작성자 정보
+                            + '     <div class="d-flex">'
                             + '         <div class="me-2">'
                             + '         <a href=""><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
                             + '     </div>'
@@ -141,7 +142,8 @@
                             + '</div>'
                             + ' <div class="' + marginTop + ' mb-2 x-text-sm x-text-gray-800">'
                             + mentionedHtml // 대댓글의 댓글인 경우 '@닉네임' 표시
-                            + bvo.content
+                            + '     <div id="contentOf'+ bvo.id +'"  style="white-space: pre">'
+                            + '     </div>'
                             + ' </div>'
                             + ' <div class="mb-2">'
                             + ' <button id="commentAddFormBtnOf' + bvo.id + '" data-root="' + vo.id + '" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
@@ -163,14 +165,16 @@
                         + ' </svg>'
                         + '</button>'
                         + '<ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700" aria-labelledby="dropdownMenuButton' + vo.id + '">'
-                        + ' <li><button id="commentEditFormBtnOf'+ vo.id +'" data-comment="root" type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
+                        + ' <li><button id="commentEditFormBtnOf' + vo.id + '" data-comment="root" type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
                         + ' <li><button id="commentDeleteBtnOf' + vo.id + '" type="button" class="dropdown-item"><i class="me-1 bi bi-trash3"></i>삭제하기</a></button></li>'
                         + '</ul>'
                         + '</div>';
                 }
+
+                // Root 댓글 영역
                 html += '<li class="py-3 border-top text-decoration-none">'
-                    // Root 댓글
                     + '<div id="commentOf' + vo.id + '">'
+                    // 작성자 정보 및 부가 메뉴
                     + ' <div class="d-flex justify-content-between">'
                     + '     <div class="d-flex">'
                     + '         <div class="me-2">'
@@ -188,7 +192,8 @@
                     + editBtnHtml
                     + ' </div>'
                     + ' <div class="my-2 x-text-sm x-text-gray-800">'
-                    + vo.content
+                    + '     <div id="contentOf'+ vo.id +'"  style="white-space: pre">'
+                    + '     </div>'
                     + ' </div>'
                     + ' <div class="mb-2 d-flex">'
                     + branchBtnHtml
@@ -210,11 +215,29 @@
 
             return html;
         }
+        function putContentsIntoHTML(xhr){
+            for (let i = 0; i < xhr.comments.length; i++) {
+                const vo = xhr.comments[i];
+                $('#contentOf' + vo.id).text(vo.content);
+                if (vo.branchComments.length > 0) {
+                    for (let j = 0; j < vo.branchComments.length; j++) {
+                        const bvo = vo.branchComments[j];
+                        $('#contentOf' + bvo.id).text(bvo.content);
+                    }
+                }
+            }
+        }
 
         $(document).ready(function () {
             // 부트스트랩 모달 등록
+            var postDeleteModal = new bootstrap.Modal(document.getElementById('postDeleteModal'));
             var commentDeleteModal = new bootstrap.Modal(document.getElementById('commentDeleteModal'));
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'), {backdrop: 'static'});
+
+            // 게시글 삭제 버튼 -> 확인 모달
+            $(document).on('click', '#postDeleteBtn', function (e) {
+                postDeleteModal.show();
+            });
 
             // 대댓글 목록 토글
             $(document).on('click', 'button[id^="toggleBranchesOf"]', function (e) { // 대댓글 목록 보기 토글
@@ -298,11 +321,14 @@
                     data: $(form).serializeArray(),
                     success: function (xhr) {  // 댓글 목록 갱신
 
+                        // 댓글 목록 HTML
                         const html = makeCommentsHTML(xhr);
-
                         $('#commentList').html(html);
                         $('#commentList li:first').removeClass('border-top');
                         $('#commentTotal').text(xhr.comments.length);
+                        // content 내용 초기화
+                        putContentsIntoHTML(xhr);
+
                         // 모든 댓글 작성 폼 초기화
                         $('.x-field-error').html('');
                         $(form).find('textarea').val('');
@@ -313,7 +339,7 @@
                         }
                     },
                     error: function (xhr) {
-                        const errorCode = parseInt(xhr.status/100);
+                        const errorCode = parseInt(xhr.status / 100);
 
                         // 클라이언트 오류는 등록 폼에 오류메세지 표시
                         if (errorCode === 4) {
@@ -348,10 +374,10 @@
                 const button = $(e.currentTarget);
 
                 const commentId = button.attr('id').replace(/^commentEditFormBtnOf/, '');
-                let writerDiv = $('#commentOf' + commentId).find('> div:nth-child(1)');
+                const rootCommentId = button.attr('data-root');
+                let writerDiv = $('#commentOf' + commentId).find('> div:first');
                 let contentDiv = $('#commentOf' + commentId).find('> div:nth-child(2)');
-                const content = contentDiv.text().trim();
-                console.log('content: ' + content);
+                const content = $('#contentOf' + commentId).text();
                 const editBoxId = 'commentEditBoxOf' + commentId;
 
                 if (!document.getElementById(editBoxId)) {  // 작성 폼이 없는 경우
@@ -371,6 +397,9 @@
                     $(clone).find('button[data-role="cancel"]').attr('id', 'commentEditCancelBtnOf' + commentId);
                     $(clone).find('button[data-role="submit"]').attr('id', 'commentEditBtnOf' + commentId);
                     $(clone).find('button[data-role="submit"]').text('수정하기');
+                    if (button.attr('data-comment') !== 'root') {
+                        $(clone).find('button[data-role="submit"]').attr('data-root', rootCommentId);
+                    }
 
                     // 다른 수정, 작성 폼 닫기
                     $('button[id^="commentEditCancelBtnOf"]').trigger('click');
@@ -412,8 +441,6 @@
             // 댓글 수정 ajax 요청
             $(document).on('click', 'button[id^="commentEditBtnOf"]', function (e) {
 
-                console.log('edit button clicked')
-
                 const button = $(e.currentTarget);
                 const form = e.currentTarget.closest('form');
                 const commentId = button.attr('id').replace(/^commentEditBtnOf/, '');
@@ -425,11 +452,14 @@
                     data: $(form).serializeArray(),
                     success: function (xhr) {  // 댓글 목록 갱신
 
+                        // 댓글 목록 HTML
                         const html = makeCommentsHTML(xhr);
-
                         $('#commentList').html(html);
                         $('#commentList li:first').removeClass('border-top');
                         $('#commentTotal').text(xhr.length);
+                        // content 내용 초기화
+                        putContentsIntoHTML(xhr);
+
                         // 모든 댓글 작성 폼 초기화
                         $('.x-field-error').html('');
                         $(form).find('textarea').val('');
@@ -440,7 +470,7 @@
                         }
                     },
                     error: function (xhr) {
-                        const errorCode = parseInt(xhr.status/100);
+                        const errorCode = parseInt(xhr.status / 100);
 
                         // 클라이언트 오류는 수정 폼에 오류메세지 표시
                         if (errorCode === 4) {
@@ -494,14 +524,16 @@
                     url: '/articles/comments/' + commentId,
                     type: 'DELETE',
                     success: function (xhr) {
-                        // 댓글 리스트 갱신
-                        const html = makeCommentsHTML(xhr);
-
+                        // 기존 모달 닫기
                         commentDeleteModal.hide();
 
+                        // 댓글 리스트 갱신
+                        const html = makeCommentsHTML(xhr);
                         $('#commentList').html(html);
                         $('#commentList li:first').removeClass('border-top');
                         $('#commentTotal').text(xhr.comments.length);
+                        // content 내용 초기화
+                        putContentsIntoHTML(xhr);
 
                         //작성한 글이 대댓글인 경우 대댓글 목록 토글 열기
                         if (rootCommentId) {
@@ -510,7 +542,7 @@
 
                     },
                     error: function (xhr) {
-                        const errorCode = parseInt(xhr.status/100);
+                        const errorCode = parseInt(xhr.status / 100);
 
                         // 클라이언트 오류 -> 안내 오류메세지 표시
                         if (errorCode === 4) {
@@ -606,8 +638,7 @@
                             <li><a class="dropdown-item" href="/articles/${post.id}/edit"><i
                                     class="me-1 bi bi-pencil-square"></i>수정하기</a></li>
                             <li>
-                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal">
+                                <button id="postDeleteBtn" type="button" class="dropdown-item">
                                     <i class="me-1 bi bi-trash3"></i>삭제하기</a>
                                 </button>
                             </li>
@@ -712,7 +743,7 @@
                                         </c:if>
                                     </div>
                                     <div class="my-2 x-text-sm x-text-gray-800">
-                                        <c:out value="${vo.content}"></c:out>
+                                        <div id="contentOf${vo.id}" style="white-space: pre"><c:out value="${vo.content}"></c:out></div>
                                     </div>
                                     <div class="mb-2 d-flex">
                                         <c:if test="${vo.branchComments.size() > 0}">
@@ -788,6 +819,7 @@
                                                                         <li>
                                                                             <button id="commentEditFormBtnOf${bvo.id}"
                                                                                     data-comment="${bvo.depthNo > 1? 'branch2': 'branch'}"
+                                                                                    data-root="${vo.id}"
                                                                                     data-mentioned="${bvo.parentCommentInfo.mentionedName}"
                                                                                     class="dropdown-item" href="#"><i
                                                                                     class="me-1 bi bi-pencil-square"></i>수정하기
@@ -810,7 +842,7 @@
                                                                     <span class="x-mention rounded-pill">@${bvo.parentCommentInfo.mentionedName}</span>
                                                                 </div>
                                                             </c:if>
-                                                            <c:out value="${bvo.content}"></c:out>
+                                                            <div id="contentOf${bvo.id}" style="white-space: pre"><c:out value="${bvo.content}"></c:out></div>
                                                         </div>
                                                         <div class="mb-2">
                                                             <c:if test="${not empty loginMember}">
@@ -848,11 +880,11 @@
     </div>
 
     <%--    모달 (게시글 삭제 확인)   --%>
-    <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="postDeleteModal" tabindex="-1" aria-labelledby="postDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title x-font-medium" id="exampleModalLabel">게시글 삭제</h5>
+                    <h5 class="modal-title x-font-medium" id="postDeleteModalLabel">게시글 삭제</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body x-text-sm x-text-gray-700">
