@@ -1,5 +1,8 @@
 package com.knou.board.web;
 
+import com.knou.board.domain.post.Topic;
+import com.knou.board.domain.post.TopicGroup;
+
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 
@@ -44,5 +47,10 @@ public class JspFunction {
         }
 
         return "약 " + years + "년 전";
+    }
+    public String getTopicListUrl(String topicName) {
+        Topic topic = Topic.valueOf(topicName);
+        TopicGroup topicGroup = TopicGroup.findGroup(topic);
+        return topicGroup.getUri() + '/' + topic.getUri();
     }
 }

@@ -78,19 +78,15 @@
                         <li class="py-3 border-top text-decoration-none">
                             <div class="x-text-sm">
                                 <span>
-                                    <c:if test="${not empty vo.author.imageName}">
-                                        <img src="/images/profile/${vo.author.imageName}"
+                                    <a href="/members/${vo.author.userNo}">
+                                        <img src="/images/profile/${not empty vo.author.imageName? vo.author.imageName: 'temporary.gif'}"
                                              style="width: 20px; height: 20px"
                                              alt="프로필사진">
-                                    </c:if>
-                                    <c:if test="${empty vo.author.imageName}">
-                                        <img src="/images/profile/temporary.gif" style="width: 20px; height: 20px"
-                                             alt="프로필사진">
-                                    </c:if>
+                                        </a>
                                 </span>
                                 <span>
                                     <a class="x-text-gray-600"
-                                       href="#">${vo.author.nickname} / ${vo.author.grade.description} / ${vo.author.region.description}</a>
+                                       href="/members/${vo.author.userNo}">${vo.author.nickname} / ${vo.author.grade.description} / ${vo.author.region.description}</a>
                                 </span>
                                 <span class="x-text-gray-600">·</span>
                                 <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
@@ -115,7 +111,8 @@
                         <c:if test="${pageMaker.prevButton}">
                             <li class="page-item">
                                 <a class="x-text-sm page-link x-page-link"
-                                   href="${cpath}?page=${pageMaker.startPageButton - 1}" aria-label="Previous">
+                                   href="${cpath}?<c:if test="${!empty param.sort}">sort=${param.sort}&</c:if>page=${pageMaker.startPageButton - 1}"
+                                   aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -130,7 +127,8 @@
                         <c:if test="${pageMaker.nextButton}">
                             <li class="page-item">
                                 <a class="x-text-sm page-link x-page-link"
-                                   href="${cpath}?page=${pageMaker.endPageButton + 1}" aria-label="Next">
+                                   href="${cpath}?<c:if test="${!empty param.sort}">sort=${param.sort}&</c:if>page=${pageMaker.endPageButton + 1}"
+                                   aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>

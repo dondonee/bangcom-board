@@ -103,7 +103,7 @@
                                 + ' </svg>'
                                 + '</button>'
                                 + '<ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700" aria-labelledby="dropdownMenuButton' + bvo.id + '">'
-                                + ' <li><button id="commentEditFormBtnOf' + bvo.id + '" data-root="'+ vo.id +'" ' + branchDataAttr + ' type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
+                                + ' <li><button id="commentEditFormBtnOf' + bvo.id + '" data-root="' + vo.id + '" ' + branchDataAttr + ' type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
                                 + ' <li><button id="commentDeleteBtnOf' + bvo.id + '" data-root="' + vo.id + '" type="button" class="dropdown-item"><i class="me-1 bi bi-trash3"></i>삭제하기</a></button></li>'
                                 + '</ul>'
                                 + '</div>';
@@ -127,10 +127,10 @@
                             + ' <div class="d-flex justify-content-between">'
                             + '     <div class="d-flex">'
                             + '         <div class="me-2">'
-                            + '         <a href=""><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
+                            + '         <a href="/members/'+ bvo.writer.userNo +'"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
                             + '     </div>'
                             + '     <div class="d-flex flex-column my-auto">'
-                            + '         <a class="x-text-sm" href="">' + bvo.writer.nickname + '</a>'
+                            + '         <a class="x-text-sm" href="/members/'+ bvo.writer.userNo +'">' + bvo.writer.nickname + '</a>'
                             + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                             + '             <span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
                             + '             <span>·</span>'
@@ -142,7 +142,7 @@
                             + '</div>'
                             + ' <div class="' + marginTop + ' mb-2 x-text-sm x-text-gray-800">'
                             + mentionedHtml // 대댓글의 댓글인 경우 '@닉네임' 표시
-                            + '     <div id="contentOf'+ bvo.id +'"  style="white-space: pre">'
+                            + '     <div id="contentOf' + bvo.id + '"  style="white-space: pre">'
                             + '     </div>'
                             + ' </div>'
                             + ' <div class="mb-2">'
@@ -178,10 +178,10 @@
                     + ' <div class="d-flex justify-content-between">'
                     + '     <div class="d-flex">'
                     + '         <div class="me-2">'
-                    + '             <a href=""><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
+                    + '             <a href="/members/'+ vo.writer.userNo +'"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
                     + '         </div>'
                     + '         <div class="d-flex flex-column my-auto">'
-                    + '             <a class="x-text-sm" href="">' + vo.writer.nickname + '</a>'
+                    + '             <a class="x-text-sm" href="/members/'+ vo.writer.userNo +'">' + vo.writer.nickname + '</a>'
                     + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                     + '                 <span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
                     + '                 <span>·</span>'
@@ -192,7 +192,7 @@
                     + editBtnHtml
                     + ' </div>'
                     + ' <div class="my-2 x-text-sm x-text-gray-800">'
-                    + '     <div id="contentOf'+ vo.id +'"  style="white-space: pre">'
+                    + '     <div id="contentOf' + vo.id + '"  style="white-space: pre">'
                     + '     </div>'
                     + ' </div>'
                     + ' <div class="mb-2 d-flex">'
@@ -215,7 +215,8 @@
 
             return html;
         }
-        function putContentsIntoHTML(xhr){
+
+        function putContentsIntoHTML(xhr) {
             for (let i = 0; i < xhr.comments.length; i++) {
                 const vo = xhr.comments[i];
                 $('#contentOf' + vo.id).text(vo.content);
@@ -599,21 +600,14 @@
                 <%--    작성자 정보    --%>
                 <div class="d-flex">
                     <div>
-                        <a href="">
-                            <c:if test="${not empty post.author.imageName}">
-                                <img src="/images/profile/${post.author.imageName}"
-                                     style="width: 40px; height: 40px;"
-                                     alt="프로필사진">
-                            </c:if>
-                            <c:if test="${empty post.author.imageName}">
-                                <img src="/images/profile/temporary.gif"
-                                     style="width: 40px; height: 40px;"
-                                     alt="프로필사진">
-                            </c:if>
+                        <a href="/members/${post.author.userNo}">
+                            <img src="/images/profile/${not empty post.author.imageName? post.author.imageName: 'temporary.gif'}"
+                                 style="width: 40px; height: 40px;"
+                                 alt="프로필사진">
                         </a>
                     </div>
                     <div class="ms-2 d-flex flex-column">
-                        <a href="">${post.author.nickname}</a>
+                        <a href="/members/${post.author.userNo}">${post.author.nickname}</a>
                         <div class="x-text-sm x-text-gray-700" style="line-height: 1.2rem">
                             <span>${post.author.grade.description} / ${post.author.region.description}</span>
                             <span>·</span>
@@ -695,13 +689,13 @@
                                             <%--    댓글 작성자 정보    --%>
                                         <div class="d-flex">
                                             <div class="me-2">
-                                                <a href=""><img
+                                                <a href="/members/${vo.writer.userNo}"><img
                                                         src="/images/profile/${vo.writer.imageName ne null? vo.writer.imageName: 'temporary.gif'}"
                                                         class="x-comment-profile-img x-border-thin rounded-circle"
                                                         alt="프로필사진"></a>
                                             </div>
                                             <div class="d-flex flex-column my-auto">
-                                                <a class="x-text-sm" href="">${vo.writer.nickname}</a>
+                                                <a class="x-text-sm" href="/members/${vo.writer.userNo}">${vo.writer.nickname}</a>
                                                 <div class="x-text-xs x-text-gray-600 x-font-light"
                                                      style="line-height: 1.2rem">
                                                     <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
@@ -743,7 +737,8 @@
                                         </c:if>
                                     </div>
                                     <div class="my-2 x-text-sm x-text-gray-800">
-                                        <div id="contentOf${vo.id}" style="white-space: pre"><c:out value="${vo.content}"></c:out></div>
+                                        <div id="contentOf${vo.id}" style="white-space: pre"><c:out
+                                                value="${vo.content}"></c:out></div>
                                     </div>
                                     <div class="mb-2 d-flex">
                                         <c:if test="${vo.branchComments.size() > 0}">
@@ -781,14 +776,14 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div class="d-flex">
                                                                 <div class="me-2">
-                                                                    <a href=""><img
+                                                                    <a href="/members/${bvo.writer.userNo}"><img
                                                                             src="/images/profile/${bvo.writer.imageName ne null? bvo.writer.imageName: 'temporary.gif'}"
                                                                             class="x-comment-profile-img x-border-thin rounded-circle"
                                                                             alt="프로필사진"></a>
                                                                 </div>
                                                                 <div class="d-flex flex-column my-auto">
                                                                     <a class="x-text-sm"
-                                                                       href="">${bvo.writer.nickname}</a>
+                                                                       href="/members/${bvo.writer.userNo}">${bvo.writer.nickname}</a>
                                                                     <div class="x-text-xs x-text-gray-600 x-font-light"
                                                                          style="line-height: 1.2rem">
                                                                         <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
@@ -842,7 +837,8 @@
                                                                     <span class="x-mention rounded-pill">@${bvo.parentCommentInfo.mentionedName}</span>
                                                                 </div>
                                                             </c:if>
-                                                            <div id="contentOf${bvo.id}" style="white-space: pre"><c:out value="${bvo.content}"></c:out></div>
+                                                            <div id="contentOf${bvo.id}" style="white-space: pre"><c:out
+                                                                    value="${bvo.content}"></c:out></div>
                                                         </div>
                                                         <div class="mb-2">
                                                             <c:if test="${not empty loginMember}">

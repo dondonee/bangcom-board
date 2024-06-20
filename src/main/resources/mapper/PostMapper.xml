@@ -37,8 +37,16 @@
     <select id="selectById" resultMap="postMap">
         SELECT *
         FROM post
-                 JOIN member_profile ON post.author_id = member_profile.user_no
+                 LEFT JOIN member_profile ON post.author_id = member_profile.user_no
         WHERE post.post_id = #{id}
+    </select>
+
+    <select id="selectByUserNo" resultMap="postMap">
+        SELECT post_id, topic, author_id, title, created_date
+        FROM post
+        WHERE author_id = #{userNo}
+        ORDER BY post_id DESC
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
     </select>
 
     <select id="selectAll" resultMap="postMap">
@@ -58,6 +66,11 @@
         ORDER BY ${criteria.sort.code} DESC
         <if test="!criteria.sort.name().equals('ID')">, post_id DESC</if>
         LIMIT #{criteria.startRow}, #{criteria.pageSize}
+    </select>
+
+    <select id="countTotalSelectedByUserNo" resultType="long">
+        SELECT count(*) FROM post
+        WHERE author_id = #{userNo}
     </select>
 
     <select id="countTotalSelectedByTopics" resultType="long">

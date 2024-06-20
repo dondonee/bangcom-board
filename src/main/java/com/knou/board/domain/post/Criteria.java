@@ -2,12 +2,10 @@ package com.knou.board.domain.post;
 
 import com.knou.board.domain.typehandler.CodeEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.Optional;
 
-@Data
 public class Criteria {
 
     private int page;  // 현재 페이지
@@ -21,6 +19,28 @@ public class Criteria {
         this.sort = Sort.ID;  // default: 최신순
     }
 
+    // getter
+    public int getPage() {
+        return page;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public Sort getSort() {
+        return sort;
+    }
+
+    public int getStartRow() {  // PostMapper.xml 에서 사용할 시작 게시글 계산 메서드
+        return (this.page - 1) * pageSize;
+    }
+
+    // setter
+    public void setPage(int page) {
+        this.page = page;
+    }
+
     public void setSort(String sort) {
         Optional<Sort> findSort = Optional.ofNullable(Sort.valueOf(sort));
         if (findSort.isPresent()) {
@@ -29,11 +49,6 @@ public class Criteria {
         }
 
         this.sort = Sort.ID;  // default: 최신순
-    }
-
-    // PostMapper.xml 에서 사용할 시작 게시글 계산 메서드
-    public int getStartRow() {
-        return (this.page - 1) * pageSize;
     }
 
 

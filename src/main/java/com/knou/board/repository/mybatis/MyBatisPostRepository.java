@@ -32,8 +32,18 @@ public class MyBatisPostRepository implements PostRepository {
     }
 
     @Override
+    public List<Post> selectByUserNo(Long userNo, Criteria criteria) {
+        return postMapper.selectByUserNo(userNo, criteria);
+    }
+
+    @Override
     public List<Post> selectByTopics(Topic[] topics, Criteria criteria) {
         return postMapper.selectByTopics(topics, criteria);
+    }
+
+    @Override
+    public long countTotalSelectedByUserNo(Long userNo) {
+        return postMapper.countTotalSelectedByUserNo(userNo);
     }
 
     @Override

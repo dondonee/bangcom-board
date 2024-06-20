@@ -2,9 +2,13 @@ package com.knou.board.web.controller;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.post.Criteria;
+import com.knou.board.domain.post.Post;
 import com.knou.board.exception.ErrorResultDetail;
 import com.knou.board.file.FileStore;
 import com.knou.board.service.MemberService;
+import com.knou.board.service.PostService;
+import com.knou.board.web.PageMaker;
 import com.knou.board.web.SessionConst;
 import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.MemberLoginForm;
@@ -40,6 +44,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PostService postService;
     private final FileStore fileStore;
 
 
@@ -179,6 +184,26 @@ public class MemberController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/community";  // [!] 추후 home으로 변경
+    }
+
+    @GetMapping(value = {"/members/{userNo}", "/members/{id}/articles"})
+    public String getMemberDetail(@PathVariable long userNo, @ModelAttribute Criteria criteria, Model model) {
+        // 작성자 userNo로 게시물 조회
+        Member member = memberService.findProfileByUserNo(userNo);
+        if (member == null) {
+            return "redirect:/community";  // [!] 추후 home으로 변경
+        }
+
+        List<Post> posts = postService.findListByMember(userNo, criteria);
+
+        PageMaker pageMaker = new PageMaker();
+        pageMaker.setCriteria(criteria);
+        pageMaker.setTotalArticles(postService.getTotalCountByMember(userNo));
+
+        model.addAttribute("pageMaker", pageMaker);
+        model.addAttribute("member", member);
+        model.addAttribute("posts", posts);
+        return "memberDetail";
     }
 
     @GetMapping(value = {"/settings", "/settings/profile"})

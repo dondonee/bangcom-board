@@ -25,6 +25,10 @@ public class PostService {
         return post.getId();
     }
 
+    public List<Post> findListByMember(long userNo, Criteria criteria) {
+        return postRepository.selectByUserNo(userNo, criteria);
+    }
+
     public List<Post> findListByTopics(Topic[] topics, Criteria criteria) {
         return postRepository.selectByTopics(topics, criteria);
     }
@@ -39,6 +43,10 @@ public class PostService {
 
     public long getTotalCountByTopics(Topic topic) {
         return postRepository.countTotalSelectedByTopics(new Topic[]{topic});
+    }
+
+    public long getTotalCountByMember(long userNo) {
+        return postRepository.countTotalSelectedByUserNo(userNo);
     }
 
     public Post findPost(long postId) {

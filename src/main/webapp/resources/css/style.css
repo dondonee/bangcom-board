@@ -137,6 +137,30 @@ a:hover {
 }
 
 /*
+    memberDetail tab
+*/
+.x-tab-link {
+    border-bottom: 2px solid transparent;
+    padding: 0.9rem 1rem;
+}
+
+.x-tab-link.active {
+    border-bottom: 2px solid #007db6;
+}
+
+.x-topic-pill {
+    box-sizing: border-box;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid #dee2e6;
+    border-radius: 1.5rem;
+}
+
+.x-topic-pill:hover {
+    box-sizing: border-box;
+    border: 1px solid #adb5bd;
+}
+
+/*
     container
 */
 @media screen and (max-width: 639px) {
@@ -383,6 +407,10 @@ a:hover {
     .x-v390-text-sm {
         font-size: 0.875rem;
     }
+}
+
+.x-text-primary {
+    color: #007db6;
 }
 
 .x-text-gray-400 {
