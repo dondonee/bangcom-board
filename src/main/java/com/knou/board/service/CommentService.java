@@ -1,7 +1,9 @@
 package com.knou.board.service;
 
 import com.knou.board.domain.comment.Comment;
+import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.comment.ParentCommentInfo;
+import com.knou.board.domain.post.Criteria;
 import com.knou.board.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,10 @@ public class CommentService {
         return commentRepository.selectById(commentId);
     }
 
+    public List<CommentHistoryDto> findListByMember(long userNo, Criteria criteria) {
+        return commentRepository.selectByUserNo(userNo, criteria);
+    }
+
     public List<Comment> findListByPostId(long postId) {
         return commentRepository.selectByPostId(postId);
     }
@@ -61,5 +67,9 @@ public class CommentService {
         }
 
         return commentRepository.delete(commentId);
+    }
+
+    public long getTotalCountByMember(long userNo) {
+        return commentRepository.countTotalSelectedByUserNo(userNo);
     }
 }

@@ -1,11 +1,13 @@
 package com.knou.board.web.controller;
 
+import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.exception.ErrorResultDetail;
 import com.knou.board.file.FileStore;
+import com.knou.board.service.CommentService;
 import com.knou.board.service.MemberService;
 import com.knou.board.service.PostService;
 import com.knou.board.web.PageMaker;
@@ -45,6 +47,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final PostService postService;
+    private final CommentService commentService;
     private final FileStore fileStore;
 
 
@@ -186,9 +189,9 @@ public class MemberController {
         return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
-    @GetMapping(value = {"/members/{userNo}", "/members/{id}/articles"})
-    public String getMemberDetail(@PathVariable long userNo, @ModelAttribute Criteria criteria, Model model) {
-        // 작성자 userNo로 게시물 조회
+    @GetMapping(value = {"/members/{userNo}", "/members/{userNo}/articles"})
+    public String getMemberDetail(@PathVariable long userNo, Criteria criteria, Model model) {
+        // 회원 조회
         Member member = memberService.findProfileByUserNo(userNo);
         if (member == null) {
             return "redirect:/community";  // [!] 추후 home으로 변경
@@ -204,6 +207,27 @@ public class MemberController {
         model.addAttribute("member", member);
         model.addAttribute("posts", posts);
         return "memberDetail";
+    }
+
+    @GetMapping(value = {"/members/{userNo}/comments"})
+    public String getMemberComments(@PathVariable long userNo, Criteria criteria, Model model) {
+        // 회원 조회
+        Member member = memberService.findProfileByUserNo(userNo);
+        if (member == null) {
+            return "redirect:/community";  // [!] 추후 home으로 변경
+        }
+
+        // 작성 댓글 조회
+        List<CommentHistoryDto> commentHistory = commentService.findListByMember(userNo, criteria);
+
+        PageMaker pageMaker = new PageMaker();
+        pageMaker.setCriteria(criteria);
+        pageMaker.setTotalArticles(commentService.getTotalCountByMember(userNo));
+
+        model.addAttribute("pageMaker", pageMaker);
+        model.addAttribute("member", member);
+        model.addAttribute("commentHistory", commentHistory);
+        return "memberDetailComments";
     }
 
     @GetMapping(value = {"/settings", "/settings/profile"})

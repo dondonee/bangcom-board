@@ -57,8 +57,8 @@
                 <div class="px-3 border-top">
                     <nav class="d-flex justify-content-start">
                         <ul class="mb-0 pagination">
-                            <li class="page-item"><a href="/members/${member.userNo}" class="x-text-sm page-link x-tab-link active">게시물</a></li>
-                            <li class="page-item"><a href="/members/${member.userNo}/comments" class="x-text-sm page-link x-tab-link">댓글</a></li>
+                            <li class="page-item"><a href="/members/${member.userNo}" class="x-text-sm page-link x-tab-link">게시물</a></li>
+                            <li class="page-item"><a href="/members/${member.userNo}/comments" class="x-text-sm page-link x-tab-link active">댓글</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -67,11 +67,11 @@
             <!--    목록    -->
             <div>
                 <ul class="list-group list-group-flush list-unstyled">
-                    <c:forEach var="vo" varStatus="status" items="${posts}">
+                    <c:forEach var="vo" varStatus="status" items="${commentHistory}">
                         <li class="py-3 text-decoration-none ${status.index eq 0? '': 'border-top'}">
                             <div class="d-flex justify-content-between x-text-sm x-text-gray-600 x-font-light">
                                 <div class="d-flex align-items-center">
-                                <a class="x-topic-pill x-link x-text-xs" href="${cpath}/${customFn.getTopicListUrl(vo.topic)}">${vo.topic.description}</a><div class="ms-1">카테고리에 <span class="x-text-primary">게시물</span>을 작성하였습니다.</div>
+                                <a class="x-topic-pill x-link x-text-xs" href="${cpath}/${customFn.getTopicListUrl(vo.postTopic)}">${vo.postTopic.description}</a><div class="ms-1"><a href="/members/${vo.authorId}" class="x-text-gray-800">${vo.authorNickname}</a>님의 게시물에 <span class="x-text-primary">댓글</span>을 달았습니다.</div>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="createdDate"/>
@@ -79,8 +79,8 @@
                                 </div>
                             </div>
                             <div class="my-2">
-                                <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
-                                        value="${vo.title}"></c:out></span></a>
+                                <a href="/articles/${vo.postId}"><span class="x-font-semibold"><c:out
+                                        value="${vo.postTitle}"></c:out></span></a>
                             </div>
                         </li>
                     </c:forEach>

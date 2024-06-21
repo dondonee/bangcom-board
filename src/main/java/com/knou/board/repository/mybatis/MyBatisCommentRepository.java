@@ -1,7 +1,9 @@
 package com.knou.board.repository.mybatis;
 
 import com.knou.board.domain.comment.Comment;
+import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.comment.ParentCommentInfo;
+import com.knou.board.domain.post.Criteria;
 import com.knou.board.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,6 +28,11 @@ public class MyBatisCommentRepository implements CommentRepository {
     }
 
     @Override
+    public List<CommentHistoryDto> selectByUserNo(Long userNo, Criteria criteria) {
+        return commentMapper.selectByUserNo(userNo, criteria);
+    }
+
+    @Override
     public List<Comment> selectByPostId(Long postId) {
         return commentMapper.selectByPostId(postId);
     }
@@ -33,6 +40,11 @@ public class MyBatisCommentRepository implements CommentRepository {
     @Override
     public ParentCommentInfo selectParentInfoById(Long id) {
         return commentMapper.selectParentInfoById(id);
+    }
+
+    @Override
+    public long countTotalSelectedByUserNo(Long userNo) {
+        return commentMapper.countTotalSelectedByUserNo(userNo);
     }
 
     @Override

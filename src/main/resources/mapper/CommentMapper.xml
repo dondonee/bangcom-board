@@ -59,10 +59,19 @@
             <association property="parentCommentInfo" resultMap="parentCommentInfoMap"/>
         </collection>
     </resultMap>
+    <resultMap id="commentHistoryMap" type="CommentHistoryDto">
+        <id property="id" column="comment_id"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="postId" column="post_id"/>
+        <result property="postTopic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler"/>
+        <result property="postTitle" column="title"/>
+        <result property="authorId" column="author_id"/>
+        <result property="authorNickname" column="nickname"/>
+    </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post_comment (post_id, writer_id, content, created_date,
-                                  parent_id, mentioned_id, depth_no, group_no, order_no)
+        parent_id, mentioned_id, depth_no, group_no, order_no)
         VALUES (#{postId}, #{writer.userNo}, #{content}, #{createdDate},
 
         <if test="parentCommentInfo == null">
@@ -75,7 +84,8 @@
         </if>
         <if test="parentCommentInfo != null">
             #{parentCommentInfo.parentId},
-            #{parentCommentInfo.mentionedId}, #{parentCommentInfo.parentDepthNo} + 1, #{parentCommentInfo.parentGroupNo},
+            #{parentCommentInfo.mentionedId}, #{parentCommentInfo.parentDepthNo} + 1,
+            #{parentCommentInfo.parentGroupNo},
             (SELECT IFNULL(MAX(order_no) + 1, 0)
             FROM post_comment
             WHERE post_id = #{postId} and group_no = #{parentCommentInfo.parentGroupNo})
@@ -107,6 +117,24 @@
                  LEFT JOIN member_profile pm
                            ON r.mentioned_id = pm.user_no
         WHERE r.comment_id = #{id}
+    </select>
+
+    <select id="selectByUserNo" resultMap="commentHistoryMap">
+        SELECT c.comment_id,
+               c.created_date,
+               c.post_id,
+               p.topic,
+               p.title,
+               p.author_id,
+               pm.nickname
+        FROM post_comment c
+                 JOIN post p
+                      ON c.post_id = p.post_id
+                 JOIN member_profile pm
+                      ON p.author_id = pm.user_no
+        WHERE c.writer_id = #{userNo}
+        ORDER BY c.comment_id DESC
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
     </select>
 
     <select id="selectByPostId" resultMap="commentMap">
@@ -169,9 +197,14 @@
         WHERE parent_id = #{id}
     </select>
 
+    <select id="countTotalSelectedByUserNo" resultType="long">
+        SELECT count(*) FROM post_comment
+        WHERE writer_id = #{userNo}
+    </select>
+
     <update id="update">
         UPDATE post_comment
-        SET content = #{content},
+        SET content       = #{content},
             modified_date = #{modifiedDate}
         WHERE comment_id = #{id}
     </update>
@@ -185,7 +218,8 @@
     </update>
 
     <delete id="delete">
-        DELETE FROM post_comment
+        DELETE
+        FROM post_comment
         WHERE comment_id = #{id}
     </delete>
 </mapper>
