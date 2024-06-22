@@ -172,7 +172,7 @@
                  LEFT JOIN member_profile m
                            ON r.writer_id = m.user_no
                  LEFT JOIN post_comment b
-                           ON b.parent_id IS NOT NULL AND r.group_no = b.group_no
+                           ON b.parent_id IS NOT NULL AND r.post_id = b.post_id AND r.group_no = b.group_no
                  LEFT JOIN member_profile bm
                            ON b.writer_id = bm.user_no
                  LEFT JOIN member_profile pm

@@ -27,7 +27,7 @@
                 <p class="m-0">3초 후 메인 화면으로 이동합니다.</p>
             </div>
             <div class="mt-4 d-flex justify-content-center">
-                <a href="/login" class="btn btn-primary" style="width: 10rem">메인 화면</a>
+                <a href="/community" class="btn btn-primary" style="width: 10rem">메인 화면</a>
             </div>
         </div>
     </div>

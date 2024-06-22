@@ -85,22 +85,15 @@
                                 + '<span>·</span>'
                         }
 
-                        // 대댓글의 댓글인 경우 '@닉네임' 표시
-                        let mentionedHtml = ''
-                        if (bvo.depthNo > 1) {
-                            mentionedHtml += '<div>'
-                                + '<span class="x-mention rounded-pill">@' + bvo.parentCommentInfo.mentionedName + '</span>'
-                                + '</div>'
-                        }
-                        // 작성자 == 로그인 사용자 -> 수정 & 삭제 버튼
+                        // 수정 & 삭제 버튼 (작성자 == 로그인 사용자)
                         let branchEditBtnHtml = '';
                         if (bvo.writer.userNo == loginMember.userNo) {
 
                             let branchDataAttr = '';
                             if (bvo.depthNo > 1) {
-                                branchDataAttr = 'data-comment="branch2" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '"';
+                                branchDataAttr = 'data-comment-type="branch2" data-mentioned="'+ bvo.parentCommentInfo.mentionedName +'"'
                             } else {
-                                branchDataAttr = 'data-comment="branch"';
+                                branchDataAttr = 'data-comment-type="branch"';
                             }
 
                             branchEditBtnHtml += '<div class="dropdown d-flex align-items-center">'
@@ -116,6 +109,15 @@
                                 + '</div>';
                         }
 
+                        // 대댓글의 댓글인 경우 '@부모글작성자닉네임' 표시
+                        let bvoMentionedHtml = ''
+                        if (bvo.depthNo > 1) {
+                            const mentionedName = bvo.parentCommentInfo.mentionedName || '(알 수 없음)';
+                            bvoMentionedHtml += '<div>'
+                                + '<span class="x-mention rounded-pill">@' + mentionedName + '</span>'
+                                + '</div>'
+                        }
+
                         let borderTop = '';
                         if (j !== 0) {
                             borderTop = ' x-border-top-dashed';
@@ -127,6 +129,8 @@
                         } else {
                             marginTop = 'mt-2';
                         }
+
+                        const bvoDataMentioned = bvo.writer.nickname || '(알 수 없음)';
 
                         branchesHtml += '<li class="py-3' + borderTop + '">'
                             + '<div id="commentOf' + bvo.id + '">'
@@ -146,13 +150,15 @@
                             + ' </div>'
                             + branchEditBtnHtml  // 로그인 사용자 == 작성자 -> 수정 & 삭제 버튼
                             + '</div>'
+                            // 내용
                             + ' <div class="' + marginTop + ' mb-2 x-text-sm x-text-gray-800">'
-                            + mentionedHtml // 대댓글의 댓글인 경우 '@닉네임' 표시
+                            + bvoMentionedHtml // 대댓글의 댓글인 경우 '@부모글작성자닉네임' 표시
                             + '     <div id="contentOf' + bvo.id + '"  style="white-space: pre">'
                             + '     </div>'
                             + ' </div>'
                             + ' <div class="mb-2">'
-                            + ' <button id="commentAddFormBtnOf' + bvo.id + '" data-root="' + vo.id + '" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                            // '댓글 쓰기' 버튼
+                            + ' <button id="commentAddFormBtnOf' + bvo.id + '" data-root="' + vo.id + '" data-mentioned="' + bvoDataMentioned + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
                             + '댓글 쓰기'
                             + ' </button>'
                             + ' </div>'
@@ -166,7 +172,7 @@
                 let gradeRegionHtml = '';
                 if (vo.writer.nickname) {
                     gradeRegionHtml += '<span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
-                    + '<span>·</span>'
+                        + '<span>·</span>'
                 }
 
                 let editBtnHtml = '';
@@ -178,7 +184,7 @@
                         + ' </svg>'
                         + '</button>'
                         + '<ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700" aria-labelledby="dropdownMenuButton' + vo.id + '">'
-                        + ' <li><button id="commentEditFormBtnOf' + vo.id + '" data-comment="root" type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
+                        + ' <li><button id="commentEditFormBtnOf' + vo.id + '" data-comment-type="root" type="button" class="dropdown-item" href="#"><i class="me-1 bi bi-pencil-square"></i>수정하기</button></li>'
                         + ' <li><button id="commentDeleteBtnOf' + vo.id + '" type="button" class="dropdown-item"><i class="me-1 bi bi-trash3"></i>삭제하기</a></button></li>'
                         + '</ul>'
                         + '</div>';
@@ -209,7 +215,7 @@
                     + ' </div>'
                     + ' <div class="mb-2 d-flex">'
                     + branchBtnHtml
-                    + '     <button id="commentAddFormBtnOf' + vo.id + '" data-comment="root" data-root="' + vo.id + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
+                    + '     <button id="commentAddFormBtnOf' + vo.id + '" data-comment-type="root" data-root="' + vo.id + '" type="button" class="px-0 btn x-btn-comment x-text-xs">'
                     + '댓글 쓰기'
                     + '     </button>'
                     + ' </div>'
@@ -282,7 +288,7 @@
                 if (!document.getElementById(addBoxId)) {  // 작성 폼이 없는 경우
                     // 대댓글 작성 폼 만들기
                     var clone = $('#addBranch').clone();
-                    if (button.attr('data-comment') === 'root') {  // 댓글인 경우
+                    if (button.attr('data-comment-type') === 'root') {  // 댓글인 경우
                         $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
                     } else {  // 대댓글인 경우
                         const mentioned = button.attr('data-mentioned') || '(알 수 없음)';
@@ -396,8 +402,8 @@
                 if (!document.getElementById(editBoxId)) {  // 작성 폼이 없는 경우
                     // 대댓글 작성 폼 만들기
                     var clone = $('#addBranch').clone();
-                    if (button.attr('data-comment') === 'root') {  // 댓글인 경우
-                    } else if (button.attr('data-comment') === 'branch') {  // 대댓글인 경우
+                    if (button.attr('data-comment-type') === 'root') {  // 댓글인 경우
+                    } else if (button.attr('data-comment-type') === 'branch') {  // 대댓글인 경우
                         $(clone).find('> div').css('border-left', '')
                     } else {  // depthNo > 1인 대댓글인 경우 - '@닉네임' 표시
                         const mentioned = button.attr('data-mentioned');
@@ -410,7 +416,7 @@
                     $(clone).find('button[data-role="cancel"]').attr('id', 'commentEditCancelBtnOf' + commentId);
                     $(clone).find('button[data-role="submit"]').attr('id', 'commentEditBtnOf' + commentId);
                     $(clone).find('button[data-role="submit"]').text('수정하기');
-                    if (button.attr('data-comment') !== 'root') {
+                    if (button.attr('data-comment-type') !== 'root') {
                         $(clone).find('button[data-role="submit"]').attr('data-root', rootCommentId);
                     }
 
@@ -520,7 +526,7 @@
                 const commentId = button.attr('id').replace(/^commentDeleteBtnOf/, '');
                 $('#commentDeleteModal').find('button[data-role="delete"]').attr('id', 'commentDeleteOf' + commentId);
                 // 대댓글일 경우 rootCommentId 추가
-                if (button.attr('data-comment') !== 'root') {
+                if (button.attr('data-comment-type') !== 'root') {
                     const rootCommentId = button.attr('data-root');
                     $('#commentDeleteModal').find('button[data-role="delete"]').attr('data-root', rootCommentId);
                 }
@@ -714,8 +720,8 @@
                                                 <div class="x-text-xs x-text-gray-600 x-font-light"
                                                      style="line-height: 1.2rem">
                                                     <c:if test="${not empty vo.writer.nickname}">
-                                                    <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
-                                                    <span>·</span>
+                                                        <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
+                                                        <span>·</span>
                                                     </c:if>
                                                     <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
                                                 </div>
@@ -737,13 +743,14 @@
                                                 <ul class="dropdown-menu dropdown-menu-end x-text-sm x-text-gray-700"
                                                     aria-labelledby="dropdownMenuButton${vo.id}">
                                                     <li>
-                                                        <button id="commentEditFormBtnOf${vo.id}" data-comment="root"
+                                                        <button id="commentEditFormBtnOf${vo.id}"
+                                                                data-comment-type="root"
                                                                 type="button" class="dropdown-item" href="#"><i
                                                                 class="me-1 bi bi-pencil-square"></i>수정하기
                                                         </button>
                                                     </li>
                                                     <li>
-                                                        <button id="commentDeleteBtnOf${vo.id}" data-comment="root"
+                                                        <button id="commentDeleteBtnOf${vo.id}" data-comment-type="root"
                                                                 type="button"
                                                                 class="dropdown-item">
                                                             <i class="me-1 bi bi-trash3"></i>삭제하기</a>
@@ -768,7 +775,7 @@
                                             </button>
                                         </c:if>
                                         <c:if test="${not empty loginMember}">
-                                            <button id="commentAddFormBtnOf${vo.id}" data-comment="root"
+                                            <button id="commentAddFormBtnOf${vo.id}" data-comment-type="root"
                                                     data-root="${vo.id}" type="button"
                                                     class="px-0 btn x-btn-comment x-text-xs">
                                                 댓글 쓰기
@@ -804,15 +811,15 @@
                                                                     <div class="x-text-xs x-text-gray-600 x-font-light"
                                                                          style="line-height: 1.2rem">
                                                                         <c:if test="${not empty bvo.writer.nickname}">
-                                                                        <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
-                                                                        <span>·</span>
+                                                                            <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
+                                                                            <span>·</span>
                                                                         </c:if>
                                                                         <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                                 <%--    부가 메뉴    --%>
-                                                            <c:if test="${vo.writer.userNo eq loginMember.userNo}">
+                                                            <c:if test="${bvo.writer.userNo eq loginMember.userNo}">
                                                                 <div class="dropdown d-flex align-items-center">
                                                                     <button class="dropdown-toggle"
                                                                             style="background: none; border: none;"
@@ -832,7 +839,7 @@
                                                                         aria-labelledby="dropdownMenuButton${bvo.id}">
                                                                         <li>
                                                                             <button id="commentEditFormBtnOf${bvo.id}"
-                                                                                    data-comment="${bvo.depthNo > 1? 'branch2': 'branch'}"
+                                                                                    data-comment-type="${bvo.depthNo > 1? 'branch2': 'branch'}"
                                                                                     data-root="${vo.id}"
                                                                                     data-mentioned="${bvo.parentCommentInfo.mentionedName}"
                                                                                     class="dropdown-item" href="#"><i
@@ -851,6 +858,7 @@
                                                             </c:if>
                                                         </div>
                                                         <div class="${bvo.depthNo > 1? 'mt-0': 'mt-2'} mb-2 x-text-sm x-text-gray-800">
+                                                                <%--    대댓글의 댓글인 경우 '@부모글작성자닉네임' 표시(해당 댓글의 depthNo > 1 일 때)    --%>
                                                             <c:if test="${bvo.depthNo > 1}">
                                                                 <div>
                                                                     <span class="x-mention rounded-pill">@${not empty bvo.parentCommentInfo.mentionedName? bvo.parentCommentInfo.mentionedName: '(알 수 없음)'}</span>
@@ -863,7 +871,7 @@
                                                             <c:if test="${not empty loginMember}">
                                                                 <button id="commentAddFormBtnOf${bvo.id}"
                                                                         data-root="${vo.id}"
-                                                                        data-mentioned="${bvo.parentCommentInfo.mentionedName}"
+                                                                        data-mentioned="${not empty bvo.writer.nickname? bvo.writer.nickname: '(알 수 없음)'}"
                                                                         type="button"
                                                                         class="px-0 btn x-btn-comment x-text-xs">
                                                                     댓글 쓰기
