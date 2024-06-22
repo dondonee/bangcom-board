@@ -6,6 +6,7 @@ import com.knou.board.domain.member.MemberLogin;
 import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
+import com.knou.board.exception.ErrorResult;
 import com.knou.board.exception.ErrorResultDetail;
 import com.knou.board.file.FileStore;
 import com.knou.board.service.CommentService;
@@ -14,10 +15,7 @@ import com.knou.board.service.PostService;
 import com.knou.board.web.PageMaker;
 import com.knou.board.web.SessionConst;
 import com.knou.board.web.argumentresolver.Login;
-import com.knou.board.web.form.MemberLoginForm;
-import com.knou.board.web.form.MemberProfileForm;
-import com.knou.board.web.form.MemberSignUpForm;
-import com.knou.board.web.form.MemberWithdrawalForm;
+import com.knou.board.web.form.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,10 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.knou.board.domain.member.Member.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -381,6 +377,59 @@ public class MemberController {
 
         // URL을 통한 비정상 접근의 경우
         return "redirect:/community";  // [!] 추후 home으로 변경
+    }
+
+    @PostMapping("/settings/account/password-reset")
+    public ResponseEntity resetPassword(@Validated PasswordResetForm form, BindingResult bindingResult, @Login Member loginMember) {
+
+        // 현재 비밀번호 검증
+        Long userNo = loginMember.getUserNo();
+        String loginName = memberService.findLoginNameByUserNo(userNo);
+
+        MemberLogin memberLogin = new MemberLogin();
+        memberLogin.setUserNo(userNo);
+        memberLogin.setLoginName(loginName);
+        memberLogin.setPassword(form.getCurrentPassword());
+        if (memberService.authenticate(memberLogin) == null) {  // 인증 불가
+            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 불일치", "현재 비밀번호가 일치하지 않습니다.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        // 변경 비밀번호 유효성 검사
+        if (bindingResult.hasErrors()) {
+            FieldError err = bindingResult.getFieldError("password");
+            if (err != null) {
+                ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "유효하지 않은 비밀번호 형식", err.getDefaultMessage());
+                return new ResponseEntity<>(errorResult, BAD_REQUEST);
+            }
+        }
+
+        // 변경 비밀번호가 이전과 동일한지 체크
+        if (form.getCurrentPassword().equals(form.getPassword())) {
+            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 동일", "현재 비밀번호와 다르게 설정해주세요.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        // 비밀번호 확인이 일치한지 체크
+        validatePasswordCheck(form.getPassword(), form.getPasswordCheck(), bindingResult);
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError("passwordCheck");
+            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 불일치", fieldError.getDefaultMessage());
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        // 검증 통과 => 비밀번호 변경
+        MemberLogin resetML = new MemberLogin();
+        resetML.setUserNo(userNo);
+        resetML.setPassword(form.getPassword());
+        MemberLogin resultML = memberService.resetPassword(resetML);
+
+        // 비밀번호 변경 성공
+        Map<String, String> resultMap = new HashMap<>();
+        if (resultML != null) {
+            resultMap.put("status", "success");
+        }
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
 

@@ -85,6 +85,9 @@ public class MemberService {
         return memberRepository.selectProfileById(findUserNo);  // 애플리케이션에서 사용할 회원 프로필 조회
     }
 
+
+    // 프로필 수정
+
     public Member updateProfile(Member member) {
         memberRepository.updateProfile(member);
         return memberRepository.selectProfileById(member.getUserNo());
@@ -102,6 +105,29 @@ public class MemberService {
         // 파일명 DB 업데이트 후 최신 프로필 반환
         return doUpdateProfileImage(loginMember, new UploadFile(null, null));
     }
+
+    public MemberLogin resetPassword(MemberLogin memberLogin) {
+
+        // 비밀번호 변경
+        LocalDateTime updatedDate = LocalDateTime.now();
+        int rs = memberRepository.updatePassword(memberLogin, updatedDate);
+        if (rs != 1) {
+            throw new IllegalStateException("비밀번호 변경 중 오류 발생");
+        }
+
+        // 인증 테스트
+        Long userNo = memberLogin.getUserNo();
+        String password = memberLogin.getPassword();
+        MemberLogin authenticated = memberRepository.selectUserByIdAndPassword(userNo, password);
+        if (authenticated == null) {
+            throw new IllegalStateException("비밀번호 변경 후 인증 실패");
+        }
+
+        return authenticated;
+    }
+
+
+    // 탈퇴
 
     public void withdrawMember(MemberWithdrawal mw) {
 

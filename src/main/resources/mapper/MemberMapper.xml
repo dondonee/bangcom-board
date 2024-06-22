@@ -67,11 +67,8 @@
           AND p.password = #{password}
     </select>
 
-    <select id="selectUploadFileNameById">
-        SELECT upload_name
-        FROM profile_image
-        WHERE user_no = #{userNo}
-    </select>
+
+    <!-- 프로필 수정 관련 -->
 
     <update id="updateProfile">
         UPDATE member_profile
@@ -84,6 +81,20 @@
         WHERE user_no = #{userNo}
     </update>
 
+    <update id="updatePassword">
+        UPDATE auth_password
+        SET password = #{memberLogin.password}, updated_date = #{updatedDate}
+        WHERE user_no = #{memberLogin.userNo}
+    </update>
+
+    <!-- 프로필 수정 - 이미지 업로드 관련 -->
+
+    <select id="selectUploadFileNameById">
+        SELECT upload_name
+        FROM profile_image
+        WHERE user_no = #{userNo}
+    </select>
+
     <update id="updateProfileImage">
         UPDATE member_profile
         SET image_name = #{uploadFile.storeFileName}, updated_date = #{member.updatedDate}
@@ -95,6 +106,7 @@
         VALUES (#{userNo}, #{uploadFile.uploadFileName})
         ON DUPLICATE KEY UPDATE upload_name = #{uploadFile.uploadFileName}
     </insert>
+
 
     <!-- 틸퇴 관련 -->
     <delete id="deleteUser">

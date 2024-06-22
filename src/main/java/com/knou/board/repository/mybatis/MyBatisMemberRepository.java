@@ -8,6 +8,8 @@ import com.knou.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 @RequiredArgsConstructor
 public class MyBatisMemberRepository implements MemberRepository {
@@ -57,16 +59,24 @@ public class MyBatisMemberRepository implements MemberRepository {
         return memberMapper.selectUserByIdAndPassword(userNo, password);
     }
 
-    @Override
-    public String selectUploadFileNameById(Long userNo) {
-        return memberMapper.selectUploadFileNameById(userNo);
-    }
+    // 프로필 수정 관련
 
     @Override
     public int updateProfile(Member member) {
         return memberMapper.updateProfile(member);
     }
 
+    @Override
+    public int updatePassword(MemberLogin memberLogin, LocalDateTime updatedDate) {
+        return memberMapper.updatePassword(memberLogin, updatedDate);
+    }
+
+    // 프로필 수정 - 이미지 업로드 관련
+
+    @Override
+    public String selectUploadFileNameById(Long userNo) {
+        return memberMapper.selectUploadFileNameById(userNo);
+    }
     @Override
     public int updateProfileImage(Member member, UploadFile uploadFile) {
         return memberMapper.updateProfileImage(member, uploadFile);

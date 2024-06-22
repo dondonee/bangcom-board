@@ -7,6 +7,8 @@ import com.knou.board.file.UploadFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+
 @Mapper
 public interface MemberMapper {
 
@@ -16,12 +18,18 @@ public interface MemberMapper {
     Member selectProfileById(Long userNo);
     Member selectProfileByNickName(String nickName);
     String selectLoginNameById(Long userNo);
-    String selectUploadFileNameById(Long userNo);
     MemberLogin selectUserByLoginName(String loginName);
     MemberLogin selectUserByIdAndPassword(@Param("userNo") Long userNo, @Param("password") String password);
+
+    // 프로필 수정 관련
     int updateProfile(Member member);
+    int updatePassword(@Param("memberLogin") MemberLogin memberLogin, @Param("updatedDate") LocalDateTime updatedDate);
+
+    // 프로필 수정 - 이미지 업로드 관련
+    String selectUploadFileNameById(Long userNo);
     int updateProfileImage(@Param("member") Member member, @Param("uploadFile") UploadFile uploadFile);
     int updateProfileImageName(@Param("userNo") Long userNo, @Param("uploadFile") UploadFile uploadFile);
+
 
     // 탈퇴 관련
     int deleteUser(long UserNo);

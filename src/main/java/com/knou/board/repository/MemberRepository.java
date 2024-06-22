@@ -5,6 +5,8 @@ import com.knou.board.domain.member.MemberLogin;
 import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.file.UploadFile;
 
+import java.time.LocalDateTime;
+
 public interface MemberRepository {
 
     MemberLogin insertUser(MemberLogin memberLogin);
@@ -15,10 +17,16 @@ public interface MemberRepository {
     String selectLoginNameById(Long userNo);
     MemberLogin selectUserByLoginName(String loginName);
     MemberLogin selectUserByIdAndPassword(Long userNo, String password);
-    String selectUploadFileNameById(Long userNo);
+
+    // 프로필 수정 관련
     int updateProfile(Member member);
+    int updatePassword(MemberLogin memberLogin, LocalDateTime updatedDate);
+
+    // 프로필 수정 - 이미지 업로드 관련
+    String selectUploadFileNameById(Long userNo);
     int updateProfileImage(Member member, UploadFile uploadFile);
     int updateProfileImageName(Long userNo, UploadFile uploadFile);
+
 
     // 탈퇴 관련
     int deleteUser(long UserNo);
