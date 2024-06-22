@@ -2,6 +2,7 @@ package com.knou.board.repository.mybatis;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.file.UploadFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,11 @@ public interface MemberMapper {
     int updateProfile(Member member);
     int updateProfileImage(@Param("member") Member member, @Param("uploadFile") UploadFile uploadFile);
     int updateProfileImageName(@Param("userNo") Long userNo, @Param("uploadFile") UploadFile uploadFile);
+
+    // 탈퇴 관련
+    int deleteUser(long UserNo);
+    int deleteUserPassword(long UserNo);
+    int updateNullProfileByUserNo(Long userNo);
+    int insertWithdrawalUser(MemberWithdrawal memberWithdrawal);
+    int insertWithdrawalLog(MemberWithdrawal memberWithdrawal);
 }

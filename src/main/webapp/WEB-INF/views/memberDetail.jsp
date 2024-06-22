@@ -39,13 +39,17 @@
                         </div>
                         <div class="my-auto">
                             <div>
-                                <h2 class="fs-4 mb-0 x-font-semibold">${member.nickname}</h2>
+                                <h2 class="fs-4 mb-0 x-font-semibold">${not empty member.nickname? member.nickname: '(알 수 없음)'}</h2>
                             </div>
                             <div>
+                                <c:if test="${not empty vo.author.nickname}">
                             <span class="x-text-sm x-text-gray-800 x-font-light"
-                                  style="font-size: 0.95rem">${member.grade.description} / ${member.region.description}
-                            <c:if
-                                    test="${member.transferred eq true}"> / 편입</c:if></span>
+                                  style="font-size: 0.95rem">${member.grade.description} / ${member.region.description}${member.transferred eq true? ' / 편입': ''}</span>
+                                </c:if>
+                                <c:if test="${empty vo.author.nickname}">
+                            <span class="x-text-sm x-text-gray-800 x-font-light"
+                                  style="font-size: 0.95rem">존재하지 않는 사용자입니다.</span>
+                                </c:if>
                             </div>
                         </div>
                     </div>
@@ -57,8 +61,10 @@
                 <div class="px-3 border-top">
                     <nav class="d-flex justify-content-start">
                         <ul class="mb-0 pagination">
-                            <li class="page-item"><a href="/members/${member.userNo}" class="x-text-sm page-link x-tab-link active">게시물</a></li>
-                            <li class="page-item"><a href="/members/${member.userNo}/comments" class="x-text-sm page-link x-tab-link">댓글</a></li>
+                            <li class="page-item"><a href="/members/${member.userNo}"
+                                                     class="x-text-sm page-link x-tab-link active">게시물</a></li>
+                            <li class="page-item"><a href="/members/${member.userNo}/comments"
+                                                     class="x-text-sm page-link x-tab-link">댓글</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -71,10 +77,13 @@
                         <li class="py-3 text-decoration-none ${status.index eq 0? '': 'border-top'}">
                             <div class="d-flex justify-content-between x-text-sm x-text-gray-600 x-font-light">
                                 <div class="d-flex align-items-center">
-                                <a class="x-topic-pill x-link x-text-xs" href="${cpath}/${customFn.getTopicListUrl(vo.topic)}">${vo.topic.description}</a><div class="ms-1">카테고리에 <span class="x-text-primary">게시물</span>을 작성하였습니다.</div>
+                                    <a class="x-topic-pill x-link x-text-xs"
+                                       href="${cpath}/${customFn.getTopicListUrl(vo.topic)}">${vo.topic.description}</a>
+                                    <div class="ms-1">카테고리에 <span class="x-text-primary">게시물</span>을 작성하였습니다.</div>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="createdDate"/>
+                                    <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss"
+                                                   var="createdDate"/>
                                     <fmt:formatDate value="${createdDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                                 </div>
                             </div>

@@ -2,6 +2,7 @@ package com.knou.board.repository.mybatis;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.file.UploadFile;
 import com.knou.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -74,5 +75,33 @@ public class MyBatisMemberRepository implements MemberRepository {
     @Override
     public int updateProfileImageName(Long userNo, UploadFile uploadFile) {
         return memberMapper.updateProfileImageName(userNo, uploadFile);
+    }
+
+
+    // 탈퇴 관련
+
+    @Override
+    public int deleteUser(long UserNo) {
+        return memberMapper.deleteUser(UserNo);
+    }
+
+    @Override
+    public int deleteUserPassword(long UserNo) {
+        return memberMapper.deleteUserPassword(UserNo);
+    }
+
+    @Override
+    public int updateNullProfileByUserNo(Long userNo) {
+        return memberMapper.updateNullProfileByUserNo(userNo);
+    }
+
+    @Override
+    public int insertWithdrawalUser(MemberWithdrawal memberWithdrawal) {
+        return memberMapper.insertWithdrawalUser(memberWithdrawal);
+    }
+
+    @Override
+    public int insertWithdrawalLog(MemberWithdrawal memberWithdrawal) {
+        return memberMapper.insertWithdrawalLog(memberWithdrawal);
     }
 }

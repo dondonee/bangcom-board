@@ -76,6 +76,7 @@
                 <ul class="list-group list-group-flush list-unstyled">
                     <c:forEach var="vo" items="${posts}">
                         <li class="py-3 border-top text-decoration-none">
+                                <%--    작성자 정보    --%>
                             <div class="x-text-sm">
                                 <span>
                                     <a href="/members/${vo.author.userNo}">
@@ -85,8 +86,13 @@
                                         </a>
                                 </span>
                                 <span>
+                                    <c:if test="${not empty vo.author.nickname}">
                                     <a class="x-text-gray-600"
                                        href="/members/${vo.author.userNo}">${vo.author.nickname} / ${vo.author.grade.description} / ${vo.author.region.description}</a>
+                                    </c:if>
+                                    <c:if test="${empty vo.author.nickname}">
+                                        <a class="x-text-gray-600" href="/members/${vo.author.userNo}">(알 수 없음)</a>
+                                    </c:if>
                                 </span>
                                 <span class="x-text-gray-600">·</span>
                                 <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>

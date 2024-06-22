@@ -15,6 +15,17 @@
             const imgUploadModal = new bootstrap.Modal(document.getElementById('imgUploadModal'))
             const imgUploadErrorModal = new bootstrap.Modal(document.getElementById('imgUploadErrorModal'))
 
+            $('#profileEditForm').on('change', function () {
+                $('#profileEditBtn').prop('disabled', false);
+            });
+
+            $('#imgUploadForm').on('change', function () {
+                let file = $('#file').val();
+                if (file) {
+                    $('#imgUploadBtn').prop('disabled', false);
+                }
+            });
+
             if ($('#successLight').css('display') === 'block') {
                 setTimeout(() => {
                     $('#successLight').fadeOut(1000)
@@ -96,11 +107,13 @@
                     <span class="x-font-medium" style="font-size: 1.15rem">내 계정</span>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item x-list-group-item x-text-gray-600 active"><a style="color:inherit"
-                                                                                            href="#"><i
+                    <li class="x-setting-btn active list-group-item x-list-group-item x-text-gray-600"><a
+                            style="display: block;color:inherit"
+                            href="/settings/profile"><i
                             class="me-2 bi bi-person-circle" style="font-size:18px"></i><span style="line-height: 18px">프로필</span></a>
                     </li>
-                    <li class="list-group-item x-list-group-item x-text-gray-600"><a style="color:inherit" href="#"><i
+                    <li class="x-setting-btn list-group-item x-list-group-item x-text-gray-600"><a
+                            style="display: block; color:inherit" href="/settings/account"><i
                             class="me-2 bi bi-gear" style="font-size:18px"></i><span
                             style="line-height: 18px">계정관리</span></a></li>
                 </ul>
@@ -114,7 +127,7 @@
                     <i id="successLight" class="ms-2 bi bi-check-circle-fill x-color-greenLight"
                        style="display:${updateSuccess eq true?'block': 'none'}"></i></h2>
             </div>
-            <form class="d-flex row" action="/settings/profile" method="post">
+            <form id="profileEditForm" class="d-flex row" action="/settings/profile" method="post">
                 <div class="order-sm-1 col-sm-5 pb-4 pb-sm-0 d-flex justify-content-center">
                     <button id="formImg" class="btn x-profile-img rounded-circle p-0 position-relative" type="button"
                             data-bs-toggle="modal"
@@ -160,7 +173,7 @@
                     <div class="mb-4 row">
                         <div class="col-6">
                             <div>
-                                <label class="form-label">학년</label>
+                                <label for="grade" class="form-label">학년</label>
                                 <select class="form-select form-select-md" name="grade" id="grade">
                                     <option selected disabled>학년</option>
                                     <c:forEach var="grade" items="${grades}">
@@ -180,7 +193,7 @@
                         </div>
                         <div class="col-6 ps-0">
                             <div>
-                                <label class="form-label">지역</label>
+                                <label for="region" class="form-label">지역</label>
                                 <select class="form-select form-select-md" name="region" id="region">
                                     <option selected disabled>지역</option>
                                     <c:forEach var="region" items="${regions}">
@@ -201,7 +214,7 @@
                     </div>
                     <div class="mb-4">
                         <div>
-                            <label class="form-label">편입여부</label>
+                            <label for="transferredY" class="form-label">편입여부</label>
                             <div class="x-form-check-group">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="transferred"
@@ -228,7 +241,7 @@
                     </div>
                 </div>
                 <div class="order-sm-2 col-sm-12 mt-3 mt-sm-5 mb-2 d-flex justify-content-end">
-                    <button type="submit" class="px-5 py-2 btn btn-primary">저장
+                    <button id="profileEditBtn" type="submit" class="px-5 py-2 btn btn-primary" disabled>저장
                     </button>
                 </div>
             </form>
@@ -249,17 +262,17 @@
                         <input class="form-control" type="file" id="file" name="file" accept="image/jpeg, image/png">
                         <div class="mt-1 x-text-sm x-text-gray-600 x-font-light">권장 사이즈 150px, 최대 250KB</div>
                     </form>
-<%--                    <div id="imgDownload" class="d-flex justify-content-end"--%>
-<%--                         style="display:${!empty loginMember.imageName? 'blcok': 'none'};">--%>
-<%--                        <button id="imgDownloadBtn" class="p-0 pe-1 btn x-link text-truncate text-end" type="button">--%>
-<%--                            <i class="bi bi-download"></i>--%>
-<%--                            <span style="text-decoration: underline">다운로드</span>--%>
-<%--                        </button>--%>
-<%--                    </div>--%>
+                    <%--                    <div id="imgDownload" class="d-flex justify-content-end"--%>
+                    <%--                         style="display:${!empty loginMember.imageName? 'blcok': 'none'};">--%>
+                    <%--                        <button id="imgDownloadBtn" class="p-0 pe-1 btn x-link text-truncate text-end" type="button">--%>
+                    <%--                            <i class="bi bi-download"></i>--%>
+                    <%--                            <span style="text-decoration: underline">다운로드</span>--%>
+                    <%--                        </button>--%>
+                    <%--                    </div>--%>
                 </div>
                 <div class="modal-footer d-flex justify-content-end">
                     <button id="imgInitBtn" type="button" class="px-3 py-1 btn btn-outline-secondary">기본사진 사용</button>
-                    <button id="imgUploadBtn" type="button" class="px-3 py-1 btn btn-primary">업로드</button>
+                    <button id="imgUploadBtn" type="button" class="px-3 py-1 btn btn-primary" disabled>업로드</button>
                 </div>
             </div>
         </div>

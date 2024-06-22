@@ -3,6 +3,7 @@ package com.knou.board.web.controller;
 import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.exception.ErrorResultDetail;
@@ -16,6 +17,7 @@ import com.knou.board.web.argumentresolver.Login;
 import com.knou.board.web.form.MemberLoginForm;
 import com.knou.board.web.form.MemberProfileForm;
 import com.knou.board.web.form.MemberSignUpForm;
+import com.knou.board.web.form.MemberWithdrawalForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -121,7 +123,7 @@ public class MemberController {
             return "signUpCelebration";
         }
 
-        // URL을 통한 접근의 경우
+        // URL을 통한 비정상 접근의 경우
         return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
@@ -231,7 +233,7 @@ public class MemberController {
     }
 
     @GetMapping(value = {"/settings", "/settings/profile"})
-    public String editProfileForm(@Login Member loginMember, Model model) {
+    public String profileSettingForm(@Login Member loginMember, Model model) {
 
         String loginName = memberService.findLoginNameByUserNo(loginMember.getUserNo());
         Member member = memberService.findProfileByUserNo(loginMember.getUserNo());
@@ -312,6 +314,11 @@ public class MemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/settings/account")
+    public String accountSettingForm(@Login Member loginMember) {
+        return "memberAccountForm";
+    }
+
     @DeleteMapping("/settings/profile/image")
     public ResponseEntity deleteProfileImage(@Login Member loginMember, HttpSession session) throws IOException {
 
@@ -324,6 +331,56 @@ public class MemberController {
         session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);  // loginMember 세션 업데이트
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/withdrawal")
+    public String withdrawalConfirm(@Login Member loginMember) {
+        return "withdrawalConfirm";
+    }
+
+    @PostMapping("/withdrawal")
+    public String withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session, RedirectAttributes redirectAttributes) {
+        // 회원 조회
+        Member member = memberService.findProfileByUserNo(form.getUserNo());
+        if (member == null || form.getUserNo() != loginMember.getUserNo()) {
+            throw new IllegalStateException("올바른 요청이 아닙니다.");
+        }
+
+        // 탈퇴 요청 유효성 검사
+        MemberWithdrawal.ReasonCode reasonCode = form.getReasonCode();
+        List<MemberWithdrawal.ReasonCode> availableCodes = Arrays.asList(MemberWithdrawal.ReasonCode.NO_LONGER_RELEVANT, MemberWithdrawal.ReasonCode.USING_OTHER_SERVICE, MemberWithdrawal.ReasonCode.LOW_FREQUENCY_USE, MemberWithdrawal.ReasonCode.ETC);
+        if (reasonCode == null || !availableCodes.contains(reasonCode)) {
+            throw new IllegalStateException("올바른 요청이 아닙니다.");
+        }
+        String reasonText = form.getReasonText();
+        if (reasonCode == MemberWithdrawal.ReasonCode.ETC && reasonText.isBlank()) {
+            throw new IllegalStateException("올바른 요청이 아닙니다.");
+        }
+
+        // 회원 탈퇴
+        MemberWithdrawal mw = new MemberWithdrawal();
+        mw.setUserNo(loginMember.getUserNo());
+        mw.setStatusCode(MemberWithdrawal.StatusCode.VOLUNTARY_WITHDRAWAL);
+        mw.setReasonCode(form.getReasonCode());
+        if (reasonCode == MemberWithdrawal.ReasonCode.ETC) {  // 기타 사유인 경우
+            mw.setReasonText(reasonText);
+        }
+        memberService.withdrawMember(mw);
+        session.invalidate(); // 로그아웃
+
+        redirectAttributes.addFlashAttribute("status", "success");
+        return "redirect:/withdrawal-complete";
+    }
+
+    @GetMapping("/withdrawal-complete")
+    public String withdrawalComplete(Model model) {
+        // 탈퇴 후 리다이렉트된 경우
+        if (model.containsAttribute("status")) {
+            return "withdrawalComplete";
+        }
+
+        // URL을 통한 비정상 접근의 경우
+        return "redirect:/community";  // [!] 추후 home으로 변경
     }
 
 

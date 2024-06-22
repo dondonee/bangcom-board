@@ -78,6 +78,13 @@
 
                         const bvo = vo.branchComments[j];
                         const bvoImageName = bvo.writer.imageName || 'temporary.gif';
+                        const bvoNickname = bvo.writer.nickname || '(알 수 없음)';
+                        let bvoGradeRegionHtml = '';
+                        if (bvo.writer.nickname) {
+                            bvoGradeRegionHtml += '<span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
+                                + '<span>·</span>'
+                        }
+
                         // 대댓글의 댓글인 경우 '@닉네임' 표시
                         let mentionedHtml = ''
                         if (bvo.depthNo > 1) {
@@ -127,13 +134,12 @@
                             + ' <div class="d-flex justify-content-between">'
                             + '     <div class="d-flex">'
                             + '         <div class="me-2">'
-                            + '         <a href="/members/'+ bvo.writer.userNo +'"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
+                            + '         <a href="/members/' + bvo.writer.userNo + '"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
                             + '     </div>'
                             + '     <div class="d-flex flex-column my-auto">'
-                            + '         <a class="x-text-sm" href="/members/'+ bvo.writer.userNo +'">' + bvo.writer.nickname + '</a>'
+                            + '         <a class="x-text-sm" href="/members/' + bvo.writer.userNo + '">' + bvoNickname + '</a>'
                             + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                            + '             <span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
-                            + '             <span>·</span>'
+                            + bvoGradeRegionHtml
                             + '             <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
                             + '         </div>'
                             + '     </div>'
@@ -156,6 +162,13 @@
                 }
 
                 const imageName = vo.writer.imageName || 'temporary.gif';
+                const nickname = vo.writer.nickname || '(알 수 없음)';
+                let gradeRegionHtml = '';
+                if (vo.writer.nickname) {
+                    gradeRegionHtml += '<span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
+                    + '<span>·</span>'
+                }
+
                 let editBtnHtml = '';
                 if (vo.writer.userNo == loginMember.userNo) {
                     editBtnHtml += '<div class="dropdown d-flex align-items-center">'
@@ -178,13 +191,12 @@
                     + ' <div class="d-flex justify-content-between">'
                     + '     <div class="d-flex">'
                     + '         <div class="me-2">'
-                    + '             <a href="/members/'+ vo.writer.userNo +'"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
+                    + '             <a href="/members/' + vo.writer.userNo + '"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
                     + '         </div>'
                     + '         <div class="d-flex flex-column my-auto">'
-                    + '             <a class="x-text-sm" href="/members/'+ vo.writer.userNo +'">' + vo.writer.nickname + '</a>'
+                    + '             <a class="x-text-sm" href="/members/' + vo.writer.userNo + '">' + nickname + '</a>'
                     + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                    + '                 <span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
-                    + '                 <span>·</span>'
+                    + gradeRegionHtml
                     + '                 <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
                     + '             </div>'
                     + '         </div>'
@@ -273,7 +285,7 @@
                     if (button.attr('data-comment') === 'root') {  // 댓글인 경우
                         $(clone).find('> div').css('border-left', '2px solid #dee2e6').addClass('ms-2 p-3');
                     } else {  // 대댓글인 경우
-                        const mentioned = button.attr('data-mentioned');
+                        const mentioned = button.attr('data-mentioned') || '(알 수 없음)';
                         $(clone).find('> div').css('border-left', '')
                         $(clone).find('div.form-control').prepend('<div class="ps-2"><span class="x-mention rounded-pill">@' + mentioned + '</span></div>');
                     }
@@ -607,10 +619,12 @@
                         </a>
                     </div>
                     <div class="ms-2 d-flex flex-column">
-                        <a href="/members/${post.author.userNo}">${post.author.nickname}</a>
+                        <a href="/members/${post.author.userNo}">${not empty post.author.nickname? post.author.nickname: '(알 수 없음)'}</a>
                         <div class="x-text-sm x-text-gray-700" style="line-height: 1.2rem">
-                            <span>${post.author.grade.description} / ${post.author.region.description}</span>
-                            <span>·</span>
+                            <c:if test="${not empty post.author.nickname}">
+                                <span>${post.author.grade.description} / ${post.author.region.description}</span>
+                                <span>·</span>
+                            </c:if>
                             <span class="">${customFn.getElapsedTime(post.createdDate)}</span>
                             <span>·</span>
                             <span><i class="me-1 bi bi-eye"></i>${post.viewCount}</span>
@@ -695,11 +709,14 @@
                                                         alt="프로필사진"></a>
                                             </div>
                                             <div class="d-flex flex-column my-auto">
-                                                <a class="x-text-sm" href="/members/${vo.writer.userNo}">${vo.writer.nickname}</a>
+                                                <a class="x-text-sm"
+                                                   href="/members/${vo.writer.userNo}">${not empty vo.writer.nickname? vo.writer.nickname: '(알 수 없음)'}</a>
                                                 <div class="x-text-xs x-text-gray-600 x-font-light"
                                                      style="line-height: 1.2rem">
+                                                    <c:if test="${not empty vo.writer.nickname}">
                                                     <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
                                                     <span>·</span>
+                                                    </c:if>
                                                     <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
                                                 </div>
                                             </div>
@@ -783,11 +800,13 @@
                                                                 </div>
                                                                 <div class="d-flex flex-column my-auto">
                                                                     <a class="x-text-sm"
-                                                                       href="/members/${bvo.writer.userNo}">${bvo.writer.nickname}</a>
+                                                                       href="/members/${bvo.writer.userNo}">${not empty bvo.writer.nickname? bvo.writer.nickname: '(알 수 없음)'}</a>
                                                                     <div class="x-text-xs x-text-gray-600 x-font-light"
                                                                          style="line-height: 1.2rem">
+                                                                        <c:if test="${not empty bvo.writer.nickname}">
                                                                         <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
                                                                         <span>·</span>
+                                                                        </c:if>
                                                                         <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
                                                                     </div>
                                                                 </div>
@@ -834,7 +853,7 @@
                                                         <div class="${bvo.depthNo > 1? 'mt-0': 'mt-2'} mb-2 x-text-sm x-text-gray-800">
                                                             <c:if test="${bvo.depthNo > 1}">
                                                                 <div>
-                                                                    <span class="x-mention rounded-pill">@${bvo.parentCommentInfo.mentionedName}</span>
+                                                                    <span class="x-mention rounded-pill">@${not empty bvo.parentCommentInfo.mentionedName? bvo.parentCommentInfo.mentionedName: '(알 수 없음)'}</span>
                                                                 </div>
                                                             </c:if>
                                                             <div id="contentOf${bvo.id}" style="white-space: pre"><c:out

@@ -2,6 +2,7 @@ package com.knou.board.service;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.file.FileStore;
 import com.knou.board.file.UploadFile;
 import com.knou.board.repository.MemberRepository;
@@ -101,6 +102,27 @@ public class MemberService {
         // 파일명 DB 업데이트 후 최신 프로필 반환
         return doUpdateProfileImage(loginMember, new UploadFile(null, null));
     }
+
+    public void withdrawMember(MemberWithdrawal mw) {
+
+        long userNo = mw.getUserNo();
+        mw.setWithdrawalDate(LocalDateTime.now());
+
+        int result0 = memberRepository.deleteUser(userNo);
+        int result1 = memberRepository.deleteUserPassword(userNo);
+        int result2 = memberRepository.updateNullProfileByUserNo(userNo);
+        int result3 = memberRepository.insertWithdrawalUser(mw);
+        int result4 = memberRepository.insertWithdrawalLog(mw);
+
+        for (int i : new int[]{result0, result1, result2, result3, result4}) {
+            if (i != 1) {
+                throw new IllegalStateException("회원 탈퇴 처리 중 오류 발생");
+            }
+        }
+    }
+
+
+    // private methods
 
     private Member doUpdateProfileImage(Member member, UploadFile uploadFile) throws IOException {
 

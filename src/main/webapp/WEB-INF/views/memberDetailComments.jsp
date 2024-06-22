@@ -39,13 +39,17 @@
                         </div>
                         <div class="my-auto">
                             <div>
-                                <h2 class="fs-4 mb-0 x-font-semibold">${member.nickname}</h2>
+                                <h2 class="fs-4 mb-0 x-font-semibold">${not empty member.nickname? member.nickname: '(알 수 없음)'}</h2>
                             </div>
                             <div>
+                                <c:if test="${not empty vo.author.nickname}">
                             <span class="x-text-sm x-text-gray-800 x-font-light"
-                                  style="font-size: 0.95rem">${member.grade.description} / ${member.region.description}
-                            <c:if
-                                    test="${member.transferred eq true}"> / 편입</c:if></span>
+                                  style="font-size: 0.95rem">${member.grade.description} / ${member.region.description}${member.transferred eq true? ' / 편입': ''}</span>
+                                </c:if>
+                                <c:if test="${empty vo.author.nickname}">
+                            <span class="x-text-sm x-text-gray-800 x-font-light"
+                                  style="font-size: 0.95rem">존재하지 않는 사용자입니다.</span>
+                                </c:if>
                             </div>
                         </div>
                     </div>

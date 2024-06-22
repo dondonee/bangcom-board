@@ -95,4 +95,32 @@
         VALUES (#{userNo}, #{uploadFile.uploadFileName})
         ON DUPLICATE KEY UPDATE upload_name = #{uploadFile.uploadFileName}
     </insert>
+
+    <!-- 틸퇴 관련 -->
+    <delete id="deleteUser">
+        DELETE FROM member_user
+        WHERE user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteUserPassword">
+        DELETE FROM auth_password
+        WHERE user_no = #{userNo}
+    </delete>
+
+    <update id="updateNullProfileByUserNo">
+        UPDATE member_profile
+        SET nickname = NULL, image_name = NULL, bio = NULL, grade = NULL, transferred = NULL, region = NULL, joined_date = NULL, updated_date = NULL
+        WHERE user_no = #{userNo}
+    </update>
+
+    <insert id="insertWithdrawalUser">
+        INSERT INTO withdrawal_member (user_no)
+        VALUES (#{userNo})
+    </insert>
+
+    <insert id="insertWithdrawalLog">
+        INSERT INTO withdrawal_log (user_no, status_code, reason_code, reason_text, withdrawal_date)
+        VALUES (#{userNo}, #{statusCode, typeHandler=com.knou.board.domain.member.MemberWithdrawal$StatusCode$TypeHandler}, #{reasonCode, typeHandler=com.knou.board.domain.member.MemberWithdrawal$ReasonCode$TypeHandler}, #{reasonText}, #{withdrawalDate})
+    </insert>
+
 </mapper>

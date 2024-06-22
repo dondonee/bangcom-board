@@ -457,3 +457,10 @@ a:hover {
         margin-bottom: .75rem;
     }
 }
+
+.x-setting-btn.active {
+    background-color: #f3f4f6;  /* $gray-150 */
+}
+.x-setting-btn:hover {
+    background-color: #f3f4f6;  /* $gray-200 */
+}
