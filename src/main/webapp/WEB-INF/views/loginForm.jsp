@@ -15,7 +15,10 @@
 <div class="x-paddingx-v640 d-flex min-vh-100 justify-content-center align-items-center">
     <div class="x-max-width-md x-width-full pb-5">
         <div class="text-center">
-            <h2 class="mt-4 fs-1 x-font-bold">환영합니다.</h2>
+            <a class="navbar-brand text-primary fst-italic x-font-bold" href="/"><h1>Bangcom</h1></a>
+        </div>
+        <div class="text-center">
+            <h2 class="mt-4 fs-3 x-font-bold">환영합니다.</h2>
             <p class="mt-2 x-font-light x-text-gray-600">'방콤'은 한국방송통신대학교 컴퓨터과학과 커뮤니티입니다.</p>
         </div>
         <div class="position-relative">

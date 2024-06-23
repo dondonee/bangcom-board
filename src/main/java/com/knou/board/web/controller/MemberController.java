@@ -108,7 +108,7 @@ public class MemberController {
             return "redirect:/signup/celebration";
         }
 
-        return "redirect:/community";  // [!] 추후 home으로 변경
+        return "redirect:/";
     }
 
     @GetMapping("/signup/celebration")
@@ -120,7 +120,7 @@ public class MemberController {
         }
 
         // URL을 통한 비정상 접근의 경우
-        return "redirect:/community";  // [!] 추후 home으로 변경
+        return "redirect:/";
     }
 
     @GetMapping("/login")
@@ -178,13 +178,13 @@ public class MemberController {
             return "redirect:" + prevUrl;
         }
 
-        return "redirect:/community";  // [!] 추후 home으로 변경
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/community";  // [!] 추후 home으로 변경
+        return "redirect:/";
     }
 
     @GetMapping(value = {"/members/{userNo}", "/members/{userNo}/articles"})
@@ -192,7 +192,7 @@ public class MemberController {
         // 회원 조회
         Member member = memberService.findProfileByUserNo(userNo);
         if (member == null) {
-            return "redirect:/community";  // [!] 추후 home으로 변경
+            return "redirect:/";
         }
 
         List<Post> posts = postService.findListByMember(userNo, criteria);
@@ -212,7 +212,7 @@ public class MemberController {
         // 회원 조회
         Member member = memberService.findProfileByUserNo(userNo);
         if (member == null) {
-            return "redirect:/community";  // [!] 추후 home으로 변경
+            return "redirect:/";
         }
 
         // 작성 댓글 조회
@@ -376,7 +376,7 @@ public class MemberController {
         }
 
         // URL을 통한 비정상 접근의 경우
-        return "redirect:/community";  // [!] 추후 home으로 변경
+        return "redirect:/";
     }
 
     @PostMapping("/settings/account/password-reset")

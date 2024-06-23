@@ -6,7 +6,7 @@
 <div class=" border-bottom">
     <nav class="x-container-width mx-auto navbar navbar-expand-sm navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand text-primary fst-italic x-font-bold" style="flex-grow: 1" href="#">Bangcom</a>
+            <a class="navbar-brand text-primary fst-italic x-font-bold" style="flex-grow: 1" href="/">Bangcom</a>
             <div class="collapse navbar-collapse" style="flex-grow: 9" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto x-text-sm x-font-medium">
                     <li class="nav-item">

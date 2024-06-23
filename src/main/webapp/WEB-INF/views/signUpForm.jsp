@@ -12,12 +12,40 @@
 <head>
     <%@ include file="fragment/head.jsp" %>
     <title>Bangcom - 회원가입</title>
+    <script>
+        $(document).ready(function () {
+
+            function showErrorMessage($element, message) {
+                $element.html('<i class="me-1 bi bi-exclamation-circle"></i>' + message).show();
+            }
+
+            $('#loginName').on('keyup', function () {
+                var loginName = $(this).val();
+                var errorMessage = '<i class="me-1 bi bi-exclamation-circle"></i>';
+
+                // @Size(min = 4, max = 15) 검사
+                if (loginName.length < 4 || loginName.length > 15) {
+                    errorMessage += "아이디는 최소 4자 이상, 최대 15자 이하로 입력해야 합니다.<br>";
+
+                }
+
+                // @Pattern(regexp = "^[a-z0-9]*$") 검사
+                if (!/^[\da-z]+$/.test(loginName)) {
+                    errorMessage += "아이디는 영문 소문자와 숫자만 가능합니다.<br>";
+                }
+
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="d-flex justify-content-center x-margin-top__form x-paddingx-v640">
     <div class="x-max-width-md x-width-full pb-5">
         <div class="text-center">
-            <h2 class="mt-4 fs-1 x-font-bold">환영합니다.</h2>
+            <a class="navbar-brand text-primary fst-italic x-font-bold" href="/"><h1>Bangcom</h1></a>
+        </div>
+        <div class="text-center">
+            <h2 class="mt-4 fs-3 x-font-bold">환영합니다.</h2>
             <p class="mt-2 x-font-light x-text-gray-600">'방콤'은 한국방송통신대학교 컴퓨터과학과 커뮤니티입니다.</p>
         </div>
         <div class="position-relative">
@@ -37,14 +65,14 @@
                     <input type="text" class="form-control" name="loginName" id="loginName"
                            placeholder="4~15자 이내로 입력해주세요" value="${form.loginName}">
                 </div>
-                <spring:hasBindErrors name="memberSignUpForm">
-                    <c:if test="${not empty errors.getFieldError('loginName')}">
-                        <div class="mt-1 x-field-error">
-                            <i class="bi bi-exclamation-circle"></i>
-                            <span><spring:message message="${errors.getFieldError('loginName')}"/></span>
-                        </div>
-                    </c:if>
-                </spring:hasBindErrors>
+                <div id="loginNameErr" class="mt-1 x-field-error">
+
+                    <span>
+                         <spring:hasBindErrors name="memberSignUpForm">
+                             <i class="bi bi-exclamation-circle"></i><spring:message message="${errors.getFieldError('loginName')}"/>
+                         </spring:hasBindErrors>
+                    </span>
+                </div>
             </div>
             <div class="mb-4">
                 <div>

@@ -13,9 +13,17 @@ public class Criteria {
     private Sort sort;  // 정렬 기준
 
 
+    // 생성자
+
     public Criteria() {
         this.page = 1;
         this.pageSize = 20;
+        this.sort = Sort.ID;  // default: 최신순
+    }
+
+    public Criteria(int pageSize) {
+        this.page = 1;
+        this.pageSize = pageSize;
         this.sort = Sort.ID;  // default: 최신순
     }
 

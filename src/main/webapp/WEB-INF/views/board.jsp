@@ -111,7 +111,7 @@
             </div>
 
             <!--    페이징    -->
-            <div class="border-top mb-5">
+            <div class="border-top">
                 <nav class="d-flex justify-content-center">
                     <ul class="pagination">
                         <c:if test="${pageMaker.prevButton}">
