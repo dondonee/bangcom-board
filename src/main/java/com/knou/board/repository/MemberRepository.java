@@ -9,14 +9,17 @@ import java.time.LocalDateTime;
 
 public interface MemberRepository {
 
+    // 회원가입 관련
     MemberLogin insertUser(MemberLogin memberLogin);
-    MemberLogin insertPassword(MemberLogin memberLogin);
+    int insertPassword(MemberLogin memberLogin);
     Member insertProfile(Member member);
+
+    // SELECT
     Member selectProfileById(Long userNo);
     Member selectProfileByNickName(String nickName);
     String selectLoginNameById(Long userNo);
     MemberLogin selectUserByLoginName(String loginName);
-    MemberLogin selectUserByIdAndPassword(Long userNo, String password);
+    MemberLogin selectUserAndPasswordByLoginName(Long userNo, String password);
 
     // 프로필 수정 관련
     int updateProfile(Member member);
@@ -26,7 +29,6 @@ public interface MemberRepository {
     String selectUploadFileNameById(Long userNo);
     int updateProfileImage(Member member, UploadFile uploadFile);
     int updateProfileImageName(Long userNo, UploadFile uploadFile);
-
 
     // 탈퇴 관련
     int deleteUser(long UserNo);

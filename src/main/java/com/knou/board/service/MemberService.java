@@ -8,6 +8,7 @@ import com.knou.board.file.UploadFile;
 import com.knou.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final FileStore fileStore;
+    private final PasswordEncoder passwordEncoder;
+
 
     public boolean isDuplicatedLoginName(String loginName) {
         MemberLogin memberLogin = memberRepository.selectUserByLoginName(loginName);
@@ -45,8 +48,13 @@ public class MemberService {
         // 회원 INSERT
         memberLogin = memberRepository.insertUser(memberLogin);
 
-        // 비밀번호 INSERT ( [!] 추후 암호화 필요 )
-        memberRepository.insertPassword(memberLogin);
+        // 비밀번호 INSERT
+        String password = memberLogin.getPassword();
+        memberLogin.setPassword(passwordEncoder.encode(password));  // 암호화
+        int rs = memberRepository.insertPassword(memberLogin);
+        if (rs != 1) {
+            throw new IllegalStateException("비밀번호 INSERT 중 오류 발생");
+        }
 
         // 회원 프로필 INSERT
         member.setUserNo(memberLogin.getUserNo());
@@ -74,14 +82,13 @@ public class MemberService {
         String passwordInput = memberLogin.getPassword();
 
         // 인증 시도
-        MemberLogin authenticated = memberRepository.selectUserByIdAndPassword(userNoInput, passwordInput);
-
-        if (authenticated == null) {
+        MemberLogin findML = memberRepository.selectUserAndPasswordByLoginName(userNoInput, passwordInput);
+        if (!passwordEncoder.matches(passwordInput, findML.getPassword())) {
             return null;
         }
 
         // 인증 성공
-        Long findUserNo = authenticated.getUserNo();
+        Long findUserNo = findML.getUserNo();
         return memberRepository.selectProfileById(findUserNo);  // 애플리케이션에서 사용할 회원 프로필 조회
     }
 
@@ -110,6 +117,7 @@ public class MemberService {
 
         // 비밀번호 변경
         LocalDateTime updatedDate = LocalDateTime.now();
+        memberLogin.setPassword(passwordEncoder.encode(memberLogin.getPassword()));  // 암호화
         int rs = memberRepository.updatePassword(memberLogin, updatedDate);
         if (rs != 1) {
             throw new IllegalStateException("비밀번호 변경 중 오류 발생");
@@ -118,12 +126,12 @@ public class MemberService {
         // 인증 테스트
         Long userNo = memberLogin.getUserNo();
         String password = memberLogin.getPassword();
-        MemberLogin authenticated = memberRepository.selectUserByIdAndPassword(userNo, password);
-        if (authenticated == null) {
+        MemberLogin findML = memberRepository.selectUserAndPasswordByLoginName(userNo, password);
+        if (passwordEncoder.matches(password, findML.getPassword())) {
             throw new IllegalStateException("비밀번호 변경 후 인증 실패");
         }
 
-        return authenticated;
+        return findML;
     }
 
 

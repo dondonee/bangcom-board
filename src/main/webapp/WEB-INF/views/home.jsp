@@ -27,7 +27,7 @@
             <div class="mt-5 container">
                 <div class="row">
                     <div class="mb-2 col-12 col-sm-6">
-                        <h3 class="x-home-category-title">공지사항</h3>
+                        <a href="/notice"><h3 class="x-home-category-title">공지사항</h3></a>
                         <ul class="list-group list-group-flush list-unstyled">
                             <c:forEach var="vo" varStatus="status" items="${noticeList}">
                                 <li class="py-2 text-decoration-none ${status.index eq 0? '': ' border-top'}">
@@ -61,7 +61,7 @@
                         </ul>
                     </div>
                     <div class="mb-2 col-12 col-sm-6">
-                        <h3 class="x-home-category-title">커뮤니티</h3>
+                        <a href="/community"><h3 class="x-home-category-title">커뮤니티</h3></a>
                         <ul class="list-group list-group-flush list-unstyled">
                             <c:forEach var="vo" varStatus="status" items="${communityList}">
                                 <li class="py-2 text-decoration-none ${status.index eq 0? '': ' border-top'}">
@@ -97,7 +97,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-2 col-12 col-sm-6">
-                        <h3 class="x-home-category-title">Q&A</h3>
+                        <a href="/questions"><h3 class="x-home-category-title">Q&A</h3></a>
                         <ul class="list-group list-group-flush list-unstyled">
                             <c:forEach var="vo" varStatus="status" items="${qnaList}">
                                 <li class="py-2 text-decoration-none ${status.index eq 0? '': ' border-top'}">
@@ -131,7 +131,7 @@
                         </ul>
                     </div>
                     <div class="mb-2 col-12 col-sm-6">
-                        <h3 class="x-home-category-title">정보</h3>
+                        <a href="/info"><h3 class="x-home-category-title">정보</h3></a>
                         <ul class="list-group list-group-flush list-unstyled">
                             <c:forEach var="vo" varStatus="status" items="${infoList}">
                                 <li class="py-2 text-decoration-none ${status.index eq 0? '': ' border-top'}">

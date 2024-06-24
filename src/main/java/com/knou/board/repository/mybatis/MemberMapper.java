@@ -12,14 +12,17 @@ import java.time.LocalDateTime;
 @Mapper
 public interface MemberMapper {
 
+    // 회원가입 관련
     void insertUser(MemberLogin memberLogin);
-    void insertPassword(MemberLogin memberLogin);
+    int insertPassword(MemberLogin memberLogin);
     void insertProfile(Member member);
+
+    // SELECT
     Member selectProfileById(Long userNo);
     Member selectProfileByNickName(String nickName);
     String selectLoginNameById(Long userNo);
     MemberLogin selectUserByLoginName(String loginName);
-    MemberLogin selectUserByIdAndPassword(@Param("userNo") Long userNo, @Param("password") String password);
+    MemberLogin selectUserAndPasswordByLoginName(@Param("userNo") Long userNo, @Param("password") String password);
 
     // 프로필 수정 관련
     int updateProfile(Member member);
@@ -29,7 +32,6 @@ public interface MemberMapper {
     String selectUploadFileNameById(Long userNo);
     int updateProfileImage(@Param("member") Member member, @Param("uploadFile") UploadFile uploadFile);
     int updateProfileImageName(@Param("userNo") Long userNo, @Param("uploadFile") UploadFile uploadFile);
-
 
     // 탈퇴 관련
     int deleteUser(long UserNo);

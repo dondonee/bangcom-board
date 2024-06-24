@@ -5,6 +5,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:useBean id="customFn" class="com.knou.board.web.JspFunction"/>
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>
+<c:choose>
+    <c:when test="${empty topic}">
+        <c:set var="curi" value="/${topicGroup.uri}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="curi" value="/${topicGroup.uri}/${topic.uri}"/>
+    </c:otherwise>
+</c:choose>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -46,7 +54,8 @@
                         </ul>
                     </div>
                     <div class="order-md-1 col-md-auto col-6 col-sm-6">
-                        <a href="/${fn:toLowerCase(topicGroup)}/new" class="btn btn-primary px-3 py-1"><i
+                        <a href="${curi}/new"
+                           class="btn btn-primary px-3 py-1"><i
                                 class="bi bi-pencil-fill pe-1"></i><span>글쓰기</span></a>
                     </div>
                 </c:if>

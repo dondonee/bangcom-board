@@ -69,6 +69,7 @@
                         imgUploadModal.hide()
                         const imgName = xhr.imageName;
 
+                        $('#file').val('');
                         $('#navProfileImg').attr('src', '/images/profile/' + imgName);
                         $('#formImg').load(location.href + ' #formImg', null, function () {
                             $('#imgSuccessLight').show()
@@ -84,6 +85,7 @@
                         const exMessage = response.exMessage;
                         const exDescription = response.exDescription;
 
+                        $('#file').val('');
                         $('#imgUploadErrorModalLabel').text(exMessage);
                         $('#imgUploadErrorModal').find('.modal-body > div').text(exDescription);
                         imgUploadErrorModal.show();

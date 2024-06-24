@@ -125,12 +125,17 @@ public class PostController {
     /**
      * 게시글 등록 폼 : 모든 게시판 공용
      */
-    @GetMapping("/{board}/new")
-    public String addPostForm(@PathVariable String board, Model model) {
+    @GetMapping({"/{board}/new", "/{board}/{boardTopic}/new"})
+    public String addPostForm(@PathVariable String board, @PathVariable(required = false) String boardTopic, Model model) {
 
         try {
             TopicGroup topicGroup = TopicGroup.uriValueOf(board);
             model.addAttribute("topicGroup", topicGroup);
+
+            if (boardTopic != null) {
+                Topic topic = Topic.uriValueOf(boardTopic);
+                model.addAttribute("topic", topic);
+            }
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }

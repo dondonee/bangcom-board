@@ -178,7 +178,7 @@ public class MemberController {
             return "redirect:" + prevUrl;
         }
 
-        return "redirect:/";
+        return "redirect:/community";
     }
 
     @GetMapping("/logout")

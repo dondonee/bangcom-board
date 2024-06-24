@@ -17,6 +17,9 @@
         <result property="updatedDate" column="updated_date"/>
     </resultMap>
 
+
+    <!-- 회원가입 관련 -->
+
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userNo" parameterType="MemberLogin">
         INSERT INTO member_user (login_name)
         VALUES (#{loginName})
@@ -34,6 +37,9 @@
                 #{authority, typeHandler=com.knou.board.domain.member.Member$Authority$TypeHandler},
                 #{region, typeHandler=com.knou.board.domain.member.Member$Region$TypeHandler}, #{joinedDate});
     </insert>
+
+
+    <!-- SELECT -->
 
     <select id="selectProfileById" resultMap="memberMap">
         SELECT *
@@ -59,12 +65,11 @@
         WHERE login_name = #{loginName}
     </select>
 
-    <select id="selectUserByIdAndPassword" resultType="MemberLogin">
-        SELECT u.user_no
+    <select id="selectUserAndPasswordByLoginName" resultType="MemberLogin">
+        SELECT u.user_no, u.login_name, p.password
         FROM member_user u
                  JOIN auth_password p ON u.user_no = p.user_no
         WHERE u.user_no = #{userNo}
-          AND p.password = #{password}
     </select>
 
 

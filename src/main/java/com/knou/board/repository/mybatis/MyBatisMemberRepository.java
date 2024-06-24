@@ -16,6 +16,9 @@ public class MyBatisMemberRepository implements MemberRepository {
 
     private final MemberMapper memberMapper;
 
+
+    // 회원가입 관련
+
     @Override
     public MemberLogin insertUser(MemberLogin memberLogin) {
         memberMapper.insertUser(memberLogin);
@@ -23,9 +26,8 @@ public class MyBatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public MemberLogin insertPassword(MemberLogin memberLogin) {
-        memberMapper.insertPassword(memberLogin);
-        return memberLogin;
+    public int insertPassword(MemberLogin memberLogin) {
+        return memberMapper.insertPassword(memberLogin);
     }
 
     @Override
@@ -33,6 +35,9 @@ public class MyBatisMemberRepository implements MemberRepository {
         memberMapper.insertProfile(member);
         return member;
     }
+
+
+    // SELECT
 
     @Override
     public Member selectProfileById(Long userNo) {
@@ -55,9 +60,10 @@ public class MyBatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public MemberLogin selectUserByIdAndPassword(Long userNo, String password) {
-        return memberMapper.selectUserByIdAndPassword(userNo, password);
+    public MemberLogin selectUserAndPasswordByLoginName(Long userNo, String password) {
+        return memberMapper.selectUserAndPasswordByLoginName(userNo, password);
     }
+
 
     // 프로필 수정 관련
 
@@ -70,6 +76,7 @@ public class MyBatisMemberRepository implements MemberRepository {
     public int updatePassword(MemberLogin memberLogin, LocalDateTime updatedDate) {
         return memberMapper.updatePassword(memberLogin, updatedDate);
     }
+
 
     // 프로필 수정 - 이미지 업로드 관련
 

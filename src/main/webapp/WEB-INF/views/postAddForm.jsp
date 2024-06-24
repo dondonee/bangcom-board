@@ -33,10 +33,10 @@
                             <label for="topic" class="form-label">토픽</label>
                             <select class="form-select form-select-md" name="topic" id="topic">
                                 <option selected disabled>토픽을 선택해주세요.</option>
-                                <c:forEach var="topic" items="${topicGroup.topics}">
-                                    <option value="${topic}" <c:if
-                                            test="${form.topic eq topic || topic eq 'USER' && loginMember.authority eq 'USER'}"> selected</c:if><c:if
-                                            test="${topic eq 'MENTOR' && loginMember.authority eq 'USER'}"> disabled</c:if>>${topic.description}</option>
+                                <c:forEach var="vo" items="${topicGroup.topics}">
+                                    <option value="${vo}" <c:if
+                                            test="${vo eq topic || vo eq 'USER' && loginMember.authority eq 'USER'}"> selected</c:if><c:if
+                                            test="${vo eq 'MENTOR' && loginMember.authority eq 'USER'}"> disabled</c:if>>${vo.description}</option>
                                 </c:forEach>
                             </select>
                         </div>

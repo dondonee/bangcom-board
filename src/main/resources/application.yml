@@ -25,5 +25,6 @@ mybatis:
     map-underscore-to-camel-case: true
 logging:
   level:
+    org.springframework.security: DEBUG
     org.springframework.jdbc: DEBUG
     com.knou.board.repository.mybatis: DEBUG
