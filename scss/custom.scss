@@ -1,0 +1,48 @@
+$primary: #007db6;
+$danger: #C91900;
+
+// primary dark : #006a9b
+// primary light : #00A4F0
+
+$gray-100: #f8f9fa;
+$gray-150: #f3f4f6;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+$font-family-base: Pretendard-Regular;
+
+$form-label-margin-bottom: .25rem;
+$form-label-font-size: 15px;
+$form-label-color: $gray-700;
+$form-check-label-color: $gray-700;
+$input-color: $gray-800;
+
+$input-placeholder-color: $gray-500;
+$input-font-family: Pretendard-Light;
+$input-btn-font-size: 0.875rem;
+$input-btn-line-height: 1.75;
+
+$navbar-light-hover-color: #007db6;
+$navbar-light-active-color: #007db6;
+
+$dropdown-link-color: #343a40;
+$dropdown-link-hover-color: #007db6;
+$dropdown-link-hover-bg: none;
+$dropdown-link-active-color: #007db6;
+$dropdown-link-active-bg: none;
+
+$pagination-color: #343a40;
+$pagination-border-radius: 0;
+$pagination-border-color: none;
+$pagination-hover-bg: none;
+$pagination-focus-bg: none;
+$pagination-active-color: #007db6;
+$pagination-active-bg: none;
+
+@import "../node_modules/bootstrap/scss/bootstrap";

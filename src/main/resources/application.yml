@@ -1,6 +1,7 @@
 server:
   port: 8084
-
+  error:
+    include-message: always
 
 spring:
   application.name: board
@@ -9,8 +10,14 @@ spring:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
-  datasource:
-    driver-class-name: org.h2.Driver
+  messages:
+    basename: errors
+  server:
+    servlet:
+      session.timeout: 1800 # 세션 타임아웃 30분
+      multipart.max-file-size: 1MB
+      max-request-size: 1MB
+
 mybatis:
   type-aliases-package: com.knou.board.domain
   mapper-locations: classpath:/mapper/**/*.xml
@@ -18,5 +25,6 @@ mybatis:
     map-underscore-to-camel-case: true
 logging:
   level:
+    org.springframework.security: DEBUG
     org.springframework.jdbc: DEBUG
     com.knou.board.repository.mybatis: DEBUG

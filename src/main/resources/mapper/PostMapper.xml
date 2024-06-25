@@ -3,10 +3,104 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.knou.board.repository.mybatis.PostMapper">
 
-    <insert id="save" useGeneratedKeys="true" keyProperty = "id">
-        INSERT INTO post (post_title, post_content) VALUES (#{postTitle}, #{postContent})
+    <resultMap id="postMap" type="Post">
+        <id property="id" column="post_id"/>
+        <result property="topic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <result property="viewCount" column="view_count"/>
+        <association property="author" column="author_id" javaType="Member">
+            <result property="userNo" column="user_no"/>
+            <result property="nickname" column="nickname"/>
+            <result property="imageName" column="image_name"/>
+            <result property="bio" column="bio"/>
+            <result property="transferred" column="transferred"/>
+            <result property="grade" column="grade"
+                    typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler"/>
+            <result property="authority" column="authority"
+                    typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler"/>
+            <result property="region" column="region"
+                    typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler"/>
+            <result property="joinedDate" column="joined_date"/>
+            <result property="updatedDate" column="updated_date"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO post (topic, author_id, title, content, created_date)
+        VALUES (#{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}, #{author.userNo}, #{title},
+                #{content}, #{createdDate})
     </insert>
-    <select id="findById" resultType="Post">
-        SELECT * FROM post WHERE id = #{id}
+
+    <select id="selectById" resultMap="postMap">
+        SELECT *
+        FROM post
+                 LEFT JOIN member_profile ON post.author_id = member_profile.user_no
+        WHERE post.post_id = #{id}
     </select>
+
+    <select id="selectByUserNo" resultMap="postMap">
+        SELECT post_id, topic, author_id, title, created_date
+        FROM post
+        WHERE author_id = #{userNo}
+        ORDER BY post_id DESC
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
+    </select>
+
+    <select id="selectAll" resultMap="postMap">
+        SELECT *
+        FROM post
+                 JOIN member_profile ON post.author_id = member_profile.user_no
+    </select>
+
+    <select id="selectByTopics" resultMap="postMap">
+        SELECT * FROM post
+        LEFT JOIN member_profile ON post.author_id = member_profile.user_no
+        <where>
+            <foreach item="topic" index="index" collection="topics" open="topic IN (" separator="," close=")">
+                #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
+            </foreach>
+        </where>
+        ORDER BY ${criteria.sort.code} DESC
+        <if test="!criteria.sort.name().equals('ID')">, post_id DESC</if>
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
+    </select>
+
+    <select id="countTotalSelectedByUserNo" resultType="long">
+        SELECT count(*) FROM post
+        WHERE author_id = #{userNo}
+    </select>
+
+    <select id="countTotalSelectedByTopics" resultType="long">
+        SELECT count(*) FROM post
+        <where>
+            <foreach item="topic" index="index" collection="array" open="topic IN (" separator="," close=")">
+                #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler}
+            </foreach>
+        </where>
+    </select>
+
+    <update id="update" parameterType="Post">
+        UPDATE post
+        SET topic         = #{topic, typeHandler=com.knou.board.domain.post.Topic$TypeHandler},
+            title         = #{title},
+            content       = #{content},
+            modified_date = #{modifiedDate}
+        WHERE post_id = #{id}
+    </update>
+
+    <update id="updateViewCount">
+        UPDATE post
+        SET view_count = view_count + 1
+        WHERE post_id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM post
+        WHERE post_id = #{id}
+    </delete>
+
 </mapper>
