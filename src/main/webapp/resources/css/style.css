@@ -116,12 +116,66 @@ a:hover {
     }
 }
 
+@media screen and (max-width: 575px) {
+    /* breakpoint: sm */
+    .x-footer {
+        margin-bottom: 4.5rem
+    }
+}
+
+
 /*
     navbar
 */
 .dropdown-toggle::after {
     display: none;
 }
+
+/* 모바일 전용 하단 navbar */
+
+.x-mnav {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.x-mnav-btn {
+    width: 20%;
+    row-gap: .375rem;
+}
+
+.x-mnav-center-btn {
+    width: 2.8rem;
+    height: 2.8rem;
+    background-color: #007db6;
+
+    border-radius: 50%;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.19)
+}
+
+.x-mnav-center-btn:hover {
+    background-color: #006a9b;
+}
+
+.x-mnav-center-dropdown {
+    top: -13rem;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1)
+}
+
+.x-mnav-btn-icon {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.x-mnav-btn-icon-center {
+    color: white;
+    width: 2rem;
+    height: 2rem;
+}
+
+.x-mnav-btn-text {
+    font-size: 0.7rem;
+    line-height: 0.65rem;
+}
+
 
 /*
     pagination
@@ -471,7 +525,6 @@ a:hover {
     font-size: 1.15rem;
     font-family: Pretendard-SemiBold;
     padding: 1rem 1.25rem;
-    /*background-color: #f3f4f6;*/
-    background: linear-gradient(120deg, #f3f4f6 1%, rgba(0,106,155, 0.2));
+    background: linear-gradient(120deg, #f3f4f6 1%, rgba(0, 106, 155, 0.2));
     border-radius: 0.5rem;
 }

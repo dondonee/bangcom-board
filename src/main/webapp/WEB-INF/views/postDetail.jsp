@@ -1011,6 +1011,9 @@
         </div>
     </c:if>
 </main>
+<footer>
+    <%@include file="fragment/footer.jsp" %>
+</footer>
 
 <!-- Bootstrap JS Bundle with Popper -->
 <%@ include file="fragment/script.jsp" %>
