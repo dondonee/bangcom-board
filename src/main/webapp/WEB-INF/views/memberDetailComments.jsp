@@ -42,11 +42,11 @@
                                 <h2 class="fs-4 mb-0 x-font-semibold">${not empty member.nickname? member.nickname: '(알 수 없음)'}</h2>
                             </div>
                             <div>
-                                <c:if test="${not empty vo.author.nickname}">
+                                <c:if test="${not empty member.nickname}">
                             <span class="x-text-sm x-text-gray-800 x-font-light"
                                   style="font-size: 0.95rem">${member.grade.description} / ${member.region.description}${member.transferred eq true? ' / 편입': ''}</span>
                                 </c:if>
-                                <c:if test="${empty vo.author.nickname}">
+                                <c:if test="${empty member.nickname}">
                             <span class="x-text-sm x-text-gray-800 x-font-light"
                                   style="font-size: 0.95rem">존재하지 않는 사용자입니다.</span>
                                 </c:if>
@@ -77,14 +77,17 @@
                                 <div class="d-flex align-items-center">
                                 <a class="x-topic-pill x-link x-text-xs" href="${cpath}/${customFn.getTopicListUrl(vo.postTopic)}">${vo.postTopic.description}</a><div class="ms-1"><a href="/members/${vo.authorId}" class="x-text-gray-800">${vo.authorNickname}</a>님의 게시물에 <span class="x-text-primary">댓글</span>을 달았습니다.</div>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                    <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="createdDate"/>
-                                    <fmt:formatDate value="${createdDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                <div class="d-flex align-items-center d-none d-sm-block">
+                                    <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDate"/>
+                                    <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                                 </div>
                             </div>
                             <div class="my-2">
                                 <a href="/articles/${vo.postId}"><span class="x-font-semibold"><c:out
                                         value="${vo.postTitle}"></c:out></span></a>
+                            </div>
+                            <div class="d-block d-sm-none x-text-sm x-text-gray-600 x-font-light">
+                                <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                             </div>
                         </li>
                     </c:forEach>

@@ -108,7 +108,7 @@ public class MemberController {
             return "redirect:/signup/celebration";
         }
 
-        return "redirect:/";
+        return "redirect:/login";
     }
 
     @GetMapping("/signup/celebration")

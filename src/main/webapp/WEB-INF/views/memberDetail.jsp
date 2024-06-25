@@ -81,15 +81,18 @@
                                        href="${cpath}/${customFn.getTopicListUrl(vo.topic)}">${vo.topic.description}</a>
                                     <div class="ms-1">카테고리에 <span class="x-text-primary">게시물</span>을 작성하였습니다.</div>
                                 </div>
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center d-none d-sm-block">
                                     <fmt:parseDate value="${vo.createdDate}" pattern="yyyy-MM-dd'T'HH:mm:ss"
-                                                   var="createdDate"/>
-                                    <fmt:formatDate value="${createdDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                                   var="parsedDate"/>
+                                    <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                                 </div>
                             </div>
                             <div class="my-2">
                                 <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                         value="${vo.title}"></c:out></span></a>
+                            </div>
+                            <div class="d-block d-sm-none x-text-sm x-text-gray-600 x-font-light">
+                                <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                             </div>
                         </li>
                     </c:forEach>

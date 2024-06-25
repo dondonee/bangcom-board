@@ -10,7 +10,7 @@
 <html lang="ko">
 <head>
     <%--  [!] refresh 경로 추후 home으로 변경  --%>
-    <meta http-equiv="Refresh" content="3; /community">
+    <meta http-equiv="Refresh" content="3; /login">
     <%@ include file="fragment/head.jsp" %>
     <title>Bangcom - 가입을 환영합니다.</title>
 </head>
