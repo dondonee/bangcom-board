@@ -1,0 +1,12 @@
+config:
+  activate.on-profile: prod
+server:
+  port: 8080
+spring:
+    url: jdbc:mysql://158.247.245.81:3306/bangcom-product
+    username: root
+    password: root9999
+custom:
+  path:
+    image: 'file:///root/board-resources/images/'
+    upload-image: '/root/board-resources/images/'

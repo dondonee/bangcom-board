@@ -3,7 +3,8 @@ server:
 
 spring:
   application.name: board
-  profiles.active: sensitive
+  config:
+    activate.on-profile: sensitive
   mvc:
     view:
       prefix: /WEB-INF/views/
@@ -14,7 +15,3 @@ mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
-logging:
-  level:
-    org.springframework.jdbc: DEBUG
-    com.knou.board.repository.mybatis: DEBUG
