@@ -36,6 +36,7 @@ public interface MemberMapper {
     // 탈퇴 관련
     int deleteUser(long UserNo);
     int deleteUserPassword(long UserNo);
+    int deleteProfileImage(long UserNo);
     int updateNullProfileByUserNo(Long userNo);
     int insertWithdrawalUser(MemberWithdrawal memberWithdrawal);
     int insertWithdrawalLog(MemberWithdrawal memberWithdrawal);

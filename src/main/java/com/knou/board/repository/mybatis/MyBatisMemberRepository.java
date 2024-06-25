@@ -108,6 +108,11 @@ public class MyBatisMemberRepository implements MemberRepository {
     }
 
     @Override
+    public int deleteProfileImage(long UserNo) {
+        return memberMapper.deleteProfileImage(UserNo);
+    }
+
+    @Override
     public int updateNullProfileByUserNo(Long userNo) {
         return memberMapper.updateNullProfileByUserNo(userNo);
     }

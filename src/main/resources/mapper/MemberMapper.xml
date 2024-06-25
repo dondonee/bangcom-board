@@ -124,6 +124,11 @@
         WHERE user_no = #{userNo}
     </delete>
 
+    <delete id="deleteProfileImage">
+        DELETE FROM profile_image
+        WHERE user_no = #{userNo}
+    </delete>
+
     <update id="updateNullProfileByUserNo">
         UPDATE member_profile
         SET nickname = NULL, image_name = NULL, bio = NULL, grade = NULL, transferred = NULL, region = NULL, joined_date = NULL, updated_date = NULL

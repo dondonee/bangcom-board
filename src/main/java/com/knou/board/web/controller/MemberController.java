@@ -335,7 +335,7 @@ public class MemberController {
     }
 
     @PostMapping("/withdrawal")
-    public String withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session, RedirectAttributes redirectAttributes) throws IOException {
         // 회원 조회
         Member member = memberService.findProfileByUserNo(form.getUserNo());
         if (member == null || form.getUserNo() != loginMember.getUserNo()) {

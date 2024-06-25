@@ -10,7 +10,7 @@
 <html lang="ko">
 <head>
 <%--      [!] refresh 경로 추후 home으로 변경  --%>
-    <meta http-equiv="Refresh" content="3; /community">
+    <meta http-equiv="Refresh" content="3; /">
     <%@ include file="fragment/head.jsp" %>
     <title>Bangcom - 탈퇴 완료</title>
 </head>
@@ -27,7 +27,7 @@
                 <p class="m-0">3초 후 메인 화면으로 이동합니다.</p>
             </div>
             <div class="mt-4 d-flex justify-content-center">
-                <a href="/community" class="btn btn-primary" style="width: 10rem">메인 화면</a>
+                <a href="/" class="btn btn-primary" style="width: 10rem">메인 화면</a>
             </div>
         </div>
     </div>
