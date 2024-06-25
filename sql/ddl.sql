@@ -1,24 +1,23 @@
 
 -- ** 회원 관련 **
 
-DROP TABLE member_user IF EXISTS;
+DROP TABLE member_user;
 CREATE TABLE member_user
 (
     user_no    BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     login_name VARCHAR(20) NOT NULL
 );
 
-DROP TABLE auth_password IF EXISTS;
+DROP TABLE auth_password;
 CREATE TABLE auth_password
 (
     password_id  BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no      BIGINT       NOT NULL UNIQUE,
     password     VARCHAR(128) NOT NULL,
-    updated_date DATETIME     NULL,
-    FOREIGN KEY (user_no) REFERENCES member_user (user_no)
+    updated_date DATETIME     NULL
 );
 
-DROP TABLE member_profile IF EXISTS;
+DROP TABLE member_profile;
 CREATE TABLE member_profile
 (
     profile_id   BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -28,26 +27,24 @@ CREATE TABLE member_profile
     bio          VARCHAR(150) NULL,
     transferred  TINYINT      NULL,
     grade       ENUM('0', '1', '2', '3', '4', 'graduate'),
-    authority   ENUM('admin', 'mentor', 'user'),
+    authority   ENUM('A', 'M', 'U'),
     region      ENUM('11', '21', '22', '23', '24', '25', '26', '29', '31', '32', '33', '34', '35', '36', '37', '38', '39', '99'),
     joined_date  DATETIME     NULL,
-    updated_date DATETIME     NULL,
-    FOREIGN KEY (user_no) REFERENCES member_user (user_no)
+    updated_date DATETIME     NULL
 );
 
-DROP TABLE profile_image IF EXISTS;
+DROP TABLE profile_image;
 CREATE TABLE profile_image
 (
     image_id    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no     BIGINT       NOT NULL UNIQUE,
-    upload_name VARCHAR(255) NULL,
-    FOREIGN KEY (user_no) REFERENCES member_user (user_no)
+    upload_name VARCHAR(255) NULL
 );
 
 
 -- ** 게시판 관련 **
 
-DROP TABLE post IF EXISTS;
+DROP TABLE post;
 CREATE TABLE post
 (
     post_id       BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -57,11 +54,10 @@ CREATE TABLE post
     content       TEXT        NOT NULL,
     created_date  DATETIME    NOT NULL,
     modified_date DATETIME    NULL,
-    view_count    INT DEFAULT 0,
-    FOREIGN KEY (author_id) REFERENCES member_user (user_no)
+    view_count    INT DEFAULT 0
 );
 
-DROP TABLE post_comment IF EXISTS;
+DROP TABLE post_comment;
 CREATE TABLE post_comment
 (
     comment_id    BIGINT   NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -74,25 +70,20 @@ CREATE TABLE post_comment
     depth_no      INT      NULL,
     order_no      INT      NULL,
     created_date  DATETIME NOT NULL,
-    modified_date DATETIME NULL,
-    FOREIGN KEY (post_id) REFERENCES post (post_id),
-    FOREIGN KEY (writer_id) REFERENCES member_user (user_no),
-    FOREIGN KEY (parent_id) REFERENCES post_comment (comment_id),
-    FOREIGN KEY (mentioned_id) REFERENCES member_user (user_no)
+    modified_date DATETIME NULL
 );
 
 
 -- ** 탈퇴 **
 
-DROP TABLE withdrawal_member IF EXISTS;
+DROP TABLE withdrawal_member;
 CREATE TABLE withdrawal_member
 (
     withdrawal_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_no       BIGINT NOT NULL,
-    FOREIGN KEY (user_no) REFERENCES member_user (user_no)
+    user_no       BIGINT NOT NULL
 );
 
-DROP TABLE withdrawal_log IF EXISTS;
+DROP TABLE withdrawal_log;
 CREATE TABLE withdrawal_log
 (
     withdrawal_log_id BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -100,6 +91,5 @@ CREATE TABLE withdrawal_log
     status_code       TINYINT      NOT NULL,
     reason_code       TINYINT      NOT NULL,
     reason_text       VARCHAR(255) NULL,
-    withdrawal_date   DATETIME     NOT NULL,
-    FOREIGN KEY (user_no) REFERENCES member_user (user_no)
+    withdrawal_date   DATETIME     NOT NULL
 );
