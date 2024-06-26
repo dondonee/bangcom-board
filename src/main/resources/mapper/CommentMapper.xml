@@ -76,19 +76,23 @@
 
         <if test="parentCommentInfo == null">
             null, null, 0,
-            (SELECT IFNULL(MAX(group_no) + 1, 0) FROM post_comment
-            WHERE post_id = #{postId}),
-            (SELECT IFNULL(MAX(order_no) + 1, 0)
+            (SELECT IFNULL(temp.group_no + 1, 0)
+            FROM (SELECT MAX(group_no) as group_no
             FROM post_comment
-            WHERE post_id = #{postId})
+            WHERE post_id = #{postId}) AS temp),
+            (SELECT IFNULL(temp.order_no + 1, 0)
+            FROM (SELECT MAX(order_no) as order_no
+            FROM post_comment
+            WHERE post_id = #{postId}) AS temp)
         </if>
         <if test="parentCommentInfo != null">
             #{parentCommentInfo.parentId},
             #{parentCommentInfo.mentionedId}, #{parentCommentInfo.parentDepthNo} + 1,
             #{parentCommentInfo.parentGroupNo},
-            (SELECT IFNULL(MAX(order_no) + 1, 0)
+            (SELECT IFNULL(temp.order_no + 1, 0)
+            FROM (SELECT MAX(order_no) as order_no
             FROM post_comment
-            WHERE post_id = #{postId} and group_no = #{parentCommentInfo.parentGroupNo})
+            WHERE post_id = #{postId} and group_no = #{parentCommentInfo.parentGroupNo}) AS temp)
         </if>
         )
     </insert>
@@ -179,7 +183,7 @@
                            ON b.mentioned_id = pm.user_no
         WHERE r.post_id = #{postId}
           AND r.parent_id IS NULL
-        ORDER BY comment_id DESC
+        ORDER BY r.order_no ASC, b.order_no ASC
     </select>
 
     <select id="selectParentInfoById" resultType="ParentCommentInfoInsert">

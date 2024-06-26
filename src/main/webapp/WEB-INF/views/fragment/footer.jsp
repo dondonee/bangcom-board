@@ -15,7 +15,7 @@
             }
         });
 
-        $('.x-main').click(function(e) {
+        $('.x-main, .x-footer').click(function(e) {
             const menu = $('#createBtnDropdup');
             menu.css('display', 'none');
         });
@@ -33,21 +33,20 @@
             </div>
             <div class="x-main">
                 <ul class="d-flex justify-content-start list-unstyled x-text-xs x-font-light">
-                    <li><a href="#">포트폴리오 소개</a></li>
+                    <li><a href="/articles/1">포트폴리오 소개</a></li>
                     <span class="mx-2">|</span>
-                    <li><a href="#">연락처</a></li>
+                    <li><a href="/articles/2">연락처</a></li>
                     <span class="mx-2">|</span>
-                    <li><a href="#">버그 제보</a></li>
+                    <li><a href="/articles/3">버그 제보</a></li>
                     <span class="mx-2">|</span>
-                    <li><a href="#">개인정보처리방침</a></li>
+                    <li><a href="/articles/4">개인정보처리방침</a></li>
                 </ul>
                 <div class="x-text-sm x-font-light x-text-gray-700">
                     <p class="my-0"><span class="x-font-medium">이임시</span>의 포트폴리오</p>
                     <p>
                         <span>email: temporary12345@gmail.com</span>
                         <span class="mx-2">|</span>
-                        <a href="#" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
-                        <span class="mx-2">|</span>
+                        <a href="#" class="me-2" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
                         <a href="#" style="color: inherit"><i class="me-1 bi bi-house-door-fill"></i>Blog</a>
                     </p>
                 </div>
@@ -67,7 +66,7 @@
 <div class="d-block d-sm-none position-relative">
     <nav class="x-mnav border-top fixed-bottom z-3" style="height: 4.5rem; background-color: white">
         <div class="d-flex justify-content-center align-items-center" style="padding: .55rem">
-            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn" href="/questions">
+            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn ${topicGroup eq 'QUESTIONS'? 'active': ''}" href="/questions">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                      class="x-mnav-btn-icon bi bi-question-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -75,7 +74,7 @@
                 </svg>
                 <span class="x-mnav-btn-text">Q&A</span>
             </a>
-            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn" href="/info">
+            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn ${topicGroup eq 'INFO'? 'active': ''}" href="/info">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                      class="x-mnav-btn-icon bi bi-info-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -139,14 +138,14 @@
                     </li>
                 </ul>
             </div>
-            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn" href="/community">
+            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn ${topicGroup eq 'COMMUNITY'? 'active': ''}" href="/community">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                      class="x-mnav-btn-icon bi bi-people" viewBox="0 0 16 16">
                     <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
                 </svg>
                 <span class="x-mnav-btn-text">커뮤니티</span>
             </a>
-            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn" href="/notice">
+            <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn ${topicGroup eq 'NOTICE'? 'active': ''}" href="/notice">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                      class="x-mnav-btn-icon bi bi-exclamation-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>

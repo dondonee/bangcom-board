@@ -38,8 +38,11 @@
                             </a>
                         </div>
                         <div class="my-auto">
-                            <div>
+                            <div class="d-flex align-items-center">
                                 <h2 class="fs-4 mb-0 x-font-semibold">${not empty member.nickname? member.nickname: '(알 수 없음)'}</h2>
+                                <c:if test="${member.authority eq 'ADMIN'}">
+                                    <span class="ms-2 x-text-sm x-badge-admin">관리자</span>
+                                </c:if>
                             </div>
                             <div>
                                 <c:if test="${not empty member.nickname}">
@@ -87,7 +90,7 @@
                                     <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
                                 </div>
                             </div>
-                            <div class="my-2">
+                            <div class="my-2 text-truncate">
                                 <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                         value="${vo.title}"></c:out></span></a>
                             </div>

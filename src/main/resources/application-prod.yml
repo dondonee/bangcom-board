@@ -3,7 +3,8 @@ config:
 server:
   port: 8080
 spring:
-    url: jdbc:mysql://158.247.245.81:3306/bangcom-product
+  datasource:
+    url: jdbc:mysql://158.247.245.81:3306/bangcom_product?createDatabaseIfNotExist=true
     username: root
     password: root9999
 custom:

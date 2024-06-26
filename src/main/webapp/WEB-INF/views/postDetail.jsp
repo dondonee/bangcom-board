@@ -91,7 +91,7 @@
 
                             let branchDataAttr = '';
                             if (bvo.depthNo > 1) {
-                                branchDataAttr = 'data-comment-type="branch2" data-mentioned="'+ bvo.parentCommentInfo.mentionedName +'"'
+                                branchDataAttr = 'data-comment-type="branch2" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '"'
                             } else {
                                 branchDataAttr = 'data-comment-type="branch"';
                             }
@@ -131,6 +131,11 @@
                         }
 
                         const bvoDataMentioned = bvo.writer.nickname || '(알 수 없음)';
+                        let bvoAdminBadgeHtml = '';
+                        if (bvo.writer.authority == '관리자') {
+                            bvoAdminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                        }
+
 
                         branchesHtml += '<li class="py-3' + borderTop + '">'
                             + '<div id="commentOf' + bvo.id + '">'
@@ -141,7 +146,10 @@
                             + '         <a href="/members/' + bvo.writer.userNo + '"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
                             + '     </div>'
                             + '     <div class="d-flex flex-column my-auto">'
-                            + '         <a class="x-text-sm" href="/members/' + bvo.writer.userNo + '">' + bvoNickname + '</a>'
+                            + '         <a class="d-flex align-items-center x-text-sm" href="/members/' + bvo.writer.userNo + '">'
+                            + '                 <span>' + bvoNickname + '</span>'
+                            + bvoAdminBadgeHtml
+                            + '         </a>'
                             + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                             + bvoGradeRegionHtml
                             + '             <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
@@ -153,7 +161,7 @@
                             // 내용
                             + ' <div class="' + marginTop + ' mb-2 x-text-sm x-text-gray-800">'
                             + bvoMentionedHtml // 대댓글의 댓글인 경우 '@부모글작성자닉네임' 표시
-                            + '     <div id="contentOf' + bvo.id + '"  style="white-space: pre">'
+                            + '     <div id="contentOf' + bvo.id + '"  style="white-space: pre-wrap">'
                             + '     </div>'
                             + ' </div>'
                             + ' <div class="mb-2">'
@@ -190,6 +198,11 @@
                         + '</div>';
                 }
 
+                let adminBadgeHtml = '';
+                if (vo.writer.authority == '관리자') {
+                    adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                }
+
                 // Root 댓글 영역
                 html += '<li class="py-3 border-top text-decoration-none">'
                     + '<div id="commentOf' + vo.id + '">'
@@ -200,7 +213,10 @@
                     + '             <a href="/members/' + vo.writer.userNo + '"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
                     + '         </div>'
                     + '         <div class="d-flex flex-column my-auto">'
-                    + '             <a class="x-text-sm" href="/members/' + vo.writer.userNo + '">' + nickname + '</a>'
+                    + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + vo.writer.userNo + '">'
+                    + '                 <span>' + nickname + '</span>'
+                    + adminBadgeHtml
+                    + '             </a>'
                     + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                     + gradeRegionHtml
                     + '                 <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
@@ -210,7 +226,7 @@
                     + editBtnHtml
                     + ' </div>'
                     + ' <div class="my-2 x-text-sm x-text-gray-800">'
-                    + '     <div id="contentOf' + vo.id + '"  style="white-space: pre">'
+                    + '     <div id="contentOf' + vo.id + '"  style="white-space: pre-wrap">'
                     + '     </div>'
                     + ' </div>'
                     + ' <div class="mb-2 d-flex">'
@@ -625,7 +641,14 @@
                         </a>
                     </div>
                     <div class="ms-2 d-flex flex-column">
-                        <a href="/members/${post.author.userNo}">${not empty post.author.nickname? post.author.nickname: '(알 수 없음)'}</a>
+                        <a class="d-flex align-items-center" href="/members/${post.author.userNo}">
+                            <span>
+                                ${not empty post.author.nickname? post.author.nickname: '(알 수 없음)'}
+                            </span>
+                            <c:if test="${loginMember.authority eq 'ADMIN'}">
+                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                            </c:if>
+                        </a>
                         <div class="x-text-sm x-text-gray-700" style="line-height: 1.2rem">
                             <c:if test="${not empty post.author.nickname}">
                                 <span>${post.author.grade.description} / ${post.author.region.description}</span>
@@ -663,7 +686,7 @@
             <%--    게시글 제목 및 내용    --%>
             <div class="pb-5 border-bottom">
                 <h1 class="my-5 fs-2 x-font-semibold"><c:out value="${post.title}"></c:out></h1>
-                <div style="white-space: pre" class="pb-5 x-text-gray-700"><c:out
+                <div style="white-space: pre-wrap" class="pb-5 x-text-gray-700"><c:out
                         value="${post.content}"></c:out></div>
             </div>
             <%--    댓글 영역    --%>
@@ -715,8 +738,13 @@
                                                         alt="프로필사진"></a>
                                             </div>
                                             <div class="d-flex flex-column my-auto">
-                                                <a class="x-text-sm"
-                                                   href="/members/${vo.writer.userNo}">${not empty vo.writer.nickname? vo.writer.nickname: '(알 수 없음)'}</a>
+                                                <a class="d-flex align-items-center x-text-sm"
+                                                   href="/members/${vo.writer.userNo}">
+                                                    <span>${not empty vo.writer.nickname? vo.writer.nickname: '(알 수 없음)'}</span>
+                                                    <c:if test="${vo.writer.authority eq 'ADMIN'}">
+                                                        <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                    </c:if>
+                                                </a>
                                                 <div class="x-text-xs x-text-gray-600 x-font-light"
                                                      style="line-height: 1.2rem">
                                                     <c:if test="${not empty vo.writer.nickname}">
@@ -761,7 +789,7 @@
                                         </c:if>
                                     </div>
                                     <div class="my-2 x-text-sm x-text-gray-800">
-                                        <div id="contentOf${vo.id}" style="white-space: pre"><c:out
+                                        <div id="contentOf${vo.id}" style="white-space: pre-wrap"><c:out
                                                 value="${vo.content}"></c:out></div>
                                     </div>
                                     <div class="mb-2 d-flex">
@@ -806,8 +834,13 @@
                                                                             alt="프로필사진"></a>
                                                                 </div>
                                                                 <div class="d-flex flex-column my-auto">
-                                                                    <a class="x-text-sm"
-                                                                       href="/members/${bvo.writer.userNo}">${not empty bvo.writer.nickname? bvo.writer.nickname: '(알 수 없음)'}</a>
+                                                                    <a class="d-flex align-items-center x-text-sm"
+                                                                       href="/members/${bvo.writer.userNo}">
+                                                                        <span>${not empty bvo.writer.nickname? bvo.writer.nickname: '(알 수 없음)'}</span>
+                                                                        <c:if test="${bvo.writer.authority eq 'ADMIN'}">
+                                                                            <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                                        </c:if>
+                                                                    </a>
                                                                     <div class="x-text-xs x-text-gray-600 x-font-light"
                                                                          style="line-height: 1.2rem">
                                                                         <c:if test="${not empty bvo.writer.nickname}">
@@ -864,7 +897,7 @@
                                                                     <span class="x-mention rounded-pill">@${not empty bvo.parentCommentInfo.mentionedName? bvo.parentCommentInfo.mentionedName: '(알 수 없음)'}</span>
                                                                 </div>
                                                             </c:if>
-                                                            <div id="contentOf${bvo.id}" style="white-space: pre"><c:out
+                                                            <div id="contentOf${bvo.id}" style="white-space: pre-wrap"><c:out
                                                                     value="${bvo.content}"></c:out></div>
                                                         </div>
                                                         <div class="mb-2">

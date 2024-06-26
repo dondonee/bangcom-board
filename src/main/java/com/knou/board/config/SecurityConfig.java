@@ -19,6 +19,8 @@ public class SecurityConfig {
                         .anyRequest().permitAll())
                 .csrf((csrf) -> csrf
                         .disable())
+                .logout((logout) -> logout
+                        .logoutSuccessUrl("/"));
         ;
         return http.build();
     }

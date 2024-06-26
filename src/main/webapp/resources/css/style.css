@@ -141,6 +141,9 @@ a:hover {
     width: 20%;
     row-gap: .375rem;
 }
+.x-mnav-btn.active {
+    color: #007db6;
+}
 
 .x-mnav-center-btn {
     width: 2.8rem;
@@ -491,6 +494,12 @@ a:hover {
     color: #00DF9C;
 }
 
+.x-text-ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 /*
     block
 */
@@ -527,4 +536,11 @@ a:hover {
     padding: 1rem 1.25rem;
     background: linear-gradient(120deg, #f3f4f6 1%, rgba(0, 106, 155, 0.2));
     border-radius: 0.5rem;
+}
+
+.x-badge-admin {
+    padding: .1rem .4rem;
+    color: #6c757d;  /* $gray-600 */
+    border: 1px solid #dee2e6;  /* $gray-300 */
+    border-radius: 50rem;  /* rounded-pill */
 }

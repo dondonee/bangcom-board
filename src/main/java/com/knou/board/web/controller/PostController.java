@@ -126,7 +126,7 @@ public class PostController {
      * 게시글 등록 폼 : 모든 게시판 공용
      */
     @GetMapping({"/{board}/new", "/{board}/{boardTopic}/new"})
-    public String addPostForm(@PathVariable String board, @PathVariable(required = false) String boardTopic, Model model) {
+    public String addPostForm(@PathVariable String board, @PathVariable(required = false) String boardTopic, @Login Member loginMember, Model model) {
 
         try {
             TopicGroup topicGroup = TopicGroup.uriValueOf(board);
@@ -135,6 +135,11 @@ public class PostController {
             if (boardTopic != null) {
                 Topic topic = Topic.uriValueOf(boardTopic);
                 model.addAttribute("topic", topic);
+            }
+
+            // 공지사항 게시판인 경우 권한 체크
+            if (topicGroup == TopicGroup.NOTICE && loginMember.getAuthority() != Member.Authority.ADMIN) {
+                throw new ResponseStatusException(FORBIDDEN, "권한이 없습니다.");
             }
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
@@ -153,21 +158,38 @@ public class PostController {
         try {
             TopicGroup topicGroup = TopicGroup.uriValueOf(board);
 
+            // BindingResult 유효성 검사
             if (bindingResult.hasErrors()) {
+
+                if (form.getTopic() != null) {
+                    model.addAttribute("topic", form.getTopic());
+                }
                 model.addAttribute("topicGroup", topicGroup);
+
+                // 사용자 입력이 빈 문자열인 경우 String 필드 초기화
+                if (form.getTitle().isBlank()) {
+                    form.setTitle(null);
+                }
+                if (form.getContent().isBlank()) {
+                    form.setContent(null);
+                }
                 model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
+
                 return "postAddForm";
+            }
+
+            // 공지사항 게시판인 경우 권한 체크
+            if (topicGroup == TopicGroup.NOTICE && loginMember.getAuthority() != Member.Authority.ADMIN) {
+                throw new ResponseStatusException(FORBIDDEN, "권한이 없습니다.");
+            }
+
+            // 멘토게시판의 경우 권한 체크
+            if (form.getTopic() == Topic.MENTOR && loginMember.getAuthority() == Member.Authority.USER) {  // 멘토, 관리자만 작성 가능
+                throw new ResponseStatusException(FORBIDDEN, "권한이 없습니다.");
             }
 
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
-        }
-
-        // 멘토게시판의 경우 권한 체크
-        if (form.getTopic() == Topic.MENTOR) {
-            if (loginMember.getAuthority() == Member.Authority.USER) {
-                throw new ResponseStatusException(FORBIDDEN, "멘토링 게시판은 멘토만 글을 작성할 수 있습니다.");
-            }
         }
 
         // 게시글 등록
@@ -220,32 +242,53 @@ public class PostController {
      * 게시글 수정 : 모든 게시판 공용
      */
     @PostMapping("/articles/{postId}/edit")
-    public String editPost(@ModelAttribute PostEditForm form, BindingResult bindingResult, @Login Member loginMember, Model model) {
+    public String editPost(@Validated @ModelAttribute PostEditForm form, BindingResult bindingResult, @Login Member loginMember, Model model) {
 
         // 바인딩 오류 검증
         try {
             TopicGroup topicGroup = TopicGroup.findGroup(form.getTopic());
 
+            // BindingResult 유효성 검사
             if (bindingResult.hasErrors()) {
+                log.info("bindingResult.hasErrors() : {}", bindingResult.hasErrors());
+
+                if (form.getTopic() != null) {
+                    model.addAttribute("topic", form.getTopic());
+                }
                 model.addAttribute("topicGroup", topicGroup);
+
+                // 사용자 입력이 빈 문자열인 경우 String 필드 초기화
+                if (form.getTitle().isBlank()) {
+                    form.setTitle(null);
+                }
+                if (form.getContent().isBlank()) {
+                    form.setContent(null);
+                }
                 model.addAttribute("form", form);  // 사용자가 입력했던 값 다시 전달
+
                 return "postEditForm";
             }
+
+            // 작성자만 수정 가능
+            if (form.getAuthorId() != loginMember.getUserNo()) {
+                throw new ResponseStatusException(FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
+            }
+
+            // 공지사항 게시판인 경우 권한 체크
+            if (topicGroup == TopicGroup.NOTICE && loginMember.getAuthority() != Member.Authority.ADMIN) {
+                throw new ResponseStatusException(FORBIDDEN, "권한이 없습니다.");
+            }
+
+            // 멘토게시판의 경우 권한 체크
+            if (form.getTopic() == Topic.MENTOR && loginMember.getAuthority() == Member.Authority.USER) {  // 멘토, 관리자만 작성 가능
+                throw new ResponseStatusException(FORBIDDEN, "권한이 없습니다.");
+            }
+
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }
 
-        // 멘토게시판의 경우 권한 체크
-        if (form.getTopic() == Topic.MENTOR) {
-            if (loginMember.getAuthority() == Member.Authority.USER) {
-                throw new ResponseStatusException(FORBIDDEN, "멘토링 게시판은 멘토만 글을 작성할 수 있습니다.");
-            }
-        }
-
-        // 작성자만 수정 가능
-        if (form.getAuthorId() != loginMember.getUserNo()) {
-            throw new ResponseStatusException(FORBIDDEN, "게시글 작성자만 수정할 수 있습니다.");
-        }
+        log.info("form : {}", form);
 
         // 게시글 업데이트
         Post post = new Post();

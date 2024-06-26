@@ -36,7 +36,7 @@
                 <h2 class="fs-2 x-font-bold x-text-gray-800">${topicGroup.description}</h2>
             </div>
             <!--    토픽 네비게이션    -->
-            <div class="mb-3 row d-flex ${topicGroup eq 'NOTICE' ?'justify-content-end':'justify-content-between'}">
+            <div class="mb-3 row d-flex ${topicGroup eq 'NOTICE' && loginMember.authority ne 'ADMIN'? 'justify-content-end': 'justify-content-between'}">
                 <c:if test="${topicGroup != 'NOTICE'}"> <%-- 공지사항은 하위 topic 없음 --%>
                     <div class="order-md-2 col-md-auto col-12 x-mb-sm-3 align-content-center">
                         <ul class="list-unstyled list-inline d-flex justify-content-center m-0">
@@ -53,6 +53,8 @@
                             </li>
                         </ul>
                     </div>
+                </c:if>
+                <c:if test="${topicGroup ne 'NOTICE' || topicGroup eq 'NOTICE' && loginMember.authority eq 'ADMIN'}">
                     <div class="order-md-1 col-md-auto col-6 col-sm-6">
                         <a href="${curi}/new"
                            class="btn btn-primary px-3 py-1"><i
@@ -96,8 +98,17 @@
                                 </span>
                                 <span>
                                     <c:if test="${not empty vo.author.nickname}">
-                                    <a class="x-text-gray-600"
-                                       href="/members/${vo.author.userNo}">${vo.author.nickname} / ${vo.author.grade.description} / ${vo.author.region.description}</a>
+                                    <a class="x-text-gray-600" href="/members/${vo.author.userNo}">
+                                        <span>${vo.author.nickname}</span>
+                                        <c:choose>
+                                            <c:when test="${vo.author.authority ne 'ADMIN'}">
+                                                <span> / ${vo.author.grade.description} / ${vo.author.region.description}</span>
+                                            </c:when>
+                                            <c:when test="${vo.author.authority eq 'ADMIN'}">
+                                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                            </c:when>
+                                        </c:choose>
+                                    </a>
                                     </c:if>
                                     <c:if test="${empty vo.author.nickname}">
                                         <a class="x-text-gray-600" href="/members/${vo.author.userNo}">(알 수 없음)</a>
@@ -106,7 +117,7 @@
                                 <span class="x-text-gray-600">·</span>
                                 <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
                             </div>
-                            <div class="my-2">
+                            <div class="my-2 x-text-ellipsis">
                                 <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                         value="${vo.title}"></c:out></span></a>
                             </div>

@@ -43,7 +43,11 @@
                                 </span>
                                             <span>
                                     <a class="x-text-gray-600"
-                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}</a>
+                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}
+                                    <c:if test="${vo.author.authority eq 'ADMIN'}">
+                                        <span class="x-badge-admin x-text-xs">관리자</span>
+                                    </c:if>
+                                    </a>
                                 </span>
                                             <span class="x-text-gray-600">·</span>
                                             <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
@@ -52,7 +56,7 @@
                                             <i class="me-1 bi bi-eye"></i><span class="x-text-sm">${vo.viewCount}</span>
                                         </div>
                                     </div>
-                                    <div class="my-2">
+                                    <div class="my-2 x-text-ellipsis">
                                         <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                                 value="${vo.title}"></c:out></span></a>
                                     </div>
@@ -77,8 +81,12 @@
                                 </span>
                                             <span>
                                     <a class="x-text-gray-600"
-                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}</a>
+                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}
                                 </span>
+                                            <c:if test="${vo.author.authority eq 'ADMIN'}">
+                                                <span class="x-badge-admin x-text-xs">관리자</span>
+                                            </c:if>
+                                            </a>
                                             <span class="x-text-gray-600">·</span>
                                             <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
                                         </div>
@@ -86,7 +94,7 @@
                                             <i class="me-1 bi bi-eye"></i><span class="x-text-sm">${vo.viewCount}</span>
                                         </div>
                                     </div>
-                                    <div class="my-2">
+                                    <div class="my-2 x-text-ellipsis">
                                         <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                                 value="${vo.title}"></c:out></span></a>
                                     </div>
@@ -113,7 +121,11 @@
                                 </span>
                                             <span>
                                     <a class="x-text-gray-600"
-                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}</a>
+                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}
+                                    <c:if test="${vo.author.authority eq 'ADMIN'}">
+                                        <span class="x-badge-admin x-text-xs">관리자</span>
+                                    </c:if>
+                                    </a>
                                 </span>
                                             <span class="x-text-gray-600">·</span>
                                             <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
@@ -122,7 +134,7 @@
                                             <i class="me-1 bi bi-eye"></i><span class="x-text-sm">${vo.viewCount}</span>
                                         </div>
                                     </div>
-                                    <div class="my-2">
+                                    <div class="my-2 x-text-ellipsis">
                                         <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                                 value="${vo.title}"></c:out></span></a>
                                     </div>
@@ -147,7 +159,11 @@
                                 </span>
                                             <span>
                                     <a class="x-text-gray-600"
-                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}</a>
+                                       href="/members/${vo.author.userNo}">${not empty vo.author.nickname? vo.author.nickname: '(알 수 없음)'}
+                                    <c:if test="${vo.author.authority eq 'ADMIN'}">
+                                        <span class="x-badge-admin x-text-xs">관리자</span>
+                                    </c:if>
+                                    </a>
                                 </span>
                                             <span class="x-text-gray-600">·</span>
                                             <span class="x-text-gray-600">${customFn.getElapsedTime(vo.createdDate)}</span>
@@ -156,7 +172,7 @@
                                             <i class="me-1 bi bi-eye"></i><span class="x-text-sm">${vo.viewCount}</span>
                                         </div>
                                     </div>
-                                    <div class="my-2">
+                                    <div class="my-2 x-text-ellipsis">
                                         <a href="/articles/${vo.id}"><span class="x-font-semibold"><c:out
                                                 value="${vo.title}"></c:out></span></a>
                                     </div>

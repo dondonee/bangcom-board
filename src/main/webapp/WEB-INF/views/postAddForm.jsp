@@ -43,12 +43,12 @@
                         <div class="mb-4">
                             <label for="title" class="form-label">제목</label>
                             <input type="text" class="form-control" name="title" id="title"
-                                   placeholder="제목을 입력해주세요." value="${form.title}">
+                                   placeholder="제목을 입력해주세요. (50자 이하)" value="${form.title}">
                         </div>
                         <div class="mb-4">
                             <label for="content" class="form-label">본문</label>
                             <textarea class="form-control" name="content" id="content" rows="10"
-                                      placeholder="내용을 입력해주세요" value="${form.content}"></textarea>
+                                      placeholder="내용을 입력해주세요. (4000자 이하)"><c:out value="${form.content}"></c:out></textarea>
 
                         </div>
                     </div>
