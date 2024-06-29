@@ -77,17 +77,23 @@
                     for (let j = 0; j < branchSize; j++) {
 
                         const bvo = vo.branchComments[j];
-                        const bvoImageName = bvo.writer.imageName || 'temporary.gif';
-                        const bvoNickname = bvo.writer.nickname || '(알 수 없음)';
-                        let bvoGradeRegionHtml = '';
-                        if (bvo.writer.nickname) {
-                            bvoGradeRegionHtml += '<span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
-                                + '<span>·</span>'
+                        let bvoImageName = ''
+                        if (bvo.writer && bvo.writer.imageName) {
+                            bvoImageName = bvo.writer.imageName;
+                        } else {
+                            bvoImageName = 'temporary.gif';
+                        }
+
+                        let bvoNickname = ''
+                        if (bvo.writer) {
+                            bvo.writer.bvoNickname;
+                        } else {
+                            'temporary.gif';
                         }
 
                         // 수정 & 삭제 버튼 (작성자 == 로그인 사용자)
                         let branchEditBtnHtml = '';
-                        if (bvo.writer.userNo == loginMember.userNo) {
+                        if (bvo.writer && bvo.writer.userNo == loginMember.userNo) {
 
                             let branchDataAttr = '';
                             if (bvo.depthNo > 1) {
@@ -130,10 +136,50 @@
                             marginTop = 'mt-2';
                         }
 
-                        const bvoDataMentioned = bvo.writer.nickname || '(알 수 없음)';
-                        let bvoAdminBadgeHtml = '';
-                        if (bvo.writer.authority == '관리자') {
-                            bvoAdminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                        let bvoDataMentioned = '';
+                        if (bvo.writer) {
+                            bvoDataMentioned = bvo.writer.nickname;
+                        } else {
+                            bvoDataMentioned = '(알 수 없음)';
+                        }
+
+                        let bvoWriterHtml = '';
+                        if (bvo.writer) {
+                            let adminBadgeHtml = '';
+                            if (bvo.writer.authority == '관리자') {
+                                adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                            }
+                            let gradeRegionHtml = '';
+                            if (bvo.writer) {
+                                gradeRegionHtml += '<span>' + bvo.writer.grade + ' / ' + bvo.writer.region + '</span>'
+                                    + '<span>·</span>'
+                            }
+
+                            bvoWriterHtml += ' <div class="me-2">'
+                                + '             <a href="/members/' + bvo.writer.userNo + '"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
+                                + '         </div>'
+                                + '         <div class="d-flex flex-column my-auto">'
+                                + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + bvo.writer.userNo + '">'
+                                + '                 <span>' + bvo.writer.nickname + '</span>'
+                                + adminBadgeHtml
+                                + '             </a>'
+                                + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                                + gradeRegionHtml
+                                + '                 <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
+                                + '             </div>'
+                                + '         </div>'
+                        } else if (!vo.writer) {
+                            bvoWriterHtml += ' <div class="me-2">'
+                                + '             <img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진">'
+                                + '         </div>'
+                                + '         <div class="d-flex flex-column my-auto">'
+                                + '             <div class="x-text-sm">'
+                                + '                <span>(알 수 없음)</span>'
+                                + '             </div>'
+                                + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                                + '                 <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
+                                + '             </div>'
+                                + '         </div>'
                         }
 
 
@@ -142,19 +188,7 @@
                             // 작성자 정보 및 부가 메뉴
                             + ' <div class="d-flex justify-content-between">'
                             + '     <div class="d-flex">'
-                            + '         <div class="me-2">'
-                            + '         <a href="/members/' + bvo.writer.userNo + '"><img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
-                            + '     </div>'
-                            + '     <div class="d-flex flex-column my-auto">'
-                            + '         <a class="d-flex align-items-center x-text-sm" href="/members/' + bvo.writer.userNo + '">'
-                            + '                 <span>' + bvoNickname + '</span>'
-                            + bvoAdminBadgeHtml
-                            + '         </a>'
-                            + '         <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                            + bvoGradeRegionHtml
-                            + '             <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
-                            + '         </div>'
-                            + '     </div>'
+                            + bvoWriterHtml
                             + ' </div>'
                             + branchEditBtnHtml  // 로그인 사용자 == 작성자 -> 수정 & 삭제 버튼
                             + '</div>'
@@ -175,16 +209,8 @@
                     }
                 }
 
-                const imageName = vo.writer.imageName || 'temporary.gif';
-                const nickname = vo.writer.nickname || '(알 수 없음)';
-                let gradeRegionHtml = '';
-                if (vo.writer.nickname) {
-                    gradeRegionHtml += '<span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
-                        + '<span>·</span>'
-                }
-
                 let editBtnHtml = '';
-                if (vo.writer.userNo == loginMember.userNo) {
+                if (vo.writer && vo.writer.userNo == loginMember.userNo) {
                     editBtnHtml += '<div class="dropdown d-flex align-items-center">'
                         + '<button class="dropdown-toggle" style="background: none; border: none;" type="button" id="dropdownMenuButtonOf' + vo.id + '" data-bs-toggle="dropdown" aria-expanded="false">'
                         + ' <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#6c757d" class="bi bi-three-dots x-text-gray-700" viewBox="0 0 16 16">'
@@ -198,10 +224,53 @@
                         + '</div>';
                 }
 
-                let adminBadgeHtml = '';
-                if (vo.writer.authority == '관리자') {
-                    adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                let writerHtml = '';
+                if (vo.writer) {
+                    let imageName = '';
+                    if (vo.writer.imageName) {
+                        imageName = vo.writer.imageName;
+                    } else {
+                        imageName = 'temporary.gif';
+                    }
+
+                    let adminBadgeHtml = '';
+                    if (vo.writer.authority == '관리자') {
+                        adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                    }
+
+                    let gradeRegionHtml = '';
+                    if (vo.writer) {
+                        gradeRegionHtml += '<span>' + vo.writer.grade + ' / ' + vo.writer.region + '</span>'
+                            + '<span> ·</span>'
+                    }
+
+                    writerHtml += ' <div class="me-2">'
+                        + '             <a href="/members/' + vo.writer.userNo + '"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진"></a>'
+                        + '         </div>'
+                        + '         <div class="d-flex flex-column my-auto">'
+                        + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + vo.writer.userNo + '">'
+                        + '                 <span>' + vo.writer.nickname + '</span>'
+                        + adminBadgeHtml
+                        + '             </a>'
+                        + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                        + gradeRegionHtml
+                        + '                 <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
+                        + '             </div>'
+                        + '         </div>'
+                } else if (!vo.writer) {
+                    writerHtml += ' <div class="me-2">'
+                        + '             <img src="/images/profile/temporary.gif" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진">'
+                        + '         </div>'
+                        + '         <div class="d-flex flex-column my-auto">'
+                        + '             <div class="x-text-sm">'
+                        + '                 <span>(알 수 없음)</span>'
+                        + '             </div>'
+                        + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
+                        + '                 <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
+                        + '             </div>'
+                        + '         </div>'
                 }
+
 
                 // Root 댓글 영역
                 html += '<li class="py-3 border-top text-decoration-none">'
@@ -209,19 +278,7 @@
                     // 작성자 정보 및 부가 메뉴
                     + ' <div class="d-flex justify-content-between">'
                     + '     <div class="d-flex">'
-                    + '         <div class="me-2">'
-                    + '             <a href="/members/' + vo.writer.userNo + '"><img src="/images/profile/' + imageName + '" class="x-comment-profile-img -border-thin rounded-circle" alt="프로필사진"></a>'
-                    + '         </div>'
-                    + '         <div class="d-flex flex-column my-auto">'
-                    + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + vo.writer.userNo + '">'
-                    + '                 <span>' + nickname + '</span>'
-                    + adminBadgeHtml
-                    + '             </a>'
-                    + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
-                    + gradeRegionHtml
-                    + '                 <span class="">' + getElapsedTime(vo.createdDate) + '</span>'
-                    + '             </div>'
-                    + '         </div>'
+                    + writerHtml
                     + '     </div>'
                     + editBtnHtml
                     + ' </div>'
@@ -634,23 +691,35 @@
                 <%--    작성자 정보    --%>
                 <div class="d-flex">
                     <div>
-                        <a href="/members/${post.author.userNo}">
-                            <img src="/images/profile/${not empty post.author.imageName? post.author.imageName: 'temporary.gif'}"
+                        <c:if test="${not empty post.author}">
+                            <a href="/members/${post.author.userNo}">
+                                <img src="/images/profile/${not empty post.author.imageName? post.author.imageName: 'temporary.gif'}"
+                                     style="width: 40px; height: 40px;"
+                                     alt="프로필사진">
+                            </a>
+                        </c:if>
+                        <c:if test="${empty post.author}">
+                            <img src="/images/profile/temporary.gif"
                                  style="width: 40px; height: 40px;"
                                  alt="프로필사진">
-                        </a>
+                        </c:if>
                     </div>
                     <div class="ms-2 d-flex flex-column">
-                        <a class="d-flex align-items-center" href="/members/${post.author.userNo}">
+                        <c:if test="${not empty post.author}">
+                            <a class="d-flex align-items-center" href="/members/${post.author.userNo}">
                             <span>
-                                ${not empty post.author.nickname? post.author.nickname: '(알 수 없음)'}
+                                    ${post.author.nickname}
                             </span>
-                            <c:if test="${loginMember.authority eq 'ADMIN'}">
-                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
-                            </c:if>
-                        </a>
+                                <c:if test="${loginMember.authority eq 'ADMIN'}">
+                                    <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                </c:if>
+                            </a>
+                        </c:if>
+                        <c:if test="${empty post.author}">
+                            <span>(알 수 없음)</span>
+                        </c:if>
                         <div class="x-text-sm x-text-gray-700" style="line-height: 1.2rem">
-                            <c:if test="${not empty post.author.nickname}">
+                            <c:if test="${not empty post.author}">
                                 <span>${post.author.grade.description} / ${post.author.region.description}</span>
                                 <span>·</span>
                             </c:if>
@@ -731,29 +800,45 @@
                                     <div class="d-flex justify-content-between">
                                             <%--    댓글 작성자 정보    --%>
                                         <div class="d-flex">
-                                            <div class="me-2">
-                                                <a href="/members/${vo.writer.userNo}"><img
-                                                        src="/images/profile/${vo.writer.imageName ne null? vo.writer.imageName: 'temporary.gif'}"
-                                                        class="x-comment-profile-img x-border-thin rounded-circle"
-                                                        alt="프로필사진"></a>
-                                            </div>
-                                            <div class="d-flex flex-column my-auto">
-                                                <a class="d-flex align-items-center x-text-sm"
-                                                   href="/members/${vo.writer.userNo}">
-                                                    <span>${not empty vo.writer.nickname? vo.writer.nickname: '(알 수 없음)'}</span>
-                                                    <c:if test="${vo.writer.authority eq 'ADMIN'}">
-                                                        <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
-                                                    </c:if>
-                                                </a>
-                                                <div class="x-text-xs x-text-gray-600 x-font-light"
-                                                     style="line-height: 1.2rem">
-                                                    <c:if test="${not empty vo.writer.nickname}">
+                                            <c:if test="${not empty vo.writer}">
+                                                <div class="me-2">
+                                                    <a href="/members/${vo.writer.userNo}">
+                                                        <img src="/images/profile/${not empty vo.writer.imageName? vo.writer.imageName: 'temporary.gif'}"
+                                                             class="x-comment-profile-img x-border-thin rounded-circle"
+                                                             alt="프로필사진">
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex flex-column my-auto">
+                                                    <a class="d-flex align-items-center x-text-sm"
+                                                       href="/members/${vo.writer.userNo}">
+                                                        <span>${vo.writer.nickname}</span>
+                                                        <c:if test="${vo.writer.authority eq 'ADMIN'}">
+                                                            <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                        </c:if>
+                                                    </a>
+                                                    <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                         style="line-height: 1.2rem">
                                                         <span>${vo.writer.grade.description} / ${vo.writer.region.description}</span>
                                                         <span>·</span>
-                                                    </c:if>
-                                                    <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
+                                                        <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </c:if>
+                                            <c:if test="${empty vo.writer}">
+                                                <div class="me-2">
+                                                    <img
+                                                            src="/images/profile/temporary.gif"
+                                                            class="x-comment-profile-img x-border-thin rounded-circle"
+                                                            alt="프로필사진">
+                                                </div>
+                                                <div class="d-flex flex-column my-auto">
+                                                    <span class="x-text-sm">(알 수 없음)</span>
+                                                    <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                         style="line-height: 1.2rem">
+                                                        <span class="">${customFn.getElapsedTime(vo.createdDate)}</span>
+                                                    </div>
+                                                </div>
+                                            </c:if>
                                         </div>
                                             <%--    부가 메뉴    --%>
                                         <c:if test="${vo.writer.userNo eq loginMember.userNo}">
@@ -827,29 +912,45 @@
                                                     <div id="commentOf${bvo.id}">
                                                         <div class="d-flex justify-content-between">
                                                             <div class="d-flex">
-                                                                <div class="me-2">
-                                                                    <a href="/members/${bvo.writer.userNo}"><img
-                                                                            src="/images/profile/${bvo.writer.imageName ne null? bvo.writer.imageName: 'temporary.gif'}"
-                                                                            class="x-comment-profile-img x-border-thin rounded-circle"
-                                                                            alt="프로필사진"></a>
-                                                                </div>
-                                                                <div class="d-flex flex-column my-auto">
-                                                                    <a class="d-flex align-items-center x-text-sm"
-                                                                       href="/members/${bvo.writer.userNo}">
-                                                                        <span>${not empty bvo.writer.nickname? bvo.writer.nickname: '(알 수 없음)'}</span>
-                                                                        <c:if test="${bvo.writer.authority eq 'ADMIN'}">
-                                                                            <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
-                                                                        </c:if>
-                                                                    </a>
-                                                                    <div class="x-text-xs x-text-gray-600 x-font-light"
-                                                                         style="line-height: 1.2rem">
-                                                                        <c:if test="${not empty bvo.writer.nickname}">
-                                                                            <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
-                                                                            <span>·</span>
-                                                                        </c:if>
-                                                                        <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
+                                                                <c:if test="${not empty bvo.writer}">
+                                                                    <div class="me-2">
+                                                                        <a href="/members/${bvo.writer.userNo}"><img
+                                                                                src="/images/profile/${not empty bvo.writer.imageName? bvo.writer.imageName: 'temporary.gif'}"
+                                                                                class="x-comment-profile-img x-border-thin rounded-circle"
+                                                                                alt="프로필사진"></a>
                                                                     </div>
-                                                                </div>
+                                                                    <div class="d-flex flex-column my-auto">
+                                                                        <a class="d-flex align-items-center x-text-sm"
+                                                                           href="/members/${bvo.writer.userNo}">
+                                                                            <span>${bvo.writer.nickname}</span>
+                                                                            <c:if test="${bvo.writer.authority eq 'ADMIN'}">
+                                                                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                                            </c:if>
+                                                                        </a>
+                                                                        <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                                             style="line-height: 1.2rem">
+                                                                            <c:if test="${not empty bvo.writer.nickname}">
+                                                                                <span>${bvo.writer.grade.description} / ${bvo.writer.region.description}</span>
+                                                                                <span>·</span>
+                                                                            </c:if>
+                                                                            <span>${customFn.getElapsedTime(bvo.createdDate)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </c:if>
+                                                                <c:if test="${empty bvo.writer}">
+                                                                    <div class="me-2">
+                                                                        <img src="/images/profile/temporary.gif"
+                                                                             class="x-comment-profile-img x-border-thin rounded-circle"
+                                                                             alt="프로필사진">
+                                                                    </div>
+                                                                    <div class="d-flex flex-column my-auto">
+                                                                        <span class="x-text-sm">(알 수 없음)</span>
+                                                                        <div class="x-text-xs x-text-gray-600 x-font-light"
+                                                                             style="line-height: 1.2rem">
+                                                                            <span class="">${customFn.getElapsedTime(bvo.createdDate)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </c:if>
                                                             </div>
                                                                 <%--    부가 메뉴    --%>
                                                             <c:if test="${bvo.writer.userNo eq loginMember.userNo}">
@@ -897,8 +998,7 @@
                                                                     <span class="x-mention rounded-pill">@${not empty bvo.parentCommentInfo.mentionedName? bvo.parentCommentInfo.mentionedName: '(알 수 없음)'}</span>
                                                                 </div>
                                                             </c:if>
-                                                            <div id="contentOf${bvo.id}" style="white-space: pre-wrap"><c:out
-                                                                    value="${bvo.content}"></c:out></div>
+                                                            <div id="contentOf${bvo.id}" style="white-space: pre-wrap"><c:out value="${bvo.content}"></c:out></div>
                                                         </div>
                                                         <div class="mb-2">
                                                             <c:if test="${not empty loginMember}">

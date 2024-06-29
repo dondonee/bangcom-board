@@ -14,7 +14,8 @@ CREATE TABLE auth_password
     password_id  BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no      BIGINT       NOT NULL UNIQUE,
     password     VARCHAR(128) NOT NULL,
-    updated_date DATETIME     NULL
+    updated_date DATETIME     NULL,
+    FOREIGN KEY (user_no) REFERENCES member_user (user_no) ON DELETE CASCADE
 );
 
 DROP TABLE member_profile;
@@ -30,7 +31,8 @@ CREATE TABLE member_profile
     authority   ENUM('A', 'M', 'U'),
     region      ENUM('11', '21', '22', '23', '24', '25', '26', '29', '31', '32', '33', '34', '35', '36', '37', '38', '39', '99'),
     joined_date  DATETIME     NULL,
-    updated_date DATETIME     NULL
+    updated_date DATETIME     NULL,
+    FOREIGN KEY (user_no) REFERENCES member_user (user_no) ON DELETE CASCADE
 );
 
 DROP TABLE profile_image;
@@ -38,7 +40,8 @@ CREATE TABLE profile_image
 (
     image_id    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_no     BIGINT       NOT NULL UNIQUE,
-    upload_name VARCHAR(255) NULL
+    upload_name VARCHAR(255) NULL,
+    FOREIGN KEY (user_no) REFERENCES member_user (user_no) ON DELETE CASCADE
 );
 
 
@@ -70,7 +73,8 @@ CREATE TABLE post_comment
     depth_no      INT      NULL,
     order_no      INT      NULL,
     created_date  DATETIME NOT NULL,
-    modified_date DATETIME NULL
+    modified_date DATETIME NULL,
+    FOREIGN KEY (post_id) REFERENCES post (post_id) ON DELETE CASCADE
 );
 
 
@@ -80,7 +84,7 @@ DROP TABLE withdrawal_member;
 CREATE TABLE withdrawal_member
 (
     withdrawal_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_no       BIGINT NOT NULL
+    user_no       BIGINT UNIQUE NOT NULL
 );
 
 DROP TABLE withdrawal_log;
@@ -91,5 +95,6 @@ CREATE TABLE withdrawal_log
     status_code       TINYINT      NOT NULL,
     reason_code       TINYINT      NOT NULL,
     reason_text       VARCHAR(255) NULL,
-    withdrawal_date   DATETIME     NOT NULL
+    withdrawal_date   DATETIME     NOT NULL,
+    FOREIGN KEY (user_no) REFERENCES withdrawal_member (user_no) ON DELETE CASCADE
 );

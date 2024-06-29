@@ -97,7 +97,7 @@
                                         </a>
                                 </span>
                                 <span>
-                                    <c:if test="${not empty vo.author.nickname}">
+                                    <c:if test="${not empty vo.author}">
                                     <a class="x-text-gray-600" href="/members/${vo.author.userNo}">
                                         <span>${vo.author.nickname}</span>
                                         <c:choose>
@@ -110,8 +110,8 @@
                                         </c:choose>
                                     </a>
                                     </c:if>
-                                    <c:if test="${empty vo.author.nickname}">
-                                        <a class="x-text-gray-600" href="/members/${vo.author.userNo}">(알 수 없음)</a>
+                                    <c:if test="${empty vo.author}">
+                                        <span class="x-text-gray-600">(알 수 없음)</span>
                                     </c:if>
                                 </span>
                                 <span class="x-text-gray-600">·</span>

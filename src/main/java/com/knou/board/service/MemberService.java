@@ -140,33 +140,25 @@ public class MemberService {
     public void withdrawMember(MemberWithdrawal mw) throws IOException {
 
         long userNo = mw.getUserNo();
+        Member member = memberRepository.selectProfileById(userNo);
 
         // 프로필 이미지 삭제
-        Member member = memberRepository.selectProfileById(userNo);
         String imageName = member.getImageName();
-        int result = memberRepository.deleteProfileImage(userNo);
-        // 현재 등록한 프로필 이미지가 존재하는 경우
-        if (imageName != null) {
-            if (result != 1) {   // 프로필 이미지 업로드 최소 1번한 경우 profile_image 데이터 존재 -> 삭제 결과가 1이어야 함
-                throw new IllegalStateException("회원 탈퇴 처리 중 오류 발생");
-            }
-            if (!fileStore.deleteFile(imageName, "profile/")) {  // 로컬 파일 삭제
+        if (imageName != null) {  // 현재 등록한 프로필 이미지가 존재하는 경우 -> 파일 삭제
+            if (!fileStore.deleteFile(imageName, "profile/")) {
                 log.error("기존 프로필 이미지 삭제 실패: {}", imageName);
             }
         }
 
-        // 연관 테이블 데이터 삭제
+        // 회원 삭제
         int result0 = memberRepository.deleteUser(userNo);
-        int result1 = memberRepository.deleteUserPassword(userNo);
-        // 프로필 테이블 - userNo, authority 제외 null 처리
-        int result2 = memberRepository.updateNullProfileByUserNo(userNo);
 
         // 탈퇴 로그 추가
         mw.setWithdrawalDate(LocalDateTime.now()); // 탈퇴일
-        int result3 = memberRepository.insertWithdrawalUser(mw);
-        int result4 = memberRepository.insertWithdrawalLog(mw);
+        int result1 = memberRepository.insertWithdrawalUser(mw);
+        int result2 = memberRepository.insertWithdrawalLog(mw);
 
-        for (int i : new int[]{result0, result1, result2, result3, result4}) {
+        for (int i : new int[]{result0, result1, result2}) {
             if (i != 1) {
                 throw new IllegalStateException("회원 탈퇴 처리 중 오류 발생");
             }
