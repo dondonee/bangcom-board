@@ -81,16 +81,36 @@
 
             $('#withdraw-agreements').change(function () {
                 if ($(this).is(':checked')) {
-                    $('#submitBtn').prop('disabled', false);
+                    $('#withdrawalBtn').prop('disabled', false);
                 } else {
-                    $('#submitBtn').prop('disabled', true);
+                    $('#withdrawalBtn').prop('disabled', true);
                 }
             });
 
-            $('#submitBtn').click(function () {
-                if ($('#withdraw-agreements').is(':checked')) {
-                    location.href = '/withdrawal';
+            $('#withdrawalBtn').click(function () {
+                if (!$('#withdraw-agreements').is(':checked')) {
+                    return;
                 }
+
+                $.ajax({
+                    url: '/withdrawal',
+                    type: 'get',
+                    success: function (xhr) {
+                        location.href = '/withdrawal';
+                    },
+                    error: function (xhr) {
+                        const response = JSON.parse(xhr.responseText);
+                        const exMessage = response.exMessage;
+                        const exDescription = response.exDescription;
+
+                        if(exMessage) {
+                            $('#errorModal').find('h5.modal-title').text(exMessage);
+                            $('#errorModal').find('.modal-body > div').text(exDescription);
+                            errorModal.show();
+                            return;
+                        }
+                    }
+                });
             });
         });
     </script>
@@ -178,7 +198,7 @@
                         <label class="x-text-sm" for="withdraw-agreements">계정 삭제에 관한 정책을 읽고 이에 동의합니다.</label>
                     </div>
                     <div class="col-12 col-sm-4 col-lg-3">
-                        <button id="submitBtn" disabled type="button"
+                        <button id="withdrawalBtn" disabled type="button"
                                 class="position-relative my-4 py-2 btn btn-danger x-width-full"><i
                                 class="position-absolute bi bi-person-slash"
                                 style="top: 10%; left: 5%; font-size: 1.2rem"></i><span class="ps-2">회원탈퇴</span>
@@ -190,7 +210,7 @@
     </div>
 
 
-    <!-- 비밀번호 변경 오류 Modal -->
+    <!-- 오류 Modal -->
     <div class="modal modal-sm fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false"
          tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -199,7 +219,7 @@
                 <div class="modal-body p-4 text-center">
                     <h5 class="modal-title mb-1 x-font-medium" style="font-size: 1.1rem"
                         id="errorModalLabel">
-                        비밀번호 변경 오류</h5>
+                        오류 발생</h5>
                     <div class="x-text-sm x-font-light x-text-gray-600">
                         오류가 발생했습니다. 다시 시도해 주세요.
                     </div>

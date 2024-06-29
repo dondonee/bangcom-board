@@ -38,6 +38,10 @@ body {
     min-width: 340px;
 }
 
+body, html{
+    overflow-x: hidden;  /* 모바일 가로 스크롤 막기 */
+}
+
 .modal {
     min-width: 340px;
 !important;

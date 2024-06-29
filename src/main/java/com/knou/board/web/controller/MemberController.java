@@ -330,12 +330,27 @@ public class MemberController {
     }
 
     @GetMapping("/withdrawal")
-    public String withdrawalConfirm(@Login Member loginMember) {
-        return "withdrawalConfirm";
+    public ResponseEntity withdrawalConfirm(@Login Member loginMember) {
+
+        // 테스트 계정 회원탈퇴 제한 (userNo: 4 ~ 13)
+        Long userNo = loginMember.getUserNo();
+        if (userNo >= 4 && userNo <= 13) {
+            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "탈퇴 불가", "테스트 계정은 탈퇴가 불가능합니다.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/withdrawal")
     public String withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session, RedirectAttributes redirectAttributes) throws IOException {
+
+        // 테스트 계정 회원탈퇴 제한 (userNo: 4 ~ 13)
+        Long userNo = loginMember.getUserNo();
+        if (userNo >= 4 && userNo <= 13) {
+            throw new IllegalStateException("테스트 계정은 탈퇴가 불가능합니다.");
+        }
+
         // 회원 조회
         Member member = memberService.findProfileByUserNo(form.getUserNo());
         if (member == null || form.getUserNo() != loginMember.getUserNo()) {
@@ -385,6 +400,13 @@ public class MemberController {
         // 현재 비밀번호 검증
         Long userNo = loginMember.getUserNo();
         String loginName = memberService.findLoginNameByUserNo(userNo);
+
+        // 테스트 계정 비밀번호 변경 제한 (userNo: 4 ~ 13)
+        Long loginUserNo = loginMember.getUserNo();
+        if (loginUserNo >= 4 && loginUserNo <= 13) {
+            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 변경 불가", "테스트 계정은 비밀번호 변경이 불가능합니다.");
+            return new ResponseEntity<>(errorResult, BAD_REQUEST);
+        }
 
         MemberLogin memberLogin = new MemberLogin();
         memberLogin.setUserNo(userNo);

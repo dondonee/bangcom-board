@@ -250,7 +250,6 @@ public class PostController {
 
             // BindingResult 유효성 검사
             if (bindingResult.hasErrors()) {
-                log.info("bindingResult.hasErrors() : {}", bindingResult.hasErrors());
 
                 if (form.getTopic() != null) {
                     model.addAttribute("topic", form.getTopic());
@@ -288,7 +287,6 @@ public class PostController {
             throw new ResponseStatusException(NOT_FOUND, "게시판을 찾을 수 없습니다.");
         }
 
-        log.info("form : {}", form);
 
         // 게시글 업데이트
         Post post = new Post();

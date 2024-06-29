@@ -11,3 +11,16 @@ custom:
   path:
     image: 'file:///root/board-resources/images/'
     upload-image: '/root/board-resources/images/'
+
+logging:
+  logback:
+    rollingpolicy:
+      max-history: 7
+      max-file-size: 10MB
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS, Asia/Seoul
+  file.name: /var/log/board.log
+  level:
+    com.knou.board: ERROR
+    org.springframework.jdbc: ERROR
+    com.knou.board.repository.mybatis: ERROR
