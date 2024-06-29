@@ -330,16 +330,8 @@ public class MemberController {
     }
 
     @GetMapping("/withdrawal")
-    public ResponseEntity withdrawalConfirm(@Login Member loginMember) {
-
-        // 테스트 계정 회원탈퇴 제한 (userNo: 4 ~ 13)
-        Long userNo = loginMember.getUserNo();
-        if (userNo >= 4 && userNo <= 13) {
-            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "탈퇴 불가", "테스트 계정은 탈퇴가 불가능합니다.");
-            return new ResponseEntity<>(errorResult, BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public String withdrawalConfirm() {
+        return "withdrawalConfirm";
     }
 
     @PostMapping("/withdrawal")

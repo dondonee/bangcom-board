@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>
 
-<div class=" border-bottom">
+<div class="x-header border-bottom">
     <nav class="x-container-width mx-auto navbar navbar-expand-sm navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand text-primary fst-italic x-font-bold" style="flex-grow: 1" href="/">Bangcom</a>

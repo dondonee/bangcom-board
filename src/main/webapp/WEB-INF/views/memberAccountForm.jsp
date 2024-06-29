@@ -88,29 +88,9 @@
             });
 
             $('#withdrawalBtn').click(function () {
-                if (!$('#withdraw-agreements').is(':checked')) {
-                    return;
+                if ($('#withdraw-agreements').is(':checked')) {
+                    location.href = '/withdrawal';
                 }
-
-                $.ajax({
-                    url: '/withdrawal',
-                    type: 'get',
-                    success: function (xhr) {
-                        location.href = '/withdrawal';
-                    },
-                    error: function (xhr) {
-                        const response = JSON.parse(xhr.responseText);
-                        const exMessage = response.exMessage;
-                        const exDescription = response.exDescription;
-
-                        if(exMessage) {
-                            $('#errorModal').find('h5.modal-title').text(exMessage);
-                            $('#errorModal').find('.modal-body > div').text(exDescription);
-                            errorModal.show();
-                            return;
-                        }
-                    }
-                });
             });
         });
     </script>

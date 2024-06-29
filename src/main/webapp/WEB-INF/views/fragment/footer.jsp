@@ -22,7 +22,7 @@
     });
 </script>
 
-<div class="x-footer d-flex justify-content-center border-top" style="margin-top: 6rem; margin-bottom: 4.5rem">
+<div class="x-footer-nav d-flex justify-content-center border-top" style="margin-top: 6rem; margin-bottom: 4.5rem">
     <div class="x-container-width x-width-full" style="min-width: 340px">
         <div class="py-3 d-flex justify-content-between">
             <div class="x-aside text-center">
@@ -31,7 +31,7 @@
                     Open
                     University<br>CS Department Community</p>
             </div>
-            <div class="x-main">
+            <div class="x-footer-main">
                 <ul class="d-flex justify-content-start list-unstyled x-text-xs x-font-light">
                     <li><a href="/articles/1">포트폴리오 소개</a></li>
                     <span class="mx-2">|</span>
@@ -63,7 +63,7 @@
 </div>
 
 <%--    모바일 하단 네비게이션    --%>
-<div class="d-block d-sm-none position-relative">
+<div class="x-footer d-block d-sm-none position-relative">
     <nav class="x-mnav border-top fixed-bottom z-3" style="height: 4.5rem; background-color: white">
         <div class="d-flex justify-content-center align-items-center" style="padding: .55rem">
             <a class="d-flex flex-column align-items-center rounded-circle x-mnav-btn ${topicGroup eq 'QUESTIONS'? 'active': ''}" href="/questions">

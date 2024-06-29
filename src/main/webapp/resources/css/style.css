@@ -38,8 +38,8 @@ body {
     min-width: 340px;
 }
 
-body, html{
-    overflow-x: hidden;  /* 모바일 가로 스크롤 막기 */
+body, html {
+    overflow-x: hidden; /* 모바일 가로 스크롤 막기 */
 }
 
 .modal {
@@ -68,6 +68,7 @@ a:hover {
 
 .x-main {
     width: 100%;
+    margin-top: 5rem;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
@@ -100,6 +101,7 @@ a:hover {
     .x-aside__bi {
         display: block;
         width: 20rem;
+        margin-top: 5rem;
         padding-right: 3rem;
         flex-shrink: 0;
     }
@@ -120,11 +122,29 @@ a:hover {
     }
 }
 
+.x-footer {
+    min-width: 320px;
+}
+
+.x-footer-main {
+    width: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
 @media screen and (max-width: 575px) {
     /* breakpoint: sm */
-    .x-footer {
+    .x-footer-nav {
         margin-bottom: 4.5rem
     }
+}
+
+.x-header {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    min-width: 340px;
+    background: #ffffff;
 }
 
 
@@ -138,13 +158,14 @@ a:hover {
 /* 모바일 전용 하단 navbar */
 
 .x-mnav {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
 .x-mnav-btn {
     width: 20%;
     row-gap: .375rem;
 }
+
 .x-mnav-btn.active {
     color: #007db6;
 }
@@ -155,7 +176,7 @@ a:hover {
     background-color: #007db6;
 
     border-radius: 50%;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.19)
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.19)
 }
 
 .x-mnav-center-btn:hover {
@@ -164,7 +185,7 @@ a:hover {
 
 .x-mnav-center-dropdown {
     top: -13rem;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1)
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1)
 }
 
 .x-mnav-btn-icon {
@@ -544,7 +565,7 @@ a:hover {
 
 .x-badge-admin {
     padding: .1rem .4rem;
-    color: #6c757d;  /* $gray-600 */
-    border: 1px solid #dee2e6;  /* $gray-300 */
-    border-radius: 50rem;  /* rounded-pill */
+    color: #6c757d; /* $gray-600 */
+    border: 1px solid #dee2e6; /* $gray-300 */
+    border-radius: 50rem; /* rounded-pill */
 }

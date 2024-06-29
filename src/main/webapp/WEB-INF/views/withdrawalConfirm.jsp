@@ -48,7 +48,23 @@
                     }
                 }
 
-                $('#form').submit();
+                $.ajax({
+                    url: '/api/v1/members/me',
+                    type: 'get',
+                    success: function (loginMember) {
+
+                        // 테스트 계정은 탈퇴 불가
+                        if (loginMember.userNo >= 4 && loginMember.userNo <= 13) {
+                            $('#testAccountErrorModal').modal('show');
+                            return;
+                        }
+
+                        $('#form').submit();
+                    },
+                    error: function () {
+                        $('#errorModal').modal('show');
+                    }
+                });
             });
         });
     </script>
@@ -87,9 +103,50 @@
             </div>
             <div class="d-flex">
                 <a href="/settings/profile" class="me-2 my-4 py-2 col-6 btn btn-outline-secondary">취소</a>
-                <button id="submitBtn" disabled type="button" class="my-4 py-2 col-6 btn btn-danger">예, 탈퇴하겠습니다.</button>
+                <button id="submitBtn" disabled type="button" class="my-4 py-2 col-6 btn btn-danger">예, 탈퇴하겠습니다.
+                </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- 오류 Modal -->
+<div class="modal modal-sm fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-4 text-center">
+                <h5 class="modal-title mb-1 x-font-medium" style="font-size: 1.1rem"
+                    id="errorModalLabel">
+                    오류 발생</h5>
+                <div class="x-text-sm x-font-light x-text-gray-600">
+                    오류가 발생했습니다. 다시 시도해 주세요.
+                </div>
+                <button type="button" class="mt-4 btn btn-primary form-control" data-bs-dismiss="modal">확인
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 테스트계정 오류 Modal -->
+<div class="modal modal-sm fade" id="testAccountErrorModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-4 text-center">
+                <h5 class="modal-title mb-1 x-font-medium" style="font-size: 1.1rem"
+                    id="testAccountErrorModalLabel">
+                    탈퇴 불가</h5>
+                <div class="x-text-sm x-font-light x-text-gray-600">
+                    테스트 계정은 탈퇴가 불가능합니다.
+                </div>
+                <button type="button" onclick="location.href='/settings/account'" class="mt-4 btn btn-primary form-control" data-bs-dismiss="modal">설정 화면으로
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
