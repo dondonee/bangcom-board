@@ -8,6 +8,8 @@ build/
 ### Sensitive Data ###
 application-sensitive.yml
 application-sensitive.properties
+application-prod.yml
+application-prod.properties
 
 ### Bootstrap 5 SCSS ###
 /node_modules
