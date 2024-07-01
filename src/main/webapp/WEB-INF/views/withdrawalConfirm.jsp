@@ -54,7 +54,7 @@
                     success: function (loginMember) {
 
                         // 테스트 계정은 탈퇴 불가
-                        if (loginMember.userNo >= 4 && loginMember.userNo <= 13) {
+                        if (loginMember.userNo == 4 || loginMember.userNo == 5) {
                             $('#testAccountErrorModal').modal('show');
                             return;
                         }

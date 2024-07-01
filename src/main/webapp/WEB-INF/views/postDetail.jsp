@@ -96,8 +96,14 @@
                         if (bvo.writer && bvo.writer.userNo == loginMember.userNo) {
 
                             let branchDataAttr = '';
+                            let dataMentioned = '';
+                            if (bvo.parentCommentInfo.mentionedName) {
+                                dataMentioned = bvo.parentCommentInfo.mentionedName;
+                            } else {
+                                dataMentioned = '(알 수 없음)';
+                            }
                             if (bvo.depthNo > 1) {
-                                branchDataAttr = 'data-comment-type="branch2" data-mentioned="' + bvo.parentCommentInfo.mentionedName + '"'
+                                branchDataAttr = 'data-comment-type="branch2" data-mentioned="' + dataMentioned + '"'
                             } else {
                                 branchDataAttr = 'data-comment-type="branch"';
                             }
@@ -145,9 +151,9 @@
 
                         let bvoWriterHtml = '';
                         if (bvo.writer) {
-                            let adminBadgeHtml = '';
-                            if (bvo.writer.authority == '관리자') {
-                                adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                            let authBadgeHtml = '';
+                            if (bvo.writer.authority != '사용자') {
+                                authBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">'+ bvo.writer.authority +'</span>';
                             }
                             let gradeRegionHtml = '';
                             if (bvo.writer) {
@@ -161,16 +167,16 @@
                                 + '         <div class="d-flex flex-column my-auto">'
                                 + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + bvo.writer.userNo + '">'
                                 + '                 <span>' + bvo.writer.nickname + '</span>'
-                                + adminBadgeHtml
+                                + authBadgeHtml
                                 + '             </a>'
                                 + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                                 + gradeRegionHtml
                                 + '                 <span class="">' + getElapsedTime(bvo.createdDate) + '</span>'
                                 + '             </div>'
                                 + '         </div>'
-                        } else if (!vo.writer) {
+                        } else if (!bvo.writer) {
                             bvoWriterHtml += ' <div class="me-2">'
-                                + '             <img src="/images/profile/' + bvoImageName + '" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진">'
+                                + '             <img src="/images/profile/temporary.gif" class="x-comment-profile-img x-border-thin rounded-circle" alt="프로필사진">'
                                 + '         </div>'
                                 + '         <div class="d-flex flex-column my-auto">'
                                 + '             <div class="x-text-sm">'
@@ -233,9 +239,9 @@
                         imageName = 'temporary.gif';
                     }
 
-                    let adminBadgeHtml = '';
-                    if (vo.writer.authority == '관리자') {
-                        adminBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">관리자</span>';
+                    let authBadgeHtml = '';
+                    if (vo.writer.authority != '사용자') {
+                        authBadgeHtml += '<span class="ms-1 x-badge-admin x-text-xs">'+ vo.writer.authority +'</span>';
                     }
 
                     let gradeRegionHtml = '';
@@ -250,7 +256,7 @@
                         + '         <div class="d-flex flex-column my-auto">'
                         + '             <a class="d-flex align-items-center x-text-sm" href="/members/' + vo.writer.userNo + '">'
                         + '                 <span>' + vo.writer.nickname + '</span>'
-                        + adminBadgeHtml
+                        + authBadgeHtml
                         + '             </a>'
                         + '             <div class="x-text-xs x-text-gray-600 x-font-light" style="line-height: 1.2rem">'
                         + gradeRegionHtml
@@ -710,8 +716,8 @@
                             <span>
                                     ${post.author.nickname}
                             </span>
-                                <c:if test="${loginMember.authority eq 'ADMIN'}">
-                                    <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                <c:if test="${post.author.authority ne 'USER'}">
+                                    <span class="ms-1 x-badge-admin x-text-xs">${post.author.authority.description}</span>
                                 </c:if>
                             </a>
                         </c:if>
@@ -812,8 +818,8 @@
                                                     <a class="d-flex align-items-center x-text-sm"
                                                        href="/members/${vo.writer.userNo}">
                                                         <span>${vo.writer.nickname}</span>
-                                                        <c:if test="${vo.writer.authority eq 'ADMIN'}">
-                                                            <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                        <c:if test="${vo.writer.authority ne 'USER'}">
+                                                            <span class="ms-1 x-badge-admin x-text-xs">${vo.writer.authority.description}</span>
                                                         </c:if>
                                                     </a>
                                                     <div class="x-text-xs x-text-gray-600 x-font-light"
@@ -923,8 +929,8 @@
                                                                         <a class="d-flex align-items-center x-text-sm"
                                                                            href="/members/${bvo.writer.userNo}">
                                                                             <span>${bvo.writer.nickname}</span>
-                                                                            <c:if test="${bvo.writer.authority eq 'ADMIN'}">
-                                                                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                                                            <c:if test="${bvo.writer.authority ne 'USER'}">
+                                                                                <span class="ms-1 x-badge-admin x-text-xs">${bvo.writer.authority.description}</span>
                                                                             </c:if>
                                                                         </a>
                                                                         <div class="x-text-xs x-text-gray-600 x-font-light"
@@ -975,7 +981,7 @@
                                                                             <button id="commentEditFormBtnOf${bvo.id}"
                                                                                     data-comment-type="${bvo.depthNo > 1? 'branch2': 'branch'}"
                                                                                     data-root="${vo.id}"
-                                                                                    data-mentioned="${bvo.parentCommentInfo.mentionedName}"
+                                                                                    data-mentioned="${not empty bvo.parentCommentInfo.mentionedName? bvo.parentCommentInfo.mentionedName: '(알 수 없음)'}"
                                                                                     class="dropdown-item" href="#"><i
                                                                                     class="me-1 bi bi-pencil-square"></i>수정하기
                                                                             </button>

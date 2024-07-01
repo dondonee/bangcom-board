@@ -42,4 +42,9 @@ public class HomeController {
 
         return "home";
     }
+
+    @GetMapping("/introduction")
+    public String introduction() {
+        return "introduction";
+    }
 }

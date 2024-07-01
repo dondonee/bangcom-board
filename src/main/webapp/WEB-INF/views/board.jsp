@@ -90,22 +90,29 @@
                                 <%--    작성자 정보    --%>
                             <div class="x-text-sm">
                                 <span>
+                                    <c:if test="${not empty vo.author}">
                                     <a href="/members/${vo.author.userNo}">
                                         <img src="/images/profile/${not empty vo.author.imageName? vo.author.imageName: 'temporary.gif'}"
                                              style="width: 20px; height: 20px"
                                              alt="프로필사진">
                                         </a>
+                                    </c:if>
+                                    <c:if test="${empty vo.author}">
+                                        <img src="/images/profile/temporary.gif"
+                                             style="width: 20px; height: 20px"
+                                             alt="프로필사진">
+                                    </c:if>
                                 </span>
                                 <span>
                                     <c:if test="${not empty vo.author}">
                                     <a class="x-text-gray-600" href="/members/${vo.author.userNo}">
                                         <span>${vo.author.nickname}</span>
                                         <c:choose>
-                                            <c:when test="${vo.author.authority ne 'ADMIN'}">
+                                            <c:when test="${vo.author.authority eq 'USER'}">
                                                 <span> / ${vo.author.grade.description} / ${vo.author.region.description}</span>
                                             </c:when>
-                                            <c:when test="${vo.author.authority eq 'ADMIN'}">
-                                                <span class="ms-1 x-badge-admin x-text-xs">관리자</span>
+                                            <c:when test="${vo.author.authority ne 'USER'}">
+                                                <span class="ms-1 x-badge-admin x-text-xs">${vo.author.authority.description}</span>
                                             </c:when>
                                         </c:choose>
                                     </a>

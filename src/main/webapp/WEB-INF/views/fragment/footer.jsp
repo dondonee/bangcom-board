@@ -15,7 +15,7 @@
             }
         });
 
-        $('.x-main, .x-footer').click(function(e) {
+        $('.x-main, .x-footer-nav').click(function(e) {
             const menu = $('#createBtnDropdup');
             menu.css('display', 'none');
         });
@@ -33,21 +33,17 @@
             </div>
             <div class="x-footer-main">
                 <ul class="d-flex justify-content-start list-unstyled x-text-xs x-font-light">
-                    <li><a href="/articles/1">포트폴리오 소개</a></li>
+                    <li><a href="/introduction">프로젝트 소개</a></li>
                     <span class="mx-2">|</span>
-                    <li><a href="/articles/2">연락처</a></li>
+                    <li><a href="/articles/1">버그 제보</a></li>
                     <span class="mx-2">|</span>
-                    <li><a href="/articles/3">버그 제보</a></li>
-                    <span class="mx-2">|</span>
-                    <li><a href="/articles/4">개인정보처리방침</a></li>
+                    <li><a href="/articles/2">개인정보처리방침</a></li>
                 </ul>
                 <div class="x-text-sm x-font-light x-text-gray-700">
-                    <p class="my-0"><span class="x-font-medium">이임시</span>의 포트폴리오</p>
+                    <p class="my-0">Bangcom verson 1.0</p>
                     <p>
-                        <span>email: temporary12345@gmail.com</span>
-                        <span class="mx-2">|</span>
-                        <a href="#" class="me-2" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
-                        <a href="#" style="color: inherit"><i class="me-1 bi bi-house-door-fill"></i>Blog</a>
+                        <a target="_blank" href="https://github.com/dondonee/knou-board" class="me-2" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
+                        <a target="_blank" href="https://velog.io/@dondonee/%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0-%EA%B2%8C%EC%8B%9C%ED%8C%90-v.1" style="color: inherit"><i class="me-1 bi bi-house-door-fill"></i>Blog</a>
                     </p>
                 </div>
             </div>
