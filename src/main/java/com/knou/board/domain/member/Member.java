@@ -35,7 +35,7 @@ public class Member {
         GRADE_2("2", "2학년"),
         GRADE_3("3", "3학년"),
         GRADE_4("4", "4학년"),
-        GRADUATE("graduate", "졸업생");
+        GRADUATE("9", "졸업생");
 
         private String code;
         @JsonValue
