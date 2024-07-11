@@ -42,8 +42,8 @@
                 <div class="x-text-sm x-font-light x-text-gray-700">
                     <p class="my-0">Bangcom verson 1.0</p>
                     <p>
-                        <a target="_blank" href="https://github.com/dondonee/knou-board" class="me-2" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
-                        <a target="_blank" href="https://velog.io/@dondonee/%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0-%EA%B2%8C%EC%8B%9C%ED%8C%90-v.1" style="color: inherit"><i class="me-1 bi bi-house-door-fill"></i>Blog</a>
+                        <a target="_blank" href="https://github.com/dondonee" class="me-2" style="color: inherit"><i class="me-1 bi bi-github"></i>Github</a>
+                        <a target="_blank" href="https://velog.io/@dondonee" style="color: inherit"><i class="me-1 bi bi-house-door-fill"></i>Blog</a>
                     </p>
                 </div>
             </div>

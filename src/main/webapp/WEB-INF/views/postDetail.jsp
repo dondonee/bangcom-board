@@ -414,7 +414,7 @@
                 const form = e.currentTarget.closest('form');
                 const rootCommentId = e.currentTarget.getAttribute('data-root');
                 $.ajax({
-                    url: '/articles/comments',
+                    url: '/api/v1/articles/comments',
                     type: 'POST',
                     data: $(form).serializeArray(),
                     success: function (xhr) {  // 댓글 목록 갱신
@@ -545,7 +545,7 @@
                 const rootCommentId = e.currentTarget.getAttribute('data-root');
 
                 $.ajax({
-                    url: '/articles/comments/' + commentId,
+                    url: '/api/v1/articles/comments/' + commentId,
                     type: 'PUT',
                     data: $(form).serializeArray(),
                     success: function (xhr) {  // 댓글 목록 갱신
@@ -619,7 +619,7 @@
                 const rootCommentId = button.attr('data-root');
 
                 $.ajax({
-                    url: '/articles/comments/' + commentId,
+                    url: '/api/v1/articles/comments/' + commentId,
                     type: 'DELETE',
                     success: function (xhr) {
                         // 기존 모달 닫기
@@ -776,7 +776,7 @@
                              src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
                              style="border:1px solid #f8f9fa">
                     </div>
-                    <form id="commentAddForm" action="/articles/comments" method="post" class="w-100">
+                    <form id="commentAddForm" action="/api/v1/articles/comments" method="post" class="w-100">
                         <c:if test="${!empty loginMember}">
                             <input type="hidden" name="postId" id="postId" value="${post.id}">
                             <textarea class="form-control" name="content" id="content" placeholder="댓글을 남겨주세요."

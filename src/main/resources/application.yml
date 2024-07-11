@@ -1,14 +1,25 @@
+server:
+  error:
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
 spring:
   application.name: board
   mvc:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
   profiles:
-    active: dev
+    active: local-dev
     group:
-      "prod": "local, prod"
-      "dev": "local, dev, sensitive"
+      "prod": "local, prod"  # 배포서버
+      "local-dev": "local, sensitive"  # 로컬 개발환경
 
 mybatis:
   type-aliases-package: com.knou.board.domain
@@ -17,9 +28,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
-server:
-  error:
-    include-exception: false
-    include-message: never
-    include-stacktrace: never
-    include-binding-errors: never
+logging:
+  level:
+    org.springframework.jdbc: DEBUG
+    com.knou.board.repository.mybatis: DEBUG

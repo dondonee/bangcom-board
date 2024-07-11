@@ -1,7 +1,0 @@
-server:
-  port: 8084
-
-logging:
-  level:
-    org.springframework.jdbc: DEBUG
-    com.knou.board.repository.mybatis: DEBUG

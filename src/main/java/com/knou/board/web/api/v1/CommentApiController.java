@@ -1,4 +1,4 @@
-package com.knou.board.web.controller;
+package com.knou.board.web.api.v1;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.comment.Comment;
@@ -23,16 +23,17 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
+@RequestMapping("/api/v1")
 @RestController
 @RequiredArgsConstructor
-public class CommentController {
+public class CommentApiController {
 
     private final CommentService commentService;
     private final PostService postService;
 
 
     @PostMapping("/articles/comments")
-    public ResponseEntity addComment(@ModelAttribute CommentAddForm form, @Login Member loginMember) {
+    public ResponseEntity<?> addComment(@ModelAttribute CommentAddForm form, @Login Member loginMember) {
 
         // 로그인 체크
         if (loginMember == null) {
@@ -74,7 +75,7 @@ public class CommentController {
     }
 
     @GetMapping("/articles/{postId}/comments")
-    public ResponseEntity getCommentList(@PathVariable long postId) {
+    public ResponseEntity<?> getCommentList(@PathVariable long postId) {
         // 존재하는 게시글인지 확인
         Post post = postService.findPost(postId);
         if (post == null) {
@@ -87,7 +88,7 @@ public class CommentController {
     }
 
     @PutMapping("/articles/comments/{commentId}")
-    public ResponseEntity editComment(@PathVariable long commentId, @ModelAttribute("content") String content, @Login Member loginMember) {
+    public ResponseEntity<?> editComment(@PathVariable long commentId, @ModelAttribute("content") String content, @Login Member loginMember) {
 
         // 존재하는 댓글인지 확인
         Comment comment = commentService.findComment(commentId);
@@ -123,7 +124,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/articles/comments/{commentId}")
-    public ResponseEntity deleteComment(@PathVariable long commentId, @Login Member loginMember) {
+    public ResponseEntity<?> deleteComment(@PathVariable long commentId, @Login Member loginMember) {
 
         // 존재하는 댓글인지 확인
         Comment comment = commentService.findComment(commentId);

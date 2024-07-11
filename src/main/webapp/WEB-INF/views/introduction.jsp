@@ -5,13 +5,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<%@ page import="com.knou.board.domain.member.Member" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <%@ include file="fragment/head.jsp" %>
-    <title>Bangcom - 회원가입</title>
+    <title>Bangcom - 사이트 소개</title>
 </head>
 <body>
 <header>
@@ -31,8 +29,14 @@
                     <p class="x-font-medium" style="color: #006a9b">Bangcom은 한국방송통신대학교 컴퓨터과학과 가상 커뮤니티 게시판입니다.</p>
                 </div>
                 <div class="mb-5 text-center x-font-light">
+                    <div>
+                        <p class="mb-0">게시판의 주제는 방송대 컴퓨터과학과 오픈카톡에서 아이디어를 얻었으며,</p>
+                        <p class="mb-4">UI는 개발자 커뮤니티 OKKY를 참고하였습니다.</p>
+                    </div>
+                    <div>
                     <p class="mb-0">본 사이트는 포트폴리오 용도로 운영중입니다.</p>
                     <p class="mb-4">가입 없이 테스트 계정을 사용하실 수 있습니다.</p>
+                    </div>
                     <div>
                     <ul class="list-unstyled">
                         <li class="row">
