@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.knou.board.repository.mybatis.CommentMapper">
+
+    <resultMap id="memberMap" type="Member">
+        <result property="userNo" column="user_no"/>
+        <result property="nickname" column="nickname"/>
+        <result property="imageName" column="image_name"/>
+        <result property="bio" column="bio"/>
+        <result property="transferred" column="transferred"/>
+        <result property="grade" column="grade"
+                typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler"/>
+        <result property="authority" column="authority"
+                typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler"/>
+        <result property="region" column="region"
+                typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler"/>
+        <result property="joinedDate" column="joined_date"/>
+        <result property="updatedDate" column="updated_date"/>
+    </resultMap>
+    <resultMap id="parentCommentInfoMap" type="com.knou.board.domain.comment.ParentCommentInfoSelect">
+        <result property="parentId" column="parent_id"/>
+        <result property="mentionedId" column="mentioned_id"/>
+        <result property="mentionedName" column="mentioned_nickname"/>
+    </resultMap>
+    <resultMap id="singleCommentMap" type="Comment">
+        <id property="id" column="comment_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="content" column="content"/>
+        <result property="groupNo" column="group_no"/>
+        <result property="depthNo" column="depth_no"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <association property="writer" column="writer_id" resultMap="memberMap"/>
+        <association property="parentCommentInfo" resultMap="parentCommentInfoMap"/>
+    </resultMap>
+    <resultMap id="commentMap" type="Comment">
+        <id property="id" column="comment_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="content" column="content"/>
+        <result property="groupNo" column="group_no"/>
+        <result property="depthNo" column="depth_no"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <association property="writer" column="writer_id" resultMap="memberMap"/>
+        <collection property="branchComments" ofType="Comment" javaType="list"
+                    columnPrefix="branch_">
+            <id property="id" column="comment_id"/>
+            <result property="postId" column="post_id"/>
+            <result property="content" column="content"/>
+            <result property="groupNo" column="group_no"/>
+            <result property="depthNo" column="depth_no"/>
+            <result property="orderNo" column="order_no"/>
+            <result property="createdDate" column="created_date"/>
+            <result property="modifiedDate" column="modified_date"/>
+            <association property="writer" column="writer_id" resultMap="memberMap"/>
+            <association property="parentCommentInfo" resultMap="parentCommentInfoMap"/>
+        </collection>
+    </resultMap>
+    <resultMap id="commentHistoryMap" type="CommentHistoryDto">
+        <id property="id" column="comment_id"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="postId" column="post_id"/>
+        <result property="postTopic" column="topic" typeHandler="com.knou.board.domain.post.Topic$TypeHandler"/>
+        <result property="postTitle" column="title"/>
+        <result property="authorId" column="author_id"/>
+        <result property="authorNickname" column="nickname"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO post_comment (post_id, writer_id, content, created_date,
+        parent_id, mentioned_id, depth_no, group_no, order_no)
+        VALUES (#{postId}, #{writer.userNo}, #{content}, #{createdDate},
+
+        <if test="parentCommentInfo == null">
+            null, null, 0,
+            (SELECT IFNULL(temp.group_no + 1, 0)
+            FROM (SELECT MAX(group_no) as group_no
+            FROM post_comment
+            WHERE post_id = #{postId}) AS temp),
+            (SELECT IFNULL(temp.order_no + 1, 0)
+            FROM (SELECT MAX(order_no) as order_no
+            FROM post_comment
+            WHERE post_id = #{postId}) AS temp)
+        </if>
+        <if test="parentCommentInfo != null">
+            #{parentCommentInfo.parentId},
+            #{parentCommentInfo.mentionedId}, #{parentCommentInfo.parentDepthNo} + 1,
+            #{parentCommentInfo.parentGroupNo},
+            (SELECT IFNULL(temp.order_no + 1, 0)
+            FROM (SELECT MAX(order_no) as order_no
+            FROM post_comment
+            WHERE post_id = #{postId} and group_no = #{parentCommentInfo.parentGroupNo}) AS temp)
+        </if>
+        )
+    </insert>
+
+    <select id="selectById" resultMap="singleCommentMap">
+        SELECT r.comment_id,
+               r.post_id,
+               r.content,
+               r.group_no,
+               r.depth_no,
+               r.order_no,
+               r.created_date,
+               r.modified_date,
+               r.parent_id,
+               r.mentioned_id,
+               m.user_no,
+               m.nickname,
+               m.image_name,
+               m.grade,
+               m.authority,
+               m.region,
+               pm.nickname as parent_mentioned_nickname
+        FROM post_comment r
+                 LEFT JOIN member_profile m
+                           ON r.writer_id = m.user_no
+                 LEFT JOIN member_profile pm
+                           ON r.mentioned_id = pm.user_no
+        WHERE r.comment_id = #{id}
+    </select>
+
+    <select id="selectByUserNo" resultMap="commentHistoryMap">
+        SELECT c.comment_id,
+               c.created_date,
+               c.post_id,
+               p.topic,
+               p.title,
+               p.author_id,
+               pm.nickname
+        FROM post_comment c
+                 JOIN post p
+                      ON c.post_id = p.post_id
+                 JOIN member_profile pm
+                      ON p.author_id = pm.user_no
+        WHERE c.writer_id = #{userNo}
+        ORDER BY c.comment_id DESC
+        LIMIT #{criteria.startRow}, #{criteria.pageSize}
+    </select>
+
+    <select id="selectByPostId" resultMap="commentMap">
+        SELECT r.comment_id,
+               r.post_id,
+               r.content,
+               r.group_no,
+               r.order_no,
+               r.created_date,
+               r.modified_date,
+               m.user_no,
+               m.nickname,
+               m.image_name,
+               m.grade,
+               m.authority,
+               m.region,
+               b.comment_id    as branch_comment_id,
+               b.post_id       as branch_post_id,
+               b.content       as branch_content,
+               b.group_no      as branch_group_no,
+               b.depth_no      as branch_depth_no,
+               b.order_no      as branch_order_no,
+               b.parent_id     as branch_parent_id,
+               b.mentioned_id  as branch_mentioned_id,
+               b.created_date  as branch_created_date,
+               b.modified_date as branch_modified_date,
+               bm.user_no      as branch_user_no,
+               bm.nickname     as branch_nickname,
+               bm.image_name   as branch_image_name,
+               bm.grade        as branch_grade,
+               bm.authority    as branch_authority,
+               bm.region       as branch_region,
+               pm.nickname     as branch_mentioned_nickname
+        FROM post_comment r
+                 LEFT JOIN member_profile m
+                           ON r.writer_id = m.user_no
+                 LEFT JOIN post_comment b
+                           ON b.parent_id IS NOT NULL AND r.post_id = b.post_id AND r.group_no = b.group_no
+                 LEFT JOIN member_profile bm
+                           ON b.writer_id = bm.user_no
+                 LEFT JOIN member_profile pm
+                           ON b.mentioned_id = pm.user_no
+        WHERE r.post_id = #{postId}
+          AND r.parent_id IS NULL
+        ORDER BY r.order_no ASC, b.order_no ASC
+    </select>
+
+    <select id="selectParentInfoById" resultType="ParentCommentInfoInsert">
+        SELECT comment_id as parent_id,
+               writer_id  as mentioned_id,
+               group_no   as parent_group_no,
+               depth_no   as parent_depth_no
+        FROM post_comment
+        WHERE comment_id = #{id}
+    </select>
+
+    <select id="countChildrenById">
+        SELECT count(*)
+        FROM post_comment
+        WHERE parent_id = #{id}
+    </select>
+
+    <select id="countTotalSelectedByUserNo" resultType="long">
+        SELECT count(*) FROM post_comment
+        WHERE writer_id = #{userNo}
+    </select>
+
+    <update id="update">
+        UPDATE post_comment
+        SET content       = #{content},
+            modified_date = #{modifiedDate}
+        WHERE comment_id = #{id}
+    </update>
+
+    <update id="updateOrderNo">
+        UPDATE post_comment
+        SET order_no = order_no + 1
+        WHERE post_id = #{postId}
+          AND comment_id != #{id}
+          AND order_no >= #{orderNo}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM post_comment
+        WHERE comment_id = #{id}
+    </delete>
+</mapper>

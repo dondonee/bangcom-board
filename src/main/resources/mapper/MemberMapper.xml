@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.knou.board.repository.mybatis.MemberMapper">
+
+    <resultMap id="memberMap" type="Member">
+        <result property="userNo" column="user_no"/>
+        <result property="nickname" column="nickname"/>
+        <result property="imageName" column="image_name"/>
+        <result property="bio" column="bio"/>
+        <result property="transferred" column="transferred"/>
+        <result property="grade" column="grade" typeHandler="com.knou.board.domain.member.Member$Grade$TypeHandler"/>
+        <result property="authority" column="authority"
+                typeHandler="com.knou.board.domain.member.Member$Authority$TypeHandler"/>
+        <result property="region" column="region" typeHandler="com.knou.board.domain.member.Member$Region$TypeHandler"/>
+        <result property="joinedDate" column="joined_date"/>
+        <result property="updatedDate" column="updated_date"/>
+    </resultMap>
+
+
+    <!-- 회원가입 관련 -->
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userNo" parameterType="MemberLogin">
+        INSERT INTO member_user (login_name)
+        VALUES (#{loginName})
+    </insert>
+
+    <insert id="insertPassword">
+        INSERT INTO auth_password (user_no, password)
+        VALUES (#{userNo}, #{password});
+    </insert>
+
+    <insert id="insertProfile">
+        INSERT INTO member_profile (user_no, nickname, transferred, grade, authority, region, joined_date)
+        VALUES (#{userNo}, #{nickname}, #{transferred},
+                #{grade, typeHandler=com.knou.board.domain.member.Member$Grade$TypeHandler},
+                #{authority, typeHandler=com.knou.board.domain.member.Member$Authority$TypeHandler},
+                #{region, typeHandler=com.knou.board.domain.member.Member$Region$TypeHandler}, #{joinedDate});
+    </insert>
+
+
+    <!-- SELECT -->
+
+    <select id="selectProfileById" resultMap="memberMap">
+        SELECT *
+        FROM member_profile
+        WHERE user_no = #{userNo}
+    </select>
+
+    <select id="selectProfileByNickName" resultMap="memberMap">
+        SELECT *
+        FROM member_profile
+        WHERE nickname = #{nickname}
+    </select>
+
+    <select id="selectLoginNameById">
+        SELECT login_name
+        FROM member_user
+        WHERE user_no = #{userNo}
+    </select>
+
+    <select id="selectUserByLoginName" resultType="MemberLogin">
+        SELECT *
+        FROM member_user
+        WHERE login_name = #{loginName}
+    </select>
+
+    <select id="selectUserAndPasswordByLoginName" resultType="MemberLogin">
+        SELECT u.user_no, u.login_name, p.password
+        FROM member_user u
+                 JOIN auth_password p ON u.user_no = p.user_no
+        WHERE u.user_no = #{userNo}
+    </select>
+
+
+    <!-- 프로필 수정 관련 -->
+
+    <update id="updateProfile">
+        UPDATE member_profile
+        SET nickname     = #{nickname},
+            bio          = #{bio},
+            grade        = #{grade, typeHandler=com.knou.board.domain.member.Member$Grade$TypeHandler},
+            region       = #{region, typeHandler=com.knou.board.domain.member.Member$Region$TypeHandler},
+            transferred  = #{transferred},
+            updated_date = #{updatedDate}
+        WHERE user_no = #{userNo}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE auth_password
+        SET password = #{memberLogin.password}, updated_date = #{updatedDate}
+        WHERE user_no = #{memberLogin.userNo}
+    </update>
+
+    <!-- 프로필 수정 - 이미지 업로드 관련 -->
+
+    <select id="selectUploadFileNameById">
+        SELECT upload_name
+        FROM profile_image
+        WHERE user_no = #{userNo}
+    </select>
+
+    <update id="updateProfileImage">
+        UPDATE member_profile
+        SET image_name = #{uploadFile.storeFileName}, updated_date = #{member.updatedDate}
+        WHERE user_no = #{member.userNo}
+    </update>
+
+    <insert id="updateProfileImageName">
+        INSERT INTO profile_image (user_no, upload_name)
+        VALUES (#{userNo}, #{uploadFile.uploadFileName})
+        ON DUPLICATE KEY UPDATE upload_name = #{uploadFile.uploadFileName}
+    </insert>
+
+
+    <!-- 틸퇴 관련 -->
+    <delete id="deleteUser">
+        DELETE FROM member_user
+        WHERE user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteUserPassword">
+        DELETE FROM auth_password
+        WHERE user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteProfileImage">
+        DELETE FROM profile_image
+        WHERE user_no = #{userNo}
+    </delete>
+
+    <update id="updateNullProfileByUserNo">
+        UPDATE member_profile
+        SET nickname = NULL, image_name = NULL, bio = NULL, grade = NULL, transferred = NULL, region = NULL, joined_date = NULL, updated_date = NULL
+        WHERE user_no = #{userNo}
+    </update>
+
+    <insert id="insertWithdrawalUser">
+        INSERT INTO withdrawal_member (user_no)
+        VALUES (#{userNo})
+    </insert>
+
+    <insert id="insertWithdrawalLog">
+        INSERT INTO withdrawal_log (user_no, status_code, reason_code, reason_text, withdrawal_date)
+        VALUES (#{userNo}, #{statusCode, typeHandler=com.knou.board.domain.member.MemberWithdrawal$StatusCode$TypeHandler}, #{reasonCode, typeHandler=com.knou.board.domain.member.MemberWithdrawal$ReasonCode$TypeHandler}, #{reasonText}, #{withdrawalDate})
+    </insert>
+
+</mapper>

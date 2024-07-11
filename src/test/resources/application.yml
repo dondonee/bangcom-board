@@ -1,0 +1,17 @@
+server:
+  port: 8084
+
+spring:
+  application.name: board
+  config:
+    activate.on-profile: sensitive
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+mybatis:
+  type-aliases-package: com.knou.board.domain
+  type-handlers-package: com.knou.board.domain
+  mapper-locations: classpath:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
