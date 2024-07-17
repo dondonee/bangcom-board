@@ -442,11 +442,11 @@
                         // 클라이언트 오류는 등록 폼에 오류메세지 표시
                         if (errorCode === 4) {
                             const response = JSON.parse(xhr.responseText);
-                            const exMessage = response.exMessage;
+                            const message = response.message;
 
-                            if (exMessage) {
+                            if (message) {
                                 let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
-                                    + '<span>' + exMessage + '</span>';
+                                    + '<span>' + message + '</span>';
                                 $('.x-field-error').html('');  // 다른 작성 폼의 에러메세지 삭제
                                 $(form).find('.x-field-error').html(html);  // 해당 작성 폼에 에러메세지 표시
                             }
@@ -479,8 +479,8 @@
                 const editBoxId = 'commentEditBoxOf' + commentId;
 
                 if (!document.getElementById(editBoxId)) {  // 작성 폼이 없는 경우
-                    // 대댓글 작성 폼 만들기
-                    var clone = $('#addBranch').clone();
+                    // 대댓글 수정 폼 만들기
+                    var clone = $('#editBranch').clone();
                     if (button.attr('data-comment-type') === 'root') {  // 댓글인 경우
                     } else if (button.attr('data-comment-type') === 'branch') {  // 대댓글인 경우
                         $(clone).find('> div').css('border-left', '')
@@ -492,9 +492,9 @@
                     $(clone).find('> div').attr('id', editBoxId);
                     $(clone).find('form').attr('id', 'commentEditFormOf' + commentId);
                     $(clone).find('form textarea').text(content);
+                    $(clone).find('form input[name="commentId"]').attr('value', commentId);
                     $(clone).find('button[data-role="cancel"]').attr('id', 'commentEditCancelBtnOf' + commentId);
                     $(clone).find('button[data-role="submit"]').attr('id', 'commentEditBtnOf' + commentId);
-                    $(clone).find('button[data-role="submit"]').text('수정하기');
                     if (button.attr('data-comment-type') !== 'root') {
                         $(clone).find('button[data-role="submit"]').attr('data-root', rootCommentId);
                     }
@@ -573,11 +573,11 @@
                         // 클라이언트 오류는 수정 폼에 오류메세지 표시
                         if (errorCode === 4) {
                             const response = JSON.parse(xhr.responseText);
-                            const exMessage = response.exMessage;
+                            const message = response.message;
 
-                            if (exMessage) {
+                            if (message) {
                                 let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
-                                    + '<span>' + exMessage + '</span>';
+                                    + '<span>' + message + '</span>';
                                 $('.x-field-error').html('');  // 다른 작성 폼의 에러메세지 삭제
                                 $(form).find('.x-field-error').html(html);  // 해당 작성 폼에 에러메세지 표시
                             }
@@ -638,18 +638,17 @@
                             $('#toggleBranchesOf' + rootCommentId).trigger('click');
                         }
 
-                    },
-                    error: function (xhr) {
-                        const errorCode = parseInt(xhr.status / 100);
+                        },
+                        error: function (xhr) {
+                            const errorCode = parseInt(xhr.status / 100);
 
-                        // 클라이언트 오류 -> 안내 오류메세지 표시
-                        if (errorCode === 4) {
-                            const response = JSON.parse(xhr.responseText);
-                            const exMessage = response.exMessage;
-                            const exDescription = response.exDescription;
+                            // 클라이언트 오류 -> 안내 오류메세지 표시
+                            if (errorCode === 4) {
+                                const response = JSON.parse(xhr.responseText);
+                                const message = response.message;
 
-                            $('#errorModal').find('h5.modal-title').text(exMessage);
-                            $('#errorModal').find('.modal-body > div').text(exDescription);
+                                $('#errorModal').find('h5.modal-title').text('댓글 삭제 오류');
+                                $('#errorModal').find('.modal-body > div').text(message);
                             errorModal.show();
                             commentDeleteModal.hide();
                         }
@@ -1143,6 +1142,34 @@
                         </button>
                         <button data-role="submit" class="px-3 py-1 btn btn-primary"
                                 type="button">댓글 쓰기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </c:if>
+
+    <%--    대댓글 수정 폼(뼈대)    --%>
+    <c:if test="${!empty loginMember}">
+        <div id="editBranch" style="display: none">
+            <div class="d-flex">
+                <div class="me-3">
+                    <img class="x-comment-profile-img x-border-thin rounded-circle"
+                         src="/images/profile/${loginMember.imageName ne null? loginMember.imageName: 'temporary.gif'}"
+                         style="border:1px solid #f8f9fa">
+                </div>
+                <form method="post" class="w-100">
+                    <input type="hidden" name="commentId">
+                    <div class="form-control p-0 pt-2">
+                                    <textarea class="pt-0 border-0 form-control" name="content" placeholder="댓글을 남겨주세요."
+                                              rows="3"></textarea>
+                    </div>
+                    <div class="mt-3 d-flex justify-content-end">
+                        <div class="mt-1 me-2 x-field-error"></div>
+                        <button data-role="cancel" class="me-1 px-3 py-1 btn btn-outline-secondary" type="button">취소
+                        </button>
+                        <button data-role="submit" class="px-3 py-1 btn btn-primary"
+                                type="button">수정하기
                         </button>
                     </div>
                 </form>

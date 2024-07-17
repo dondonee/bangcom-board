@@ -4,6 +4,7 @@ import com.knou.board.domain.comment.Comment;
 import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.comment.ParentCommentInfo;
 import com.knou.board.domain.post.Criteria;
+import com.knou.board.exception.HasCommentException;
 import com.knou.board.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class CommentService {
         // 자식 댓글이 있는지 확인
         int children = commentRepository.countChildrenById(commentId);
         if (children > 0) {
-            return 0;  // 삭제 불가
+            throw new HasCommentException("댓글이 존재하는 경우 삭제할 수 없습니다.");
         }
 
         return commentRepository.delete(commentId);

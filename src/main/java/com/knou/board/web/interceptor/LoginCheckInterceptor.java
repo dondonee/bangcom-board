@@ -16,6 +16,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();  // 로그인 이전 페이지
         HttpSession session = request.getSession();
 
+        // GET 요청은 인터셉트 X
+        if (request.getMethod().equals("GET") && requestURI.startsWith("/api")) {
+            return true;
+        }
+
         // 미인증 사용자 -> 로그인 페이지로 이동
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
             session.setAttribute(SessionConst.PREV_URL, requestURI);
