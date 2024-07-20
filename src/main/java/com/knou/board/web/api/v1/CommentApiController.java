@@ -2,7 +2,6 @@ package com.knou.board.web.api.v1;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.comment.Comment;
-import com.knou.board.domain.post.Post;
 import com.knou.board.exception.*;
 import com.knou.board.service.CommentService;
 import com.knou.board.service.PostService;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RequestMapping("/api/v1")
@@ -36,10 +34,7 @@ public class CommentApiController {
 
         // 존재하는 게시물인지 확인
         long postId = form.getPostId();
-        Optional<Post> post = Optional.ofNullable(postService.findPost(postId));
-        if (post.isEmpty()) {
-            throw new NotFoundException("게시글이 존재하지 않습니다.");
-        }
+        postService.findPost(postId);
 
         // 검증 성공 => 댓글 등록
         Comment comment = new Comment();
@@ -61,10 +56,7 @@ public class CommentApiController {
     @GetMapping("/articles/{postId}/comments")
     public ResponseEntity<List<Comment>> getCommentList(@PathVariable long postId) {
         // 존재하는 게시글인지 확인
-        Post post = postService.findPost(postId);
-        if (post == null) {
-            throw new NotFoundException("게시글이 존재하지 않습니다.");
-        }
+        postService.findPost(postId);
 
         List<Comment> comments = commentService.findListByPostId(postId);// 댓글 목록 및 개수 반환
         return new ResponseEntity<>(comments, HttpStatus.OK);
@@ -75,13 +67,10 @@ public class CommentApiController {
 
         // 존재하는 댓글인지 확인
         Comment comment = commentService.findComment(form.getCommentId());
-        if (comment == null) {
-            throw new NotFoundException("댓글이 존재하지 않습니다.");
-        }
 
         // 작성자 여부 체크
         if (loginMember.getUserNo() != comment.getWriter().getUserNo()) {
-            throw new NotWriterException("작성자만 댓글을 수정할 수 있습니다.");
+            throw BusinessException.NOT_WRITER;
         }
 
         // 검증 성공 => 댓글 삭제
@@ -100,13 +89,10 @@ public class CommentApiController {
 
         // 존재하는 댓글인지 확인
         Comment comment = commentService.findComment(commentId);
-        if (comment == null) {
-            throw new NotFoundException("댓글이 존재하지 않습니다.");
-        }
 
         // 작성자 여부 체크
         if (loginMember.getUserNo() != comment.getWriter().getUserNo()) {
-            throw new NotWriterException("작성자만 댓글을 삭제할 수 있습니다.");
+            throw BusinessException.NOT_WRITER;
         }
 
         // 검증 성공 => 댓글 삭제

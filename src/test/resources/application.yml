@@ -2,9 +2,9 @@ server:
   port: 8084
 
 spring:
+  profiles:
+    active: sensitive
   application.name: board
-  config:
-    activate.on-profile: sensitive
   mvc:
     view:
       prefix: /WEB-INF/views/

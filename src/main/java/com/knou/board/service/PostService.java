@@ -3,6 +3,8 @@ package com.knou.board.service;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.domain.post.Topic;
+import com.knou.board.exception.BusinessException;
+import com.knou.board.exception.ErrorCode;
 import com.knou.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +52,11 @@ public class PostService {
     }
 
     public Post findPost(long postId) {
-        return postRepository.selectById(postId);
+        Post post = postRepository.selectById(postId);
+        if (post == null) {
+            throw BusinessException.POST_NOT_EXIST;
+        }
+        return post;
     }
 
     public void increaseViewCount(long postId) {

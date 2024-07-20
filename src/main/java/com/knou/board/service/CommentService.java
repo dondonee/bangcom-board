@@ -4,7 +4,8 @@ import com.knou.board.domain.comment.Comment;
 import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.comment.ParentCommentInfo;
 import com.knou.board.domain.post.Criteria;
-import com.knou.board.exception.HasCommentException;
+import com.knou.board.exception.BusinessException;
+import com.knou.board.exception.ErrorCode;
 import com.knou.board.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,11 @@ public class CommentService {
     }
 
     public Comment findComment(long commentId) {
-        return commentRepository.selectById(commentId);
+        Comment comment = commentRepository.selectById(commentId);
+        if(comment == null) {
+            throw BusinessException.COMMENT_NOT_EXIST;
+        }
+        return comment;
     }
 
     public List<CommentHistoryDto> findListByMember(long userNo, Criteria criteria) {
@@ -64,7 +69,7 @@ public class CommentService {
         // 자식 댓글이 있는지 확인
         int children = commentRepository.countChildrenById(commentId);
         if (children > 0) {
-            throw new HasCommentException("댓글이 존재하는 경우 삭제할 수 없습니다.");
+            throw BusinessException.COMMENT_HAS_CHILD;
         }
 
         return commentRepository.delete(commentId);
