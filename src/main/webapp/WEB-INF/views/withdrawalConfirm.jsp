@@ -49,7 +49,7 @@
                 }
 
                 $.ajax({
-                    url: '/api/v1/members/me',
+                    url: '/api/v1/me',
                     type: 'get',
                     success: function (loginMember) {
 

@@ -113,25 +113,17 @@ public class MemberService {
         return doUpdateProfileImage(loginMember, new UploadFile(null, null));
     }
 
-    public MemberLogin resetPassword(MemberLogin memberLogin) {
+    public MemberLogin resetPassword(Long userNo, String password) {
 
-        // 비밀번호 변경
+        // DB 업데이트
+        MemberLogin memberLogin = new MemberLogin();
+        memberLogin.setUserNo(userNo);
+        memberLogin.setPassword(passwordEncoder.encode(password));  // 암호화
         LocalDateTime updatedDate = LocalDateTime.now();
-        memberLogin.setPassword(passwordEncoder.encode(memberLogin.getPassword()));  // 암호화
-        int rs = memberRepository.updatePassword(memberLogin, updatedDate);
-        if (rs != 1) {
-            throw new IllegalStateException("비밀번호 변경 중 오류 발생");
-        }
+        memberRepository.updatePassword(memberLogin, updatedDate);
 
-        // 인증 테스트
-        Long userNo = memberLogin.getUserNo();
-        String password = memberLogin.getPassword();
-        MemberLogin findML = memberRepository.selectUserAndPasswordByLoginName(userNo, password);
-        if (passwordEncoder.matches(password, findML.getPassword())) {
-            throw new IllegalStateException("비밀번호 변경 후 인증 실패");
-        }
-
-        return findML;
+        // 새 비밀번호로 로그인 테스트
+        return memberRepository.selectUserAndPasswordByLoginName(userNo, password);
     }
 
 

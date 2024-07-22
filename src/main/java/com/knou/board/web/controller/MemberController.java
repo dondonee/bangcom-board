@@ -6,9 +6,6 @@ import com.knou.board.domain.member.MemberLogin;
 import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
-import com.knou.board.exception.ErrorResult;
-import com.knou.board.exception.ErrorResultDetail;
-import com.knou.board.file.FileStore;
 import com.knou.board.service.CommentService;
 import com.knou.board.service.MemberService;
 import com.knou.board.service.PostService;
@@ -20,15 +17,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
@@ -36,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.knou.board.domain.member.Member.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @Controller
@@ -46,7 +38,6 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final CommentService commentService;
-    private final FileStore fileStore;
 
 
     // Model 초기화
@@ -278,55 +269,9 @@ public class MemberController {
         return "redirect:/settings/profile";  // 수정 완료 후 프로필 수정 폼으로 리다이렉트
     }
 
-    @PostMapping("/settings/profile/image")
-    public ResponseEntity editProfileImage(@RequestParam(required = false) MultipartFile file, @Login Member loginMember, HttpSession session) throws IOException {
-
-        // 업로드 파일 검증
-        if (file.isEmpty()) {
-            ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "파일 없음", "파일을 업로드 해주세요.");
-            return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
-        } else {
-            // 파일 크기 검사
-            long size = file.getSize() / 1024;  // KB
-            if (size > 250) {  // 프로필 이미지 용량제한 초과
-                ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "프로필 이미지 용량제한 초과", "프로필 이미지 파일 용량은 최대 250KB 까지만 가능합니다.");
-                return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
-            }
-
-            // 지원하는 포맷인지 검사 (JPEG, PNG)
-            String fileExt = fileStore.extractExtension(file.getOriginalFilename());
-            Set<String> accpetExts = Set.of("jpg", "jpeg", "png");
-            if (!accpetExts.contains(fileExt) || !fileStore.isSupportedImageType(file)) {
-                ErrorResultDetail errorResultDetail = new ErrorResultDetail("BAD_REQUEST", "지원하지 않는 이미지 형식", "JPEG, PNG 형식의 이미지 파일만 업로드 가능합니다.");
-                return new ResponseEntity<>(errorResultDetail, BAD_REQUEST);
-            }
-        }
-
-        // 검증 통과 => 프로필 이미지 저장
-        Member updatedMember = memberService.updateProfileImage(loginMember, file);
-        session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);  // loginMember 세션 업데이트
-
-        Map<String, String> response = Map.of("imageName", updatedMember.getImageName());  // 네비게이션 바 이미지 업데이트용
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @GetMapping("/settings/account")
     public String accountSettingForm(@Login Member loginMember) {
         return "memberAccountForm";
-    }
-
-    @DeleteMapping("/settings/profile/image")
-    public ResponseEntity deleteProfileImage(@Login Member loginMember, HttpSession session) throws IOException {
-
-        if (loginMember.getImageName() == null) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        // 기존 프로필 이미지 삭제
-        Member updatedMember = memberService.initProfileImage(loginMember);
-        session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);  // loginMember 세션 업데이트
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/withdrawal")
@@ -384,66 +329,6 @@ public class MemberController {
 
         // URL을 통한 비정상 접근의 경우
         return "redirect:/";
-    }
-
-    @PostMapping("/settings/account/password-reset")
-    public ResponseEntity resetPassword(@Validated PasswordResetForm form, BindingResult bindingResult, @Login Member loginMember) {
-
-        // 현재 비밀번호 검증
-        Long userNo = loginMember.getUserNo();
-        String loginName = memberService.findLoginNameByUserNo(userNo);
-
-        // 테스트 계정 비밀번호 변경 제한 (userNo: 4, 5)
-        Long loginUserNo = loginMember.getUserNo();
-        if (loginUserNo == 4 || loginUserNo == 5) {
-            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 변경 불가", "테스트 계정은 비밀번호 변경이 불가능합니다.");
-            return new ResponseEntity<>(errorResult, BAD_REQUEST);
-        }
-
-        MemberLogin memberLogin = new MemberLogin();
-        memberLogin.setUserNo(userNo);
-        memberLogin.setLoginName(loginName);
-        memberLogin.setPassword(form.getCurrentPassword());
-        if (memberService.authenticate(memberLogin) == null) {  // 인증 불가
-            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 불일치", "현재 비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity<>(errorResult, BAD_REQUEST);
-        }
-
-        // 변경 비밀번호 유효성 검사
-        if (bindingResult.hasErrors()) {
-            FieldError err = bindingResult.getFieldError("password");
-            if (err != null) {
-                ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "유효하지 않은 비밀번호 형식", err.getDefaultMessage());
-                return new ResponseEntity<>(errorResult, BAD_REQUEST);
-            }
-        }
-
-        // 변경 비밀번호가 이전과 동일한지 체크
-        if (form.getCurrentPassword().equals(form.getPassword())) {
-            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 동일", "현재 비밀번호와 다르게 설정해주세요.");
-            return new ResponseEntity<>(errorResult, BAD_REQUEST);
-        }
-
-        // 비밀번호 확인이 일치한지 체크
-        validatePasswordCheck(form.getPassword(), form.getPasswordCheck(), bindingResult);
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError("passwordCheck");
-            ErrorResult errorResult = new ErrorResultDetail("BAD_REQUEST", "비밀번호 불일치", fieldError.getDefaultMessage());
-            return new ResponseEntity<>(errorResult, BAD_REQUEST);
-        }
-
-        // 검증 통과 => 비밀번호 변경
-        MemberLogin resetML = new MemberLogin();
-        resetML.setUserNo(userNo);
-        resetML.setPassword(form.getPassword());
-        MemberLogin resultML = memberService.resetPassword(resetML);
-
-        // 비밀번호 변경 성공
-        Map<String, String> resultMap = new HashMap<>();
-        if (resultML != null) {
-            resultMap.put("status", "success");
-        }
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
 

@@ -11,7 +11,7 @@ public class RestExceptionHandlerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)  // @Validated 바인딩 오류
     public ResponseEntity<ErrorResponse> handleValidationException(final MethodArgumentNotValidException e) {
-        return new ResponseEntity<>(new ErrorResponse(ErrorCode.INVALID_INPUT, e.getAllErrors().get(0).getDefaultMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse(ErrorCode.INVALID_FORM, e.getAllErrors().get(0).getDefaultMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BusinessException.class)

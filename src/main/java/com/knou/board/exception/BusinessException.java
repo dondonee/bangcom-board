@@ -4,14 +4,15 @@ import org.springframework.http.ResponseEntity;
 
 public class BusinessException extends RuntimeException {
 
+    public static final BusinessException UPLOAD_FILE_NOT_EXIST = new BusinessException(ErrorCode.UPLOAD_FILE_NOT_EXIST);
     public static final BusinessException NOT_WRITER = new BusinessException(ErrorCode.NOT_WRITER);
+    public static final BusinessException TEST_FORBIDDEN = new BusinessException(ErrorCode.TEST_FORBIDDEN);
     public static final BusinessException COMMENT_NOT_EXIST = new BusinessException(ErrorCode.COMMENT_NOT_EXIST);
     public static final BusinessException POST_NOT_EXIST = new BusinessException(ErrorCode.POST_NOT_EXIST);
     public static final BusinessException COMMENT_HAS_CHILD = new BusinessException(ErrorCode.COMMENT_HAS_CHILD);
 
 
     private final ErrorCode code;
-
 
     public BusinessException(ErrorCode code) {
         super();
@@ -29,7 +30,7 @@ public class BusinessException extends RuntimeException {
     }
 
     public ResponseEntity<ErrorResponse> makeResponseEntity() {
-        // 생성시 지정한 message -> 없으면 ErrorCode의 message 사용
+        // BusinessException 생성시 지정한 message -> 없으면 ErrorCode의 message 사용
         String message = getMessage();
         if (getMessage() == null) {
             message = code.getMessage();

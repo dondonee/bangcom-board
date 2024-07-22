@@ -35,8 +35,8 @@
                 const form = $('#resetPwForm');
 
                 $.ajax({
-                    url: '/settings/account/password-reset',
-                    type: 'post',
+                    url: '/api/v1/me/password',
+                    type: 'put',
                     data: form.serialize(),
                     success: function (xhr) {
                         if (xhr.status === 'success') {
@@ -58,11 +58,11 @@
                         // 클라이언트 오류는 수정 폼에 오류메세지 표시
                         if (errorCode === 4) {
                             const response = JSON.parse(xhr.responseText);
-                            const exMessage = response.exDescription;
+                            const message = response.message;
 
-                            if (exMessage) {
+                            if (message) {
                                 let html = '<i class="me-1 bi bi-exclamation-circle"></i>'
-                                    + '<span>' + exMessage + '</span>';
+                                    + '<span>' + message + '</span>';
                                 $('.x-field-error > div').html('');  // 기존 에러메세지 삭제
                                 $(form).find('.x-field-error > div').html(html);  // 에러메세지 표시
                             }

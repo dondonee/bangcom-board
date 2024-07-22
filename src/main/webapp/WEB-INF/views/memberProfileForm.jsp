@@ -34,7 +34,7 @@
 
             $('#imgInitBtn').click(function () {
                 $.ajax({
-                    url: '/settings/profile/image',
+                    url: '/api/v1/me/image',
                     method: 'DELETE',
                     success: function (xhr) {
                         imgUploadModal.hide()
@@ -58,8 +58,8 @@
 
             $('#imgUploadBtn').click(function () {
                 $.ajax({
-                    url: '/settings/profile/image',
-                    method: 'POST',
+                    url: '/api/v1/me/image',
+                    method: 'PUT',
                     data: new FormData($('#imgUploadForm')[0]),
                     enctype: 'multipart/form-data',
                     processData: false,
@@ -259,7 +259,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pb-0 x-text-sm x-text-gray-700">
-                    <form id="imgUploadForm" class="mb-2" action="/settings/profile/image" method="post"
+                    <form id="imgUploadForm" class="mb-2" action="/api/v1/me/image" method="put"
                           enctype="multipart/form-data">
                         <input class="form-control" type="file" id="file" name="file" accept="image/jpeg, image/png">
                         <div class="mt-1 x-text-sm x-text-gray-600 x-font-light">권장 사이즈 150px, 최대 250KB</div>
