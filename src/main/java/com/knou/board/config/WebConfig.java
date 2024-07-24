@@ -2,6 +2,7 @@ package com.knou.board.config;
 
 import com.knou.board.web.argumentresolver.LoginMemberArgumentResolver;
 import com.knou.board.web.interceptor.LoginCheckInterceptor;
+import com.knou.board.web.interceptor.TesterLockInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +26,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 미인증 사용자 접근 제한
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(1)
                 .addPathPatterns("/*/new", "/*/*/edit", "/*/*/delete", "/settings/{*path}", "/api/**");
+
+        // 테스터 기능 제한 - 비밀번호 변경, 회원탈퇴
+        registry.addInterceptor(new TesterLockInterceptor())
+                .order(2)
+                .addPathPatterns("/api/v1/me/password", "/api/v1/me/withdrawal");
     }
 
     @Override

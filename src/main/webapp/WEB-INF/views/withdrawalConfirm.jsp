@@ -49,20 +49,29 @@
                 }
 
                 $.ajax({
-                    url: '/api/v1/me',
-                    type: 'get',
-                    success: function (loginMember) {
-
-                        // 테스트 계정은 탈퇴 불가
-                        if (loginMember.userNo == 4 || loginMember.userNo == 5) {
-                            $('#testAccountErrorModal').modal('show');
-                            return;
+                    url: '/api/v1/me/withdrawal',
+                    type: 'post',
+                    data: $('#form').serialize(),
+                    success: function (xhr) {
+                        const response = JSON.parse(xhr.responseText);
+                        const status = response.status;
+                        if (status == 'success') {
+                            location.href = '/withdrawal-complete';
+                        } else {
+                            $('#errorModal').modal('show');
                         }
-
-                        $('#form').submit();
                     },
-                    error: function () {
-                        $('#errorModal').modal('show');
+                    error: function (xhr) {
+                        const response = JSON.parse(xhr.responseText);
+                        const title = response.title;
+                        const message = response.message;
+
+                        let clone = $('#errorModal').clone();
+                        clone.find('.modal-title').text(title);
+                        clone.find('.modal-body > div').text(message);
+
+                        let errorModal = new bootstrap.Modal(clone, {backdrop: 'static'});
+                        errorModal.show();
                     }
                 });
             });
@@ -79,8 +88,7 @@
              style="background-color: #F9FAFB">
             <p>모든 개인 정보는 완전히 삭제되며 더 이상 복구할 수 없게 됩니다. 게시물은 삭제되지 않으며, 익명처리 후 Bangcom으로 소유권이 귀속됩니다.</p>
         </div>
-        <form id="form" action="/withdrawal" method="post">
-            <input type="hidden" name="userNo" value="${loginMember.userNo}">
+        <form id="form" action="/settings/withdrawal" method="post">
             <div class="mb-2">
                 <div>
                     <div>
@@ -102,7 +110,7 @@
                 </div>
             </div>
             <div class="d-flex">
-                <a href="/settings/profile" class="me-2 my-4 py-2 col-6 btn btn-outline-secondary">취소</a>
+                <a href="/settings/account" class="me-2 my-4 py-2 col-6 btn btn-outline-secondary">취소</a>
                 <button id="submitBtn" disabled type="button" class="my-4 py-2 col-6 btn btn-danger">예, 탈퇴하겠습니다.
                 </button>
             </div>
@@ -124,26 +132,6 @@
                     오류가 발생했습니다. 다시 시도해 주세요.
                 </div>
                 <button type="button" class="mt-4 btn btn-primary form-control" data-bs-dismiss="modal">확인
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 테스트계정 오류 Modal -->
-<div class="modal modal-sm fade" id="testAccountErrorModal" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1"
-     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body p-4 text-center">
-                <h5 class="modal-title mb-1 x-font-medium" style="font-size: 1.1rem"
-                    id="testAccountErrorModalLabel">
-                    탈퇴 불가</h5>
-                <div class="x-text-sm x-font-light x-text-gray-600">
-                    테스트 계정은 탈퇴가 불가능합니다.
-                </div>
-                <button type="button" onclick="location.href='/settings/account'" class="mt-4 btn btn-primary form-control" data-bs-dismiss="modal">설정 화면으로
                 </button>
             </div>
         </div>

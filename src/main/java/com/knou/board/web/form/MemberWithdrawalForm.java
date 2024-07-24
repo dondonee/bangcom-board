@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 public class MemberWithdrawalForm {
 
-    private long userNo;
     private MemberWithdrawal.ReasonCode reasonCode;
     private String reasonText;
 

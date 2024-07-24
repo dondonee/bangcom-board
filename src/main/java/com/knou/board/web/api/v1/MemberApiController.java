@@ -2,15 +2,18 @@ package com.knou.board.web.api.v1;
 
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
+import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.exception.BusinessException;
 import com.knou.board.exception.ErrorCode;
 import com.knou.board.file.FileStore;
 import com.knou.board.service.MemberService;
 import com.knou.board.web.SessionConst;
 import com.knou.board.web.argumentresolver.Login;
+import com.knou.board.web.form.MemberWithdrawalForm;
 import com.knou.board.web.form.PasswordResetForm;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -19,10 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+@Slf4j
 @RequestMapping("/api/v1")
 @RestController
 @RequiredArgsConstructor
@@ -84,13 +86,8 @@ public class MemberApiController {
     @PutMapping("/me/password")
     public ResponseEntity resetPassword(@Validated PasswordResetForm form, BindingResult bindingResult, @Login Member loginMember) {
 
-        // 테스트 계정 비밀번호 변경 제한 (userNo: 4, 5)
-        Long userNo = loginMember.getUserNo();
-        if (userNo == 4 || userNo == 5) {
-            throw BusinessException.TEST_FORBIDDEN;
-        }
-
         // 현재 비밀번호 검증
+        Long userNo = loginMember.getUserNo();
         String loginName = memberService.findLoginNameByUserNo(userNo);
         MemberLogin memberLogin = new MemberLogin();
         memberLogin.setUserNo(userNo);
@@ -124,5 +121,34 @@ public class MemberApiController {
             resultMap.put("status", "success");
         }
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    }
+
+    @PostMapping("/me/withdrawal")  // DELETE 메소드는 payload 권장되지 않으므로 POST로 대체
+    public ResponseEntity withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session) throws IOException {
+
+        // 탈퇴 요청 유효성 검사
+        MemberWithdrawal.ReasonCode reasonCode = form.getReasonCode();
+        List<MemberWithdrawal.ReasonCode> availableCodes = Arrays.asList(MemberWithdrawal.ReasonCode.NO_LONGER_RELEVANT, MemberWithdrawal.ReasonCode.USING_OTHER_SERVICE, MemberWithdrawal.ReasonCode.LOW_FREQUENCY_USE, MemberWithdrawal.ReasonCode.ETC);
+        if (reasonCode == null || !availableCodes.contains(reasonCode)) {
+            throw new IllegalStateException("올바른 요청이 아닙니다.");
+        }
+        String reasonText = form.getReasonText();
+        if (reasonCode == MemberWithdrawal.ReasonCode.ETC && reasonText.isBlank()) {
+            throw new IllegalStateException("올바른 요청이 아닙니다.");
+        }
+
+        // 회원 탈퇴
+        MemberWithdrawal mw = new MemberWithdrawal();
+        mw.setUserNo(loginMember.getUserNo());
+        mw.setStatusCode(MemberWithdrawal.StatusCode.VOLUNTARY_WITHDRAWAL);
+        mw.setReasonCode(form.getReasonCode());
+        if (reasonCode == MemberWithdrawal.ReasonCode.ETC) {  // 기타 사유인 경우
+            mw.setReasonText(reasonText);
+        }
+        memberService.withdrawMember(mw);
+        session.invalidate(); // 로그아웃
+
+        Map<String, String> result = Map.of("status", "success");
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -3,7 +3,6 @@ package com.knou.board.web.controller;
 import com.knou.board.domain.comment.CommentHistoryDto;
 import com.knou.board.domain.member.Member;
 import com.knou.board.domain.member.MemberLogin;
-import com.knou.board.domain.member.MemberWithdrawal;
 import com.knou.board.domain.post.Criteria;
 import com.knou.board.domain.post.Post;
 import com.knou.board.service.CommentService;
@@ -24,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -274,61 +272,17 @@ public class MemberController {
         return "memberAccountForm";
     }
 
-    @GetMapping("/withdrawal")
+
+    // 탈퇴
+
+    @GetMapping("/settings/withdrawal")
     public String withdrawalConfirm() {
-        return "withdrawalConfirm";
-    }
-
-    @PostMapping("/withdrawal")
-    public String withdraw(MemberWithdrawalForm form, @Login Member loginMember, HttpSession session, RedirectAttributes redirectAttributes) throws IOException {
-
-        // 테스트 계정 회원탈퇴 제한 (userNo: 4, 5)
-        Long userNo = loginMember.getUserNo();
-        if (userNo == 4 && userNo == 5) {
-            throw new IllegalStateException("테스트 계정은 탈퇴가 불가능합니다.");
-        }
-
-        // 회원 조회
-        Member member = memberService.findProfileByUserNo(form.getUserNo());
-        if (member == null || form.getUserNo() != loginMember.getUserNo()) {
-            throw new IllegalStateException("올바른 요청이 아닙니다.");
-        }
-
-        // 탈퇴 요청 유효성 검사
-        MemberWithdrawal.ReasonCode reasonCode = form.getReasonCode();
-        List<MemberWithdrawal.ReasonCode> availableCodes = Arrays.asList(MemberWithdrawal.ReasonCode.NO_LONGER_RELEVANT, MemberWithdrawal.ReasonCode.USING_OTHER_SERVICE, MemberWithdrawal.ReasonCode.LOW_FREQUENCY_USE, MemberWithdrawal.ReasonCode.ETC);
-        if (reasonCode == null || !availableCodes.contains(reasonCode)) {
-            throw new IllegalStateException("올바른 요청이 아닙니다.");
-        }
-        String reasonText = form.getReasonText();
-        if (reasonCode == MemberWithdrawal.ReasonCode.ETC && reasonText.isBlank()) {
-            throw new IllegalStateException("올바른 요청이 아닙니다.");
-        }
-
-        // 회원 탈퇴
-        MemberWithdrawal mw = new MemberWithdrawal();
-        mw.setUserNo(loginMember.getUserNo());
-        mw.setStatusCode(MemberWithdrawal.StatusCode.VOLUNTARY_WITHDRAWAL);
-        mw.setReasonCode(form.getReasonCode());
-        if (reasonCode == MemberWithdrawal.ReasonCode.ETC) {  // 기타 사유인 경우
-            mw.setReasonText(reasonText);
-        }
-        memberService.withdrawMember(mw);
-        session.invalidate(); // 로그아웃
-
-        redirectAttributes.addFlashAttribute("status", "success");
-        return "redirect:/withdrawal-complete";
+        return "withdrawalConfirm";  // 탈퇴 확인 페이지
     }
 
     @GetMapping("/withdrawal-complete")
-    public String withdrawalComplete(Model model) {
-        // 탈퇴 후 리다이렉트된 경우
-        if (model.containsAttribute("status")) {
-            return "withdrawalComplete";
-        }
-
-        // URL을 통한 비정상 접근의 경우
-        return "redirect:/";
+    public String withdrawalComplete() {
+        return "withdrawalComplete";  // 탈퇴 완료 페이지
     }
 
 

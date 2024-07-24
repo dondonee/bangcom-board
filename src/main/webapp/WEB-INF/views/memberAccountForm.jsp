@@ -89,7 +89,7 @@
 
             $('#withdrawalBtn').click(function () {
                 if ($('#withdraw-agreements').is(':checked')) {
-                    location.href = '/withdrawal';
+                    location.href = '/settings/withdrawal';
                 }
             });
         });

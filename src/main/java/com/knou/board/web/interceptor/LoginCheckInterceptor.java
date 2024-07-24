@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Slf4j
@@ -13,13 +14,15 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String requestURI = request.getRequestURI();  // 로그인 이전 페이지
-        HttpSession session = request.getSession();
+        String method = request.getMethod();
+        String requestURI = request.getRequestURI();
 
-        // GET 요청은 인터셉트 X
-        if (request.getMethod().equals("GET") && requestURI.startsWith("/api")) {
+        // API GET 요청은 통과
+        if (requestURI.startsWith("/api")  && HttpMethod.GET.matches(method)) {
             return true;
         }
+
+        HttpSession session = request.getSession();
 
         // 미인증 사용자 -> 로그인 페이지로 이동
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
@@ -28,7 +31,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 인증된 사용자 -> 요청 처리 진행
+        // 인증된 사용자는 통과
         return true;
     }
 }
